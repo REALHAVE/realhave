@@ -48,10 +48,9 @@ const TABS: Tab[] = [
   },
 ];
 
-export default function TabBar() {
+// isLoggedIn: null = 아직 확인 중
+export default function TabBar({ isLoggedIn }: { isLoggedIn: boolean | null }) {
   const pathname = usePathname();
-  // 로그인 기능은 4단계에서 연결. 지금은 항상 비회원으로 표시
-  const isLoggedIn = false;
 
   return (
     <nav className={styles.tabbar} aria-label="하단 메뉴">
@@ -79,7 +78,7 @@ export default function TabBar() {
             </svg>
             <span>
               {tab.label}
-              {tab.href === "/mypage" && !isLoggedIn && (
+              {tab.href === "/mypage" && isLoggedIn === false && (
                 <span className={styles.sub}> (Log in)</span>
               )}
             </span>

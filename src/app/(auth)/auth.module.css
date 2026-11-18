@@ -1,0 +1,255 @@
+/* 목업의 로그인·회원가입·비밀번호 찾기 화면 스타일 */
+.wrap {
+  padding: 50px 26px 30px;
+  text-align: center;
+}
+
+.logo {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 26px;
+  color: var(--wine);
+  margin-bottom: 36px;
+}
+
+.rAccent {
+  font-family: var(--font-accent);
+  font-weight: 900;
+  font-size: 1.25em;
+  -webkit-text-stroke: 1.18px var(--wine);
+  line-height: 1;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+}
+
+.backBtn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--cream);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.title {
+  font-size: 14.5px;
+  font-weight: 800;
+}
+
+.body {
+  padding: 14px 20px 40px;
+}
+
+.form {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.label {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--ink-soft);
+  margin-bottom: 5px;
+}
+
+.input {
+  width: 100%;
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px 13px;
+  font: inherit;
+  font-size: 16px; /* 16px 미만이면 아이폰이 입력 시 화면을 확대함 */
+  color: var(--ink);
+  outline: none;
+}
+
+.input:focus {
+  border-color: var(--wine);
+  background: var(--paper);
+}
+
+.input::placeholder {
+  color: var(--ink-soft);
+  font-size: 14px;
+}
+
+.codeInput {
+  composes: input;
+  text-align: center;
+  font-size: 22px;
+  letter-spacing: 8px;
+  font-weight: 700;
+}
+
+.btnFull {
+  display: block;
+  width: 100%;
+  background: var(--wine);
+  color: var(--paper);
+  text-align: center;
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.btnFull:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.btnOutline {
+  display: block;
+  width: 100%;
+  border: 1px solid var(--wine);
+  color: var(--wine);
+  border-radius: 8px;
+  padding: 13px;
+  font-size: 13.5px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.btnOutline:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.link {
+  display: block;
+  font-size: 12px;
+  color: var(--ink-soft);
+  text-align: right;
+  margin: -4px 0 22px;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  color: var(--ink-soft);
+  margin: 20px 0;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+.social {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 26px;
+}
+
+.soc {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+  color: var(--ink-soft);
+}
+
+.foot {
+  font-size: 12.5px;
+  color: var(--ink-soft);
+}
+
+.foot a {
+  color: var(--wine);
+  font-weight: 800;
+}
+
+.agree {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--ink);
+  padding: 6px 0 16px;
+  cursor: pointer;
+}
+
+.agree input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--wine);
+}
+
+.hint {
+  font-size: 11.5px;
+  color: var(--ink-soft);
+  line-height: 1.7;
+  margin-top: 8px;
+}
+
+.error {
+  background: #fbefe9;
+  border: 1px solid #efcdbd;
+  color: var(--warn);
+  font-size: 12.5px;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 14px;
+  text-align: left;
+  line-height: 1.5;
+}
+
+.message {
+  background: #f4f0f8;
+  border: 1px solid #e3d6e6;
+  color: var(--wine);
+  font-size: 12.5px;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 14px;
+  text-align: left;
+  line-height: 1.5;
+}
+
+.emailBox {
+  background: var(--cream);
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 13px;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.emailBox b {
+  color: var(--wine);
+  word-break: break-all;
+}
+
+.resendRow {
+  margin-top: 14px;
+  text-align: center;
+}
+
+.textBtn {
+  font-size: 12px;
+  color: var(--ink-soft);
+  text-decoration: underline;
+}

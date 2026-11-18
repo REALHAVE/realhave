@@ -1,0 +1,140 @@
+/* 목업 마이페이지 (비회원 / 회원) */
+.loading {
+  padding: 60px 20px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+.guestCard {
+  padding: 40px 24px 28px;
+  text-align: center;
+  border-bottom: 1px solid var(--line);
+}
+
+.guestTitle {
+  font-size: 16px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.guestSub {
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  margin-bottom: 14px;
+}
+
+.btnFull {
+  display: block;
+  background: var(--wine);
+  color: var(--paper);
+  text-align: center;
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.guestSignup {
+  font-size: 12px;
+  color: var(--ink-soft);
+  margin-top: 14px;
+}
+
+.guestSignup a {
+  color: var(--wine);
+  font-weight: 800;
+}
+
+.header {
+  background: var(--wine-deep);
+  color: var(--paper);
+  padding: 18px 20px 30px;
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(255, 253, 249, 0.15);
+  border: 1px solid rgba(255, 253, 249, 0.3);
+  flex-shrink: 0;
+}
+
+.name {
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.grade {
+  font-size: 11px;
+  color: #d8c6d0;
+  margin-top: 3px;
+}
+
+.stats {
+  display: flex;
+  background: var(--paper);
+  margin: -14px 20px 0;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(59, 27, 46, 0.12);
+  position: relative;
+  z-index: 1;
+}
+
+.cell {
+  flex: 1;
+  text-align: center;
+  padding: 14px 4px;
+  border-right: 1px solid var(--line);
+}
+
+.cell:last-child {
+  border-right: none;
+}
+
+.num {
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--wine);
+}
+
+.lbl {
+  font-size: 11px;
+  color: var(--ink-soft);
+  margin-top: 2px;
+}
+
+.menu {
+  list-style: none;
+  padding: 22px 0 0;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 20px;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.chev {
+  color: var(--ink-soft);
+  font-size: 12px;
+}
+
+.logout {
+  display: block;
+  width: 100%;
+  text-align: center;
+  padding: 20px;
+  font-size: 12px;
+  color: var(--ink-soft);
+  font-weight: 600;
+}
