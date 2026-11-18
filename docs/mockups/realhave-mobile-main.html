@@ -1,0 +1,1538 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>RealHave 모바일 메인화면 구조안</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;900&family=Playfair+Display:wght@700;800;900&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --wine:#4D1437; --wine-deep:#34092A; --brass:#B08D57;
+    --cream:#F7F2EA; --paper:#FFFDF9; --ink:#2A2229; --ink-soft:#8A7C82; --line:#E7DED3;
+    --warn:#B4552D;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  .ic{width:1em; height:1em; vertical-align:-0.15em; display:inline-block;}
+  body{
+    background:#EFE9E0; font-family:'Noto Sans KR',sans-serif; color:var(--ink);
+    display:flex; justify-content:center; padding:40px 16px;
+  }
+  .display{font-family:'Fraunces',serif;}
+  .phone{
+    width:380px; background:var(--paper); border-radius:36px;
+    box-shadow:0 30px 60px rgba(59,27,46,.25);
+    overflow:hidden; border:8px solid var(--ink);
+    position:relative;
+  }
+  .statusbar{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:12px 22px 6px; font-size:13px; font-weight:700; color:var(--ink);
+  }
+
+  .annot{
+    font-size:10.5px; color:var(--wine); background:#FBF0F5; border:1px solid #E9CFDD;
+    padding:3px 8px; border-radius:20px; display:inline-block; margin:6px 20px 0;
+    font-weight:700;
+  }
+
+  /* Top bar */
+  .topbar{display:flex; align-items:center; justify-content:space-between; padding:6px 20px 0;}
+  .brand{font-family:'Fraunces',serif; font-weight:900; font-size:22px; color:var(--wine); cursor:pointer;}
+  .r-accent{font-family:'Playfair Display',serif; font-weight:900; font-size:1.25em; -webkit-text-stroke:1.18px var(--wine); line-height:1; vertical-align:baseline; display:inline-block;}
+  .top-right{display:flex; align-items:center; gap:10px;}
+  .top-icon-btn{
+    width:30px; height:30px; border-radius:50%; border:1px solid var(--line);
+    background:var(--paper); display:flex; align-items:center; justify-content:center;
+    font-size:14px; color:var(--wine); flex-shrink:0;
+  }
+  .btn-sell-top{
+    background:var(--wine); color:var(--paper); font-size:12px; font-weight:800;
+    padding:7px 12px; border-radius:16px; white-space:nowrap;
+  }
+  .sell-row{display:flex; justify-content:flex-end; padding:0 20px 2px; margin-top:11px;}
+
+  /* Search */
+  .search{
+    margin:11px 20px 3px; background:var(--cream); border:1px solid var(--line);
+    border-radius:20px; padding:10px 16px; font-size:13px; color:var(--ink-soft);
+  }
+
+  /* Banner */
+  .banner{
+    margin:0 20px 18px; background:linear-gradient(120deg,var(--wine-deep),var(--wine));
+    border-radius:14px; padding:18px; color:var(--paper); position:relative; overflow:hidden;
+  }
+  .banner .b-title{font-weight:700; font-size:15px; margin-bottom:4px;}
+  .banner .b-sub{font-size:12px; color:#E7D3DE;}
+  .banner .b-badge{
+    position:absolute; right:16px; top:16px; background:var(--brass); color:var(--wine-deep);
+    font-size:11px; font-weight:800; padding:5px 10px; border-radius:20px;
+  }
+
+  /* Quick menu */
+  .quickmenu{display:flex; justify-content:space-between; padding:4px 18px 22px;}
+  .qm-item{display:flex; flex-direction:column; align-items:center; gap:6px; width:56px;}
+  .qm-icon{
+    width:46px; height:46px; border-radius:50%; background:var(--cream);
+    border:1px solid var(--line); display:flex; align-items:center; justify-content:center;
+    font-size:16px; color:var(--wine);
+  }
+  .qm-item span{font-size:10.5px; font-weight:600; color:var(--ink); text-align:center; line-height:1.2;}
+
+  /* Section header */
+  .sec-head{display:flex; justify-content:space-between; align-items:baseline; padding:0 20px 12px; margin-top:0;}
+  .sec-head h3{font-size:16px; font-weight:800;}
+  .sec-head .more{font-size:11.5px; color:var(--ink-soft);}
+
+  /* Cert product row (horizontal scroll) */
+  .row-scroll{display:flex; gap:12px; padding:0 20px 22px; overflow-x:auto;}
+  .cert-card{flex:0 0 128px; background:var(--paper); border:1px solid var(--line); border-radius:10px; overflow:hidden; cursor:pointer;}
+  .cert-thumb{height:110px; background:var(--cream); position:relative;}
+  .cert-thumb .badge{
+    position:absolute; top:6px; left:6px; background:var(--wine); color:var(--paper);
+    font-size:9px; font-weight:800; padding:3px 6px; border-radius:4px;
+  }
+  .cert-info{padding:8px 9px 10px;}
+  .cert-info .b{font-size:10px; color:var(--ink-soft); margin-bottom:2px;}
+  .cert-info .n{font-size:12px; font-weight:700; margin-bottom:4px;}
+  .cert-info .p{font-size:12.5px; font-weight:900; color:var(--wine);}
+
+  /* Brand grid */
+  .brand-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; padding:0 20px 24px;}
+  .brand-tile{
+    background:var(--paper); border:1px solid var(--line); border-radius:10px;
+    display:flex; align-items:center; justify-content:center; height:56px; cursor:pointer;
+    font-family:'Fraunces',serif; font-weight:700; font-size:12.5px; color:var(--ink);
+    text-align:center; padding:0 6px; line-height:1.3;
+  }
+
+  /* Just listed - horizontal scroll, up to 20 items */
+  .listed-scroll{display:flex; gap:12px; padding:0 20px 26px; overflow-x:auto;}
+  .listed-card{flex:0 0 132px; background:var(--paper); border:1px solid var(--line); border-radius:10px; overflow:hidden; cursor:pointer;}
+  .listed-thumb{height:132px; background:var(--cream); position:relative;}
+  .listed-thumb .new{
+    position:absolute; top:6px; left:6px; background:var(--brass); color:var(--wine-deep);
+    font-size:9px; font-weight:800; padding:3px 6px; border-radius:4px;
+  }
+  .listed-info{padding:9px 10px 11px;}
+  .listed-info .b{font-size:10px; color:var(--ink-soft); margin-bottom:2px;}
+  .listed-info .n{font-size:11.5px; font-weight:700; margin-bottom:3px; line-height:1.3;}
+  .listed-info .used{font-size:9.5px; color:var(--ink-soft); margin-bottom:4px;}
+  .listed-info .p{font-size:12.5px; font-weight:900; color:var(--wine);}
+
+  /* Bottom tab bar */
+  .tabbar{
+    display:flex; justify-content:space-between; padding:12px 22px 16px;
+    border-top:1px solid var(--line); background:var(--paper);
+  }
+  .tab{display:flex; flex-direction:column; align-items:center; gap:4px; font-size:9.5px; color:var(--ink-soft); font-weight:600;}
+  .tab.active{color:var(--wine);}
+  .tab-icon{width:20px; height:20px; border-radius:5px; background:currentColor; opacity:.15;}
+  .tab-sub{font-size:8.5px; color:var(--wine); font-weight:800;}
+
+  .caption{
+    text-align:center; font-size:12px; color:#7A6E73; margin-top:14px; max-width:380px;
+  }
+
+  /* Screen switching */
+  .screen{display:none;}
+  .screen.active{display:block;}
+
+  /* Category screen top bar (bell/cart with badge counts) */
+  .cat-topbar{display:flex; align-items:center; justify-content:space-between; padding:14px 20px 16px; border-bottom:1px solid var(--line);}
+  .cat-icons{display:flex; gap:16px;}
+  .icon-badge{position:relative; font-size:17px;}
+  .icon-badge .count{
+    position:absolute; top:-7px; right:-9px; background:#C0392B; color:#fff;
+    font-size:9px; font-weight:800; width:15px; height:15px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+  }
+
+  /* Category group list */
+  .cat-list{padding:6px 20px 18px;}
+  .cat-group{padding:16px 0; border-bottom:1px solid var(--line);}
+  .cat-group h4{font-size:14.5px; font-weight:800; margin-bottom:8px; color:var(--ink);}
+  .cat-group .items{font-size:12.5px; color:var(--ink-soft); line-height:1.8;}
+  .cat-sub{cursor:pointer;}
+  .cat-sub:active{color:var(--wine); font-weight:700;}
+
+  /* Search screen */
+  .search-topbar{display:flex; align-items:center; gap:10px; padding:14px 20px 14px; border-bottom:1px solid var(--line);}
+  .search-input{
+    flex:1; background:var(--cream); border:1px solid var(--wine); border-radius:20px;
+    padding:10px 16px; font-size:13px; color:var(--ink); display:flex; justify-content:space-between; align-items:center;
+  }
+  .search-input .cursor{width:1px; height:13px; background:var(--wine); display:inline-block;}
+  .search-cancel{font-size:13px; color:var(--ink-soft); font-weight:600; white-space:nowrap;}
+
+  .search-block{padding:18px 20px; border-bottom:1px solid var(--line);}
+  .search-block h4{font-size:13.5px; font-weight:800; margin-bottom:10px;}
+  .chip-row{display:flex; flex-wrap:wrap; gap:8px;}
+  .chip{
+    background:var(--cream); border:1px solid var(--line); border-radius:16px;
+    padding:7px 13px; font-size:12px; color:var(--ink); font-weight:600;
+  }
+  .rank-row{display:flex; flex-direction:column; gap:9px;}
+  .rank-item{display:flex; align-items:center; gap:10px; font-size:12.5px;}
+  .rank-item .num{color:var(--wine); font-weight:900; width:14px;}
+
+  .result-count{padding:16px 20px 8px; font-size:12.5px; color:var(--ink-soft);}
+  .result-count b{color:var(--wine); font-weight:800;}
+  .result-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:0 20px 22px;}
+  .result-list{display:flex; flex-direction:column; padding:0 20px 22px;}
+  .result-row{display:flex; gap:14px; padding:14px 0; border-bottom:1px solid var(--line); cursor:pointer;}
+  .result-row-thumb{width:96px; height:96px; border-radius:10px; background:var(--cream); border:1px solid var(--line); position:relative; flex-shrink:0;}
+  .result-row-thumb .badge{
+    position:absolute; top:6px; left:6px; background:var(--wine); color:var(--paper);
+    font-size:9px; font-weight:800; padding:3px 6px; border-radius:4px;
+  }
+  .result-row-info{display:flex; flex-direction:column; justify-content:center; gap:4px;}
+  .result-row-info .b{font-size:11px; color:var(--ink-soft);}
+  .result-row-info .n{font-size:13.5px; font-weight:700; line-height:1.4;}
+  .result-row-info .meta{font-size:10.5px; color:var(--ink-soft); line-height:1.5;}
+  .result-row-info .p{font-size:14.5px; font-weight:900; color:var(--wine); margin-top:2px;}
+  .result-card{background:var(--paper); border:1px solid var(--line); border-radius:10px; overflow:hidden; cursor:pointer;}
+  .result-thumb{aspect-ratio:1; background:var(--cream); position:relative;}
+  .result-thumb .badge{
+    position:absolute; top:6px; left:6px; background:var(--wine); color:var(--paper);
+    font-size:9px; font-weight:800; padding:3px 6px; border-radius:4px;
+  }
+  .result-info{padding:9px 10px 11px;}
+  .result-info .b{font-size:10px; color:var(--ink-soft); margin-bottom:2px;}
+  .result-info .n{font-size:11.5px; font-weight:700; margin-bottom:3px; line-height:1.3;}
+  .result-info .p{font-size:12.5px; font-weight:900; color:var(--wine);}
+
+  /* A-Z Designers screen */
+  .dz-header{padding:16px 20px 12px; border-bottom:1px solid var(--line);}
+  .dz-header .title{font-family:'Fraunces',serif; font-weight:900; font-size:19px; color:var(--wine); margin-bottom:10px;}
+  .dz-search{background:var(--cream); border:1px solid var(--line); border-radius:20px; padding:9px 15px; font-size:12.5px; color:var(--ink-soft);}
+  .dz-body{display:flex;}
+  .dz-list{flex:1; padding-bottom:10px;}
+  .dz-letter{
+    background:var(--cream); padding:6px 20px; font-size:12px; font-weight:900; color:var(--wine);
+    border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+  }
+  .dz-brand{display:flex; align-items:center; gap:12px; padding:12px 20px; border-bottom:1px solid var(--line); cursor:pointer;}
+  .dz-brand .check{margin-left:auto; color:var(--wine); font-weight:900; font-size:15px;}
+  .dz-brand.sel-row{background:#FBF3F7;}
+  .dz-logo{width:34px; height:34px; border-radius:50%; background:var(--paper); border:1px solid var(--line); flex-shrink:0;}
+  .dz-brand .name{font-size:13.5px; font-weight:700;}
+  .dz-brand .origin{font-size:10.5px; color:var(--ink-soft); margin-top:2px;}
+  .dz-index{
+    width:22px; display:flex; flex-direction:column; align-items:center; gap:1px;
+    padding:6px 4px; font-size:9px; color:var(--ink-soft); font-weight:700;
+  }
+  .dz-index .on{color:var(--wine);}
+
+  /* Product detail screen */
+  .pd-topbar{display:flex; justify-content:space-between; align-items:center; padding:14px 20px; position:relative; z-index:2;}
+  .pd-topbar .icon-btn{width:32px; height:32px; border-radius:50%; background:rgba(255,253,249,.9); display:flex; align-items:center; justify-content:center; font-size:15px; box-shadow:0 1px 4px rgba(0,0,0,.12);}
+  .icon-btn.liked{background:var(--wine);}
+  .icon-btn.liked img{filter:invert(1);}
+  .btn-chat.liked{background:var(--wine); color:var(--paper); border-color:var(--wine);}
+  .btn-chat.liked img{filter:invert(1);}
+  .pd-photo{height:300px; background:linear-gradient(135deg,var(--cream),#EDE3D3); margin-top:-56px;}
+  .pd-dots{display:flex; justify-content:center; gap:5px; margin-top:10px;}
+  .pd-dots span{width:5px; height:5px; border-radius:50%; background:var(--line);}
+  .pd-dots span.on{background:var(--wine);}
+
+  .pd-main{padding:18px 20px 4px;}
+  .pd-brand{font-size:12px; color:var(--ink-soft); font-weight:700; letter-spacing:.03em;}
+  .pd-name{font-size:16px; font-weight:800; margin:4px 0 10px;}
+  .pd-price-row{display:flex; align-items:baseline; gap:8px; margin-bottom:10px;}
+  .pd-price{font-size:21px; font-weight:900; color:var(--wine);}
+  .pd-used{font-size:11.5px; color:var(--ink-soft); background:var(--cream); padding:3px 9px; border-radius:10px; font-weight:700;}
+
+  .pd-cert{
+    margin:14px 20px; background:#FBF3F7; border:1px solid #E9CFDD; border-radius:10px; padding:14px 16px;
+  }
+  .pd-cert .head{display:flex; align-items:center; gap:6px; font-size:13px; font-weight:800; color:var(--wine); margin-bottom:8px;}
+  .pd-cert ul{list-style:none; font-size:12px; color:var(--ink); line-height:1.9;}
+  .pd-cert li:before{content:'✓ '; color:var(--wine); font-weight:900;}
+
+  .pd-seller{display:flex; align-items:center; gap:10px; padding:14px 20px; border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
+  .pd-seller .avatar{width:38px; height:38px; border-radius:50%; background:var(--cream); border:1px solid var(--line);}
+  .pd-seller .name{font-size:13px; font-weight:700;}
+  .pd-seller .meta{font-size:11px; color:var(--ink-soft); margin-top:2px;}
+  .pd-seller .badge{margin-left:auto; font-size:10.5px; background:var(--wine); color:var(--paper); padding:4px 9px; border-radius:10px; font-weight:700;}
+
+  .pd-info{padding:16px 20px 8px;}
+  .pd-info h4{font-size:13.5px; font-weight:800; margin-bottom:10px;}
+  .pd-info .row{display:flex; font-size:12.5px; padding:7px 0; border-bottom:1px dashed var(--line);}
+  .pd-info .row .k{width:90px; color:var(--ink-soft);}
+  .pd-info .row .v{font-weight:600;}
+  .color-caveat{font-weight:500; font-size:11px; color:var(--ink-soft);}
+  .pd-desc{padding:16px 20px 90px; border-top:1px solid var(--line);}
+  .pd-desc h4{font-size:13.5px; font-weight:800; margin-bottom:10px;}
+  .pd-desc p{font-size:12.5px; color:var(--ink); line-height:1.7;}
+
+  .pd-footer{
+    position:sticky; bottom:0; background:var(--paper); border-top:1px solid var(--line);
+    padding:12px 20px 14px;
+  }
+  .pd-footer-actions{display:flex; gap:10px;}
+  .pd-footer-done{
+    display:none; text-align:center; padding:13px; border-radius:8px;
+    background:var(--cream); color:var(--ink-soft); font-size:13.5px; font-weight:800;
+  }
+  .pd-footer-actions.hidden{display:none;}
+  .pd-footer-done.show{display:block;}
+  .pd-footer-msgonly{display:none;}
+  .pd-footer-msgonly.show{display:block;}
+  .pd-footer .btn-chat{flex:0 0 40%; border:1px solid var(--wine); color:var(--wine); border-radius:8px; text-align:center; padding:13px; font-size:13.5px; font-weight:800;}
+  .pd-footer .btn-buy{flex:1; background:var(--wine); color:var(--paper); border-radius:8px; text-align:center; padding:13px; font-size:13.5px; font-weight:800;}
+
+  /* Sell flow — shared */
+  .sell-topbar{display:flex; align-items:center; gap:12px; padding:14px 20px;}
+  .sell-topbar .icon-btn{width:30px; height:30px; border-radius:50%; background:var(--cream); display:flex; align-items:center; justify-content:center; font-size:14px;}
+  .sell-topbar .title{font-size:14.5px; font-weight:800; flex:1;}
+  .step-dots{display:flex; gap:6px; padding:0 20px 16px;}
+  .step-dots span{flex:1; height:3px; border-radius:2px; background:var(--line);}
+  .step-dots span.on{background:var(--wine);}
+
+  /* Step 1: photo capture */
+  .cam-frame{
+    margin:10px 20px 18px; aspect-ratio:1; border-radius:14px;
+    background:repeating-linear-gradient(45deg,#EFE7DA,#EFE7DA 10px,#E7DDCC 10px,#E7DDCC 20px);
+    border:2px dashed var(--brass); position:relative; display:flex; align-items:center; justify-content:center;
+  }
+  .cam-frame .guide{width:70%; height:45%; border:2px solid var(--wine); border-radius:8px; background:rgba(255,253,249,.4);}
+  .cam-hint{text-align:center; font-size:12.5px; color:var(--ink-soft); padding:0 30px 18px; line-height:1.6;}
+  .shutter-wrap{display:flex; justify-content:center; padding-bottom:22px;}
+  .shutter{width:62px; height:62px; border-radius:50%; border:4px solid var(--wine); background:var(--paper);}
+
+  /* Step 2: AI analysis */
+  .ai-preview{margin:14px 20px; display:flex; gap:12px; align-items:center;}
+  .ai-thumb{width:64px; height:64px; border-radius:10px; background:var(--cream); border:1px solid var(--line); flex-shrink:0;}
+  .ai-status{font-size:13px; font-weight:800; color:var(--wine);}
+  .ai-status .sub{font-size:11.5px; color:var(--ink-soft); font-weight:500; margin-top:2px;}
+
+  .ai-result{margin:6px 20px 18px; background:#FBF3F7; border:1px solid #E9CFDD; border-radius:12px; padding:16px;}
+  .ai-result .seal{
+    width:64px; height:64px; border-radius:50%; border:2px solid var(--brass); margin:0 auto 10px;
+    display:flex; align-items:center; justify-content:center; font-size:22px; color:var(--wine);
+  }
+  .ai-result .verdict{text-align:center; font-size:14px; font-weight:800; color:var(--wine); margin-bottom:14px;}
+  .ai-checklist{display:flex; flex-direction:column; gap:9px;}
+  .ai-checklist .item{display:flex; justify-content:space-between; font-size:12px;}
+  .ai-checklist .item .ok{color:var(--wine); font-weight:800;}
+
+  /* Step 3: registration form */
+  .form-wrap{padding:6px 20px 90px;}
+  .form-group{margin-bottom:18px;}
+  .form-group label{display:block; font-size:12.5px; font-weight:700; margin-bottom:8px;}
+  .form-input{background:var(--cream); border:1px solid var(--line); border-radius:8px; padding:11px 13px; font-size:13px; color:var(--ink);}
+  .form-autofill{display:flex; align-items:center; gap:8px; background:#FBF3F7; border:1px solid #E9CFDD; border-radius:8px; padding:10px 13px; font-size:12.5px; color:var(--wine); font-weight:700;}
+  .form-chips{display:flex; gap:8px;}
+  .form-chips.grid6{display:grid; grid-template-columns:repeat(3,1fr); gap:8px;}
+  .form-chips.grid4{display:grid; grid-template-columns:repeat(4,1fr); gap:6px;}
+  .form-chips.grid4 .chip2{padding:10px 2px; font-size:10.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .purchase-group{margin-bottom:10px;}
+  .purchase-group:last-child{margin-bottom:0;}
+  .purchase-label{font-size:11px; font-weight:700; color:var(--ink-soft); margin-bottom:6px;}
+  .form-chips.wrap{display:flex; flex-wrap:wrap; gap:8px;}
+  .form-chips.wrap .chip2{flex:0 0 auto; padding:8px 13px;}
+  .size-note{font-size:10.5px; color:var(--ink-soft); line-height:1.7; margin-top:6px;}
+  .size-cond{font-size:10.5px; color:var(--wine); font-weight:600;}
+  .dev-note{font-size:10px; color:#B4552D; font-weight:700; font-style:italic;}
+
+  /* Color picker (reference: swatch + label grid) */
+  .color-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:16px 8px;}
+  .color-item{display:flex; flex-direction:column; align-items:center; gap:6px; font-size:10.5px; color:var(--ink); font-weight:600;}
+  .color-swatch{width:36px; height:36px; border-radius:50%; box-shadow:inset 0 0 0 1px rgba(0,0,0,.06);}
+  .color-item.sel .color-swatch{outline:2px solid var(--wine); outline-offset:3px;}
+  .color-swatch.multicolor{
+    background:#111;
+    background-image:
+      radial-gradient(circle at 30% 30%, #fff 0 3px, transparent 3.5px),
+      radial-gradient(circle at 70% 30%, #fff 0 3px, transparent 3.5px),
+      radial-gradient(circle at 50% 55%, #fff 0 3px, transparent 3.5px),
+      radial-gradient(circle at 30% 75%, #fff 0 3px, transparent 3.5px),
+      radial-gradient(circle at 70% 75%, #fff 0 3px, transparent 3.5px);
+  }
+  .form-chips .chip2{flex:1; text-align:center; border:1px solid var(--line); border-radius:8px; padding:10px; font-size:12.5px; font-weight:700; color:var(--ink);}
+  .form-chips .chip2.sel{background:var(--wine); color:var(--paper); border-color:var(--wine);}
+
+  /* Sell screen photo grid (당근st. write flow) */
+  .photo-row{display:flex; gap:10px; overflow-x:auto;}
+  .photo-slot{width:72px; height:72px; border-radius:8px; background:var(--cream); border:1px solid var(--line); flex-shrink:0; position:relative;}
+  .photo-slot.cert{border:2px solid var(--brass);}
+  .photo-slot.cert .tag{
+    position:absolute; bottom:4px; left:4px; right:4px; background:var(--wine); color:var(--paper);
+    font-size:8px; font-weight:800; text-align:center; border-radius:3px; padding:2px 0;
+  }
+  .photo-add{
+    width:72px; height:72px; border-radius:8px; border:1px dashed var(--line); flex-shrink:0;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
+    font-size:18px; color:var(--ink-soft);
+  }
+  .photo-add span{font-size:9px; font-weight:600;}
+  .form-textarea{background:var(--cream); border:1px solid var(--line); border-radius:8px; padding:11px 13px; font-size:12.5px; color:var(--ink-soft); min-height:70px;}
+  .sell-footer{
+    position:sticky; bottom:0; background:var(--paper); border-top:1px solid var(--line); padding:12px 20px 14px;
+  }
+  .btn-full{background:var(--wine); color:var(--paper); text-align:center; border-radius:8px; padding:14px; font-size:14px; font-weight:800;}
+  .btn-outline{border:1px solid var(--wine); color:var(--wine); border-radius:8px; padding:13px; font-size:13.5px; font-weight:800; text-align:center;}
+
+  /* Withdraw flow */
+  .wd-warn{text-align:center; padding:50px 30px 20px;}
+  .wd-icon{font-size:40px; margin-bottom:14px;}
+  .wd-title{font-size:17px; font-weight:800; margin-bottom:10px;}
+  .wd-sub{font-size:12.5px; color:var(--ink-soft); line-height:1.7;}
+  .wd-count-row{display:flex; justify-content:space-between; margin:10px 20px 28px; padding:14px 16px; background:var(--cream); border-radius:10px; font-size:13px; font-weight:700;}
+  .wd-demo-link{text-align:center; padding:16px 20px; font-size:11px; color:var(--ink-soft); text-decoration:underline; cursor:pointer;}
+  .wd-btns{display:flex; gap:10px; padding:0 20px; margin-top:10px;}
+  .wd-btns .btn-outline, .wd-btns .btn-full{flex:1;}
+  .chk-section{padding:14px 20px; border-bottom:1px solid var(--line);}
+
+  /* Chat list */
+  .chatlist-row{display:flex; gap:12px; align-items:center; padding:14px 20px; border-bottom:1px solid var(--line); cursor:pointer;}
+  .chatlist-avatar{width:46px; height:46px; border-radius:50%; background:var(--cream); border:1px solid var(--line); flex-shrink:0;}
+  .chatlist-info{flex:1; min-width:0;}
+  .chatlist-info .top{display:flex; justify-content:space-between; margin-bottom:4px;}
+  .chatlist-info .name{font-size:13px; font-weight:700;}
+  .chatlist-info .time{font-size:10.5px; color:var(--ink-soft);}
+  .chatlist-info .msg{font-size:12px; color:var(--ink-soft); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .chatlist-badge{background:var(--wine); color:var(--paper); font-size:10.5px; font-weight:800; width:19px; height:19px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+
+  /* Sales management (판매내역) */
+  .sales-tabs{display:flex; gap:8px; padding:14px 20px;}
+  .sales-tab{padding:8px 16px; border-radius:16px; font-size:12.5px; font-weight:700; background:var(--cream); color:var(--ink-soft);}
+  .sales-tab.active{background:var(--wine); color:var(--paper);}
+  .sales-list{padding:0 20px 24px; display:flex; flex-direction:column; gap:14px;}
+  .sales-card{border:1px solid var(--line); border-radius:12px; overflow:hidden; background:var(--paper);}
+  .sales-status{padding:10px 14px 0; font-size:11.5px; font-weight:800; color:var(--wine);}
+  .sales-body{display:flex; gap:12px; padding:8px 14px 10px; cursor:pointer;}
+  .sales-thumb{width:64px; height:64px; border-radius:8px; background:var(--cream); border:1px solid var(--line); position:relative; flex-shrink:0;}
+  .sales-thumb .badge{position:absolute; top:4px; left:4px; background:var(--wine); color:var(--paper); font-size:8px; font-weight:800; padding:2px 5px; border-radius:3px;}
+  .sales-info .n{font-size:12.5px; font-weight:700; line-height:1.35;}
+  .sales-info .meta{font-size:10.5px; color:var(--ink-soft); margin:3px 0;}
+  .sales-info .p{font-size:13.5px; font-weight:900; color:var(--wine);}
+  .sales-counts{display:flex; gap:14px; padding:0 14px 10px; font-size:11px; color:var(--ink-soft);}
+  .sales-actions{border-top:1px solid var(--line);}
+  .sales-btn{padding:12px; text-align:center; font-size:12.5px; font-weight:700; color:var(--ink);}
+
+  /* Buyer select screen */
+  .buyer-item{display:flex; gap:12px; padding:16px 20px; background:var(--cream); align-items:center;}
+  .buyer-item-thumb{width:56px; height:56px; border-radius:8px; background:var(--paper); border:1px solid var(--line); flex-shrink:0;}
+  .buyer-item-info .n{font-size:13px; font-weight:700; margin-bottom:4px;}
+  .buyer-item-info .p{font-size:13px; font-weight:900; color:var(--wine);}
+  .buyer-confirm-btn{
+    margin:20px 20px 0; padding:14px; text-align:center; border-radius:8px;
+    background:var(--line); color:var(--ink-soft); font-size:14px; font-weight:800;
+  }
+  .buyer-confirm-btn.ready{background:var(--wine); color:var(--paper); cursor:pointer;}
+  .buyer-find-link{text-align:center; padding:18px 20px 6px; font-size:12.5px; color:var(--ink-soft); text-decoration:underline; cursor:pointer;}
+  .buyer-list{padding:6px 0 0;}
+  .buyer-row{display:flex; gap:12px; align-items:center; padding:12px 20px; border-bottom:1px solid var(--line); cursor:pointer;}
+  .buyer-row.selected{background:#FBF3F7;}
+  .buyer-avatar{width:42px; height:42px; border-radius:50%; background:var(--cream); border:1px solid var(--line); flex-shrink:0;}
+  .buyer-row-info .name{font-size:12.5px; font-weight:700;}
+  .buyer-row-info .msg{font-size:11px; color:var(--ink-soft); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:220px;}
+  .buyer-skip{text-align:center; padding:22px 20px; font-size:13px; font-weight:700; color:var(--ink); cursor:pointer;}
+  .sales-status-row{display:flex; justify-content:space-between; align-items:center; padding:10px 14px 0;}
+  .sales-status-row .sales-status{padding:0;}
+  .sales-dots{font-size:18px; color:var(--ink-soft); font-weight:900; padding:2px 6px; cursor:pointer;}
+
+  /* Bottom action sheet */
+  .sheet-backdrop{position:absolute; inset:0; background:rgba(20,10,15,.4); display:none; z-index:40;}
+  .sheet-backdrop.show{display:block;}
+  .bottom-sheet{
+    position:absolute; left:0; right:0; bottom:-100%; z-index:41;
+    background:var(--paper); border-radius:20px 20px 0 0; padding:10px 0 6px;
+    transition:bottom .25s ease;
+  }
+  .bottom-sheet.show{bottom:0;}
+  .sheet-handle{width:36px; height:4px; background:var(--line); border-radius:2px; margin:4px auto 8px;}
+  .sheet-option{padding:16px 20px; text-align:center; font-size:14px; font-weight:600; border-top:1px solid var(--line);}
+  .sheet-option.danger{color:#B4552D;}
+  .sheet-close{padding:16px 20px 6px; text-align:center; font-size:14px; font-weight:700; color:var(--ink-soft);}
+
+  /* My page */
+  .mp-header{background:var(--wine-deep); color:var(--paper); padding:18px 20px; margin-top:4px; display:flex; align-items:center; gap:14px;}
+  .mp-avatar{width:52px; height:52px; border-radius:50%; background:rgba(255,253,249,.15); border:1px solid rgba(255,253,249,.3); flex-shrink:0;}
+  .mp-header .name{font-size:15px; font-weight:800;}
+  .mp-header .grade{font-size:11px; color:#D8C6D0; margin-top:3px;}
+  .mp-stats{display:flex; background:var(--paper); margin:-14px 20px 0; border-radius:10px; box-shadow:0 3px 10px rgba(59,27,46,.12); position:relative; z-index:1;}
+  .mp-stats .cell{flex:1; text-align:center; padding:14px 4px; border-right:1px solid var(--line);}
+  .mp-stats .cell .ico{font-size:15px; margin-bottom:4px;}
+  .mp-stats .cell:last-child{border-right:none;}
+  .mp-stats .cell .num{font-size:15px; font-weight:900; color:var(--wine);}
+  .mp-stats .cell .lbl{font-size:10.5px; color:var(--ink-soft); margin-top:3px;}
+  .mp-menu{padding:22px 0 0;}
+  .mp-group{margin-bottom:6px;}
+  .mp-group h5{font-size:11px; color:var(--ink-soft); font-weight:800; padding:6px 20px; text-transform:uppercase; letter-spacing:.04em;}
+  .mp-item{display:flex; align-items:center; justify-content:space-between; padding:13px 20px; border-bottom:1px solid var(--line); font-size:13px; font-weight:600;}
+  .mp-item-left{display:flex; align-items:center; gap:10px;}
+  .mp-item .icon{font-size:15px; width:20px; text-align:center;}
+  .mp-item .chev{color:var(--ink-soft); font-size:12px;}
+  .mp-logout{text-align:center; padding:20px; font-size:12px; color:var(--ink-soft); font-weight:600; cursor:pointer;}
+
+  /* Withdraw flow */
+  .wd-wrap{text-align:center; padding:60px 30px 30px;}
+  .wd-icon{font-size:40px; margin-bottom:18px;}
+  .wd-title{font-size:17px; font-weight:800; margin-bottom:10px;}
+  .wd-desc{font-size:13px; color:var(--ink-soft); line-height:1.7; margin-bottom:20px;}
+  .wd-count{background:var(--cream); border-radius:10px; padding:12px; font-size:13px; font-weight:700; margin-bottom:24px;}
+  .wd-count b{color:var(--wine);}
+  .wd-skip{margin-top:16px; font-size:12px; color:var(--ink-soft); text-decoration:underline; cursor:pointer;}
+  .wd-btn-row{display:flex; gap:10px; margin-top:10px;}
+  .wd-btn-no{flex:1; padding:14px; border:1px solid var(--line); border-radius:8px; font-size:14px; font-weight:800; cursor:pointer;}
+  .wd-btn-yes{flex:1; padding:14px; background:var(--warn); color:#fff; border-radius:8px; font-size:14px; font-weight:800; cursor:pointer;}
+
+  /* Withdraw flow */
+  .wd-wrap{padding:60px 30px 30px; text-align:center;}
+  .wd-icon{font-size:40px; margin-bottom:18px;}
+  .wd-title{font-size:17px; font-weight:800; margin-bottom:10px;}
+  .wd-desc{font-size:12.5px; color:var(--ink-soft); line-height:1.7; margin-bottom:24px;}
+  .wd-card{background:var(--cream); border-radius:10px; padding:14px; font-size:13px; margin-bottom:22px;}
+  .wd-card b{color:var(--wine);}
+  .wd-skip{margin-top:16px; font-size:11.5px; color:var(--ink-soft); text-decoration:underline; cursor:pointer;}
+  .wd-btn-row{display:flex; gap:10px;}
+
+  /* Guest state (logged-out) */
+  #mp-guest{display:none;}
+  #mp-guest.active{display:block;}
+  #mp-loggedin.hidden{display:none;}
+  .mp-guest-card{padding:40px 24px 28px; text-align:center; border-bottom:1px solid var(--line);}
+  .mp-guest-title{font-size:16px; font-weight:800; margin-bottom:6px;}
+  .mp-guest-sub{font-size:12.5px; color:var(--ink-soft);}
+  .mp-guest-signup{font-size:12px; color:var(--ink-soft); margin-top:14px;}
+  .mp-guest-signup b{color:var(--wine); font-weight:800;}
+
+  /* Auth screens */
+  .auth-wrap{padding:50px 26px 30px; text-align:center;}
+  .auth-logo{font-family:'Fraunces',serif; font-weight:900; font-size:26px; color:var(--wine); margin-bottom:36px; cursor:pointer;}
+  .auth-form{text-align:left; display:flex; flex-direction:column; gap:12px; margin-bottom:16px;}
+  .auth-form .form-input{width:100%;}
+  .auth-link{font-size:12px; color:var(--ink-soft); text-align:right; margin-bottom:22px;}
+  .auth-divider{display:flex; align-items:center; gap:10px; font-size:11px; color:var(--ink-soft); margin:20px 0;}
+  .auth-divider .line{flex:1; height:1px; background:var(--line);}
+  .auth-social{display:flex; flex-direction:column; gap:10px; margin-bottom:26px;}
+  .auth-social .soc{border:1px solid var(--line); border-radius:8px; padding:12px; font-size:13px; font-weight:700; text-align:center;}
+  .auth-foot{font-size:12.5px; color:var(--ink-soft);}
+  .auth-foot b{color:var(--wine); font-weight:800;}
+  .auth-topbar{display:flex; align-items:center; gap:12px; padding:16px 20px;}
+  .auth-topbar .icon-btn{width:30px; height:30px; border-radius:50%; background:var(--cream); display:flex; align-items:center; justify-content:center; font-size:14px;}
+  .auth-topbar .title{font-size:14.5px; font-weight:800;}
+  .auth-body{padding:14px 20px;}
+  .auth-hint{font-size:11.5px; color:var(--ink-soft); line-height:1.7; margin-top:8px;}
+  .auth-agree{display:flex; align-items:center; gap:8px; font-size:12px; color:var(--ink); padding:6px 0 16px;}
+  .auth-agree .box{width:16px; height:16px; border-radius:4px; background:var(--wine); color:var(--paper); font-size:10px; display:flex; align-items:center; justify-content:center; font-weight:900;}
+  .auth-agree .box.off{background:var(--paper); border:1.5px solid var(--line);}
+  .auth-agree{cursor:pointer;}
+</style>
+</head>
+<body>
+<div>
+  <div class="phone">
+    <div class="statusbar"><span>9:41</span><span>●●●● <img class="ic" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAABU0lEQVR4nO3dO3LCMBSGUYfJStKF/a+FdGyFlGRSWbJ0/fjP6XmM9HGRC8OyAAAAAAAAAAAAAAAAAAAAAAAAR/Sx9QnuX9+vEW+EZXk8fzbvR6vuF7Tx81SGcOt5kM2fq3J9mwOw+TWq1rkpAJtfq2K9u74CuI7VAfj072P2upsA4T5HPdEe17BXsed0NQHCCSCcAMINOwP856rh7cjnIxMgnADCCSDctDMAY/WcqdacPUyAcAIIJ4BwAggngHACCCeAcAIIJ4BwAggngHACCCeAcAIIJ4BwAggngHACCCeAcAIIJ4BwAggngHACCOfGkJOYdYOpCRBOAOEEEG7aGeDIP4rAmwkQTgDhBBBu2BnAj0KdkwkQbnUATvX7mL3uJkC4pgBMgVoV6908AURQo2qdu74CRDBX5fr638AD8cECAAAAAAAAAAAAAAAAAAAAAOCPXwrPPwhQYnm7AAAAAElFTkSuQmCC" alt=""></span></div>
+
+    <div id="screen-home" class="screen active">
+    <div class="topbar">
+      <div class="brand" onclick="showScreen('home')"><span class="r-accent">R</span>eal HAVE</div>
+      <div class="top-right">
+        <div class="top-icon-btn" onclick="requireLogin('wishlist')"><img class="ic" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAEMUlEQVR4nO2dS3LjMAxE21NzEu+c+5/F3vkqnkVKNYqiD0UBID79tqmIINAESEqkAUIIIYQQQgghhBBCCCGEEEIIIQm5jWz86/74nP2f5/s11OYjovVpSMM9TlrDixgi98ekQSkHbTFKCBn6pdqAtoOWWAkhU7/+aD3Y2klWbWbrl4oA9gzWHqVf98dHw2Faz52z5xuttsUFMGKErCFpR8Y+TYiOxlYDn+/X7ev++PRkg7NOuJpxLNqbfHHGf2fb2ELkQWecJGl8q+N622x5bq+Qe9tctn+1vb9XH9CKRu0/M2o0kA4+8N9PVv26bHyLoRbLM+ksoJVVJG2QsKP7n0fUqyOkguYh+K22TPTaJLYKWDPAeofuqL0WZ3oK/lZ7kjZ0CWDNSct6OHKfvnc9PXL/Yo+lX7f83/Ns8dmxhxc0vaPY2+hfQ9r3pzOAl02RPXpKQYTgH9ETG9GdQE9OkrQla7+AkwLwnvqXtM4FsvarBbW3gSQG6QVwNFqijX5pmgVQ3VHekCoD6TMA2YcCKA4FUByz18EjOdr5qzyHYQYIjIRwKYDgPN+v25oQWlcCJUpAZrYC3ZodmAECI/FijgIoTukSUHn2P8EMUBwKoDgUQHGaBbCsl1vrT2LLWhzOxEXssATFYItULFgCikMBFOeUAEZcYEB+I1mKRTMARaCPtI9PC0Di/B3pQ+PwivgcYPSZ/axo3EUAdAqAc4ExaCzDuzMAS4EdmucWL5UAikAf7UOrl+cAewZwPnCNo7rv/ptABv862j4UEQBLgTxW9xWo3hE0hyJox/KyCrMLIjgfaMOi7s8xexnE4Ldj6SuVncC9v1MI24y4p0jtIw4vN4hGYKSv1ErAkcGcE3zTsscf8hdDjpiCX1kEHnygKgCpu3kz4uWuZfUMQBH8xkvwAePfDeTE0J8PTOcALR3LnAm8BR9w/suhWbKB5/4OWQW0dDTLMrH1U65RYg/x49FRM0GE/g09GJJ5hRAh+ICDk0EZRRAl+MDgErAkkuPWiGj/8AwwJ/Lk0PtkbwtXxkxEG0nR7J3jKgNMRJoXRA4+4FQAQAwRRA8+4LQELPG4herRph7cGzjhZbR5sUMKtyVgiYcVQtSZ/h5hDJ0YNQKzjfyJMBlgYsTkMGvwgYACAGxFkDn4QMASsERzNp5lpr9HyAwwR+srowrBBxIIAJAXQZXgA0kEAMgdRBl9UMOaNAI4QjoDZCGNkuf0HrIccThzNCkzQM89Bdbn8r2QUgBA3yi/+hNsEUkrgCPmwa5U85ekVfbE1eBmHv1AgQxwJYDZgw8UEADZp4QAekZyhdEPFBEAcC6gVYIPFBIA0P5VkYUtXiglAOB4k8jSFg+UEwD5SUkBrI30iqMfKCoAQgB87xJW3gYGmAHKQwEUhwIghBBCCCGEEEIIIYQQQgghhBBC8vEP70nZk9vOZWsAAAAASUVORK5CYII=" alt=""></div>
+        <div class="top-icon-btn" onclick="requireLogin('chatlist')"><img class="ic" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAACNUlEQVR4nO3dTVIbQQyAUZOjsEvuf5Zkl6uQFZtAQbtb0nSP3jsApqRvfgyu8eMBAAAAAAAAAAAA3MHLVS/86/Xn21Wvvavff/+U76P0BS19XFUMJS9i8fOyQ0j94RYfJyuEHxk/9PGw/GhZ80wJwPJzZMw1PADLzxU939AALL9G5JzDbixmfqkr3vfu6qr5hSzgmV/e0r9XOc+0dwGfsfwxlXNaDmC0Vst/zui8Vu8HSs4Alj+nYm5LAYzUZ/lrRua3chZIPQNYfozMOZbeBLKf6QD80Wcvs/tIOwM4/cc67r+BnEEAzQmgOQE0J4DmBNCcAJoTQHMCaE4AzQmgOQE0J4DmBNCcAJoTQHMCaE4AzQmgOQE0J4DmBNCcAJoTQHMCaE4AzQmgOQE0J4DmBNCcAJoTQHOeFn6I7Z4W7gkge5ndh0tAc6kBuAzEyJzjUgDZDzEk/2GcJZcAEcypmNtyAFUPNe6m6iHcpTeBIhhTOSffGLKJo78x5J0jvE7UwRN6CXBE14icc/g9gAhyRc835SZQBDky5upp4YfImqdvD9/c0d8e/j8hjKs6g152mhbDR1dcNre7TkeH4V7ka7f+PIDlf++2AVj+mFsGYPnjbhkA424XgKP/ObcKwPKfd5sALH/OLQKw/HnHB2D5a44OwPLXHRuA5cc4MgDLj3NcAJYf66gALD/eMQFYfo5jAiDHEQE4+vNsH4Dl59o6AMvPt20Alt+UTwsDAAAAAAAAAADAlH8pudPxzodiNQAAAABJRU5ErkJggg==" alt=""></div>
+        <div class="btn-sell-top" onclick="requireLogin('sell')">상품등록</div>
+      </div>
+    </div>
+
+    <div class="search" onclick="showScreen('search')"><img class="ic" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAADL0lEQVR4nO2dQVLkMAxFPdSchB3c/yzDbq7CrLqgMnRix7b0Jb23hAbL1ovsTnXUrQEAAAAAAAAAAAAAAAAAAEA2fnkH0MP769tn72v//P0IMScVJBdrJOFXIMQ5UouzMvFHEOFn3BdlZ9KfgQxfvHgO7pF8z3EVcbkSlBJQvRqYVwCl5LemF481pgKoLrZqXBaYlb/ZRe4p1RZjZMNkwncSsyIZXuNGYvtkR5OwIwEKMaiydaJqt3DV4lFg2yFQcbFHxqlyMNwigGLy74xXQYLfXgN7ltjH2BUSfMXyCpBtUbPN58hSAXoXS+WA1RtHZgnMbwWrJP+BWjzWmAqgutiqcVmwTIDMZbK1vPMzqwDqV5l6fLtYIkDWq+NIxnmaVIAoV1eUOFfi+pEw8AcBijMtQMZ98Yxs891eAaLtq9HinYUtoDgIUBwEKA4CFAcBioMAxUGA4iBAcbYLEO3OWbR4Z5kWoNqds2zzZQsoDgIUx0SAKPtqlDhXskSAbPviMzLO02wLUL+61OPbxTIBMl4d38k6P3oENd24LKBLmFg81iwVINrDltEeZt3B8gqQbbGyzeeIW4OIx9XnscAqFUiBLWcA5TYsyu1rPNh2CFSUgOT/j1RrttboE2gNnUI7x31/ffvMKAa9gjvG+P5/s0lgOhnl03dP8q9eGxF6BLWx5J/9PCJ0CRtMfu/vo+CaDM9FPBOx0ttF14+EeS3equTfeb0aUvZ6f2/gzPhRK4Fk0J7fHFpNghABW+/JlSQIFawlVSTguYAnzCQx0sEQAU6oIAECXJBdAgToILMECNBJVgkQYICMEiDAINkkQIAbZJIAAW6SRQIEmCCDBAgwSXQJEGABkSVAgEVElQABFhJRAgRYTDQJEGADkSRAgE1EkQABNhJBAgTYjLoECGCAsgQIYISqBAhgiKIECGCMmgQI4ICSBAjghIoECOCIggQI4Iy3BAgggKcECCCClwQIIISHBAgghrUECCCIpQQIIMpdCUb/DgGEGU3mHWkQQJzepN6tGAgQgKvkzpwZECAIz5I825AKAQJxTHakbmSwEO/HyQAAAAAAAAAAAAAgFP8AHpbFhsHzyzUAAAAASUVORK5CYII=" alt=""> 브랜드, 상품명으로 검색</div>
+    <div class="sec-head" style="margin-top:10px;"><h3>인기브랜드</h3><span class="more" onclick="showScreen('designers')" style="cursor:pointer;">전체보기 ›</span></div>
+    <div class="brand-grid">
+      <div class="brand-tile" onclick="openCategoryList('LOUIS VUITTON')">LOUIS VUITTON</div>
+      <div class="brand-tile" onclick="openCategoryList('HERMÈS')">HERMÈS</div>
+      <div class="brand-tile" onclick="openCategoryList('CHANEL')">CHANEL</div>
+      <div class="brand-tile" onclick="openCategoryList('B&O')">B&O</div>
+      <div class="brand-tile" onclick="openCategoryList('TIFFANY&CO')">TIFFANY&CO</div>
+      <div class="brand-tile" onclick="openCategoryList('ROLEX')">ROLEX</div>
+      <div class="brand-tile" onclick="openCategoryList('GUCCI')">GUCCI</div>
+      <div class="brand-tile" onclick="openCategoryList('PRADA')">PRADA</div>
+      <div class="brand-tile" onclick="openCategoryList('LORO PIANA')">LORO PIANA</div>
+    </div>
+    <div class="sec-head" style="margin-top:-13px;"><h3>최신등록상품</h3><span class="more" onclick="openCategoryList('최신등록상품')" style="cursor:pointer;">최대 20개까지 보기 ›</span></div>
+    <div class="listed-scroll">
+      <div class="listed-card" onclick="viewNormalDetail()"><div class="listed-thumb"><div class="new">NEW</div></div>
+        <div class="listed-info"><div class="b">GUCCI</div><div class="n">구찌지 카드지갑</div><div class="used">USED · 상태 100%</div><div class="p">1,990,000원</div></div></div>
+      <div class="listed-card" onclick="viewNormalDetail()"><div class="listed-thumb"><div class="new">NEW</div></div>
+        <div class="listed-info"><div class="b">LORO PIANA</div><div class="n">여성 셀렉티드 로퍼</div><div class="used">USED</div><div class="p">780,000원</div></div></div>
+      <div class="listed-card" onclick="viewNormalDetail()"><div class="listed-thumb"><div class="new">NEW</div></div>
+        <div class="listed-info"><div class="b">HERMÈS</div><div class="n">여성 숄더백</div><div class="used">USED</div><div class="p">9,990,000원</div></div></div>
+      <div class="listed-card" onclick="viewNormalDetail()"><div class="listed-thumb"><div class="new">NEW</div></div>
+        <div class="listed-info"><div class="b">CASIMA</div><div class="n">숄더백</div><div class="used">USED</div><div class="p">590,000원</div></div></div>
+    </div>
+
+    </div>
+    <!-- /screen-home -->
+
+    <div id="screen-category" class="screen">
+      <span class="annot">Category 탭 클릭 시 이동하는 화면</span>
+      <div class="cat-topbar">
+        <div class="brand" onclick="showScreen('home')">Real HAVE</div>
+        <div class="top-right">
+          <div class="top-icon-btn" onclick="requireLogin('wishlist')"><img class="ic" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAEMUlEQVR4nO2dS3LjMAxE21NzEu+c+5/F3vkqnkVKNYqiD0UBID79tqmIINAESEqkAUIIIYQQQgghhBBCCCGEEEIIIQm5jWz86/74nP2f5/s11OYjovVpSMM9TlrDixgi98ekQSkHbTFKCBn6pdqAtoOWWAkhU7/+aD3Y2klWbWbrl4oA9gzWHqVf98dHw2Faz52z5xuttsUFMGKErCFpR8Y+TYiOxlYDn+/X7ev++PRkg7NOuJpxLNqbfHHGf2fb2ELkQWecJGl8q+N622x5bq+Qe9tctn+1vb9XH9CKRu0/M2o0kA4+8N9PVv26bHyLoRbLM+ksoJVVJG2QsKP7n0fUqyOkguYh+K22TPTaJLYKWDPAeofuqL0WZ3oK/lZ7kjZ0CWDNSct6OHKfvnc9PXL/Yo+lX7f83/Ns8dmxhxc0vaPY2+hfQ9r3pzOAl02RPXpKQYTgH9ETG9GdQE9OkrQla7+AkwLwnvqXtM4FsvarBbW3gSQG6QVwNFqijX5pmgVQ3VHekCoD6TMA2YcCKA4FUByz18EjOdr5qzyHYQYIjIRwKYDgPN+v25oQWlcCJUpAZrYC3ZodmAECI/FijgIoTukSUHn2P8EMUBwKoDgUQHGaBbCsl1vrT2LLWhzOxEXssATFYItULFgCikMBFOeUAEZcYEB+I1mKRTMARaCPtI9PC0Di/B3pQ+PwivgcYPSZ/axo3EUAdAqAc4ExaCzDuzMAS4EdmucWL5UAikAf7UOrl+cAewZwPnCNo7rv/ptABv862j4UEQBLgTxW9xWo3hE0hyJox/KyCrMLIjgfaMOi7s8xexnE4Ldj6SuVncC9v1MI24y4p0jtIw4vN4hGYKSv1ErAkcGcE3zTsscf8hdDjpiCX1kEHnygKgCpu3kz4uWuZfUMQBH8xkvwAePfDeTE0J8PTOcALR3LnAm8BR9w/suhWbKB5/4OWQW0dDTLMrH1U65RYg/x49FRM0GE/g09GJJ5hRAh+ICDk0EZRRAl+MDgErAkkuPWiGj/8AwwJ/Lk0PtkbwtXxkxEG0nR7J3jKgNMRJoXRA4+4FQAQAwRRA8+4LQELPG4herRph7cGzjhZbR5sUMKtyVgiYcVQtSZ/h5hDJ0YNQKzjfyJMBlgYsTkMGvwgYACAGxFkDn4QMASsERzNp5lpr9HyAwwR+srowrBBxIIAJAXQZXgA0kEAMgdRBl9UMOaNAI4QjoDZCGNkuf0HrIccThzNCkzQM89Bdbn8r2QUgBA3yi/+hNsEUkrgCPmwa5U85ekVfbE1eBmHv1AgQxwJYDZgw8UEADZp4QAekZyhdEPFBEAcC6gVYIPFBIA0P5VkYUtXiglAOB4k8jSFg+UEwD5SUkBrI30iqMfKCoAQgB87xJW3gYGmAHKQwEUhwIghBBCCCGEEEIIIYQQQgghhBBC8vEP70nZk9vOZWsAAAAASUVORK5CYII=" alt=""></div>
+          <div class="top-icon-btn" onclick="requireLogin('chatlist')"><img class="ic" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAACNUlEQVR4nO3dTVIbQQyAUZOjsEvuf5Zkl6uQFZtAQbtb0nSP3jsApqRvfgyu8eMBAAAAAAAAAAAA3MHLVS/86/Xn21Wvvavff/+U76P0BS19XFUMJS9i8fOyQ0j94RYfJyuEHxk/9PGw/GhZ80wJwPJzZMw1PADLzxU939AALL9G5JzDbixmfqkr3vfu6qr5hSzgmV/e0r9XOc+0dwGfsfwxlXNaDmC0Vst/zui8Vu8HSs4Alj+nYm5LAYzUZ/lrRua3chZIPQNYfozMOZbeBLKf6QD80Wcvs/tIOwM4/cc67r+BnEEAzQmgOQE0J4DmBNCcAJoTQHMCaE4AzQmgOQE0J4DmBNCcAJoTQHMCaE4AzQmgOQE0J4DmBNCcAJoTQHMCaE4AzQmgOQE0J4DmBNCcAJoTQHOeFn6I7Z4W7gkge5ndh0tAc6kBuAzEyJzjUgDZDzEk/2GcJZcAEcypmNtyAFUPNe6m6iHcpTeBIhhTOSffGLKJo78x5J0jvE7UwRN6CXBE14icc/g9gAhyRc835SZQBDky5upp4YfImqdvD9/c0d8e/j8hjKs6g152mhbDR1dcNre7TkeH4V7ka7f+PIDlf++2AVj+mFsGYPnjbhkA424XgKP/ObcKwPKfd5sALH/OLQKw/HnHB2D5a44OwPLXHRuA5cc4MgDLj3NcAJYf66gALD/eMQFYfo5jAiDHEQE4+vNsH4Dl59o6AMvPt20Alt+UTwsDAAAAAAAAAADAlH8pudPxzodiNQAAAABJRU5ErkJggg==" alt=""></div>
+          <div class="btn-sell-top" onclick="requireLogin('sell')">상품등록</div>
+        </div>
+      </div>
+      <div class="cat-list">
+        <div class="cat-group">
+          <h4 onclick="openCategoryList('여성의류')" style="cursor:pointer;">여성의류</h4>
+          <div class="items"><span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('여성의류 > 티셔츠')">티셔츠</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('여성의류 > 블라우스/셔츠')">블라우스/셔츠</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('여성의류 > 스커트')">스커트</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('여성의류 > 원피스')">원피스</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('여성의류 > 팬츠')">팬츠</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('여성의류 > 니트/가디건')">니트/가디건</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('여성의류 > 점퍼/자켓')">점퍼/자켓</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('여성의류 > 코트')">코트</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('여성의류 > 수영복')">수영복</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('여성의류 > 기타')">기타</span></div>
+        </div>
+        <div class="cat-group">
+          <h4 onclick="openCategoryList('남성의류')" style="cursor:pointer;">남성의류</h4>
+          <div class="items"><span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('남성의류 > 티셔츠')">티셔츠</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('남성의류 > 셔츠')">셔츠</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('남성의류 > 팬츠')">팬츠</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('남성의류 > 니트/가디건')">니트/가디건</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('남성의류 > 점퍼/자켓')">점퍼/자켓</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('남성의류 > 정장')">정장</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('남성의류 > 코트')">코트</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('남성의류 > 다운재킷')">다운재킷</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('남성의류 > 수영복')">수영복</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('남성의류 > 기타')">기타</span></div>
+        </div>
+        <div class="cat-group">
+          <h4 onclick="openCategoryList('여성슈즈')" style="cursor:pointer;">여성슈즈</h4>
+          <div class="items"><span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('여성슈즈 > 스니커즈')">스니커즈</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('여성슈즈 > 샌들')">샌들</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('여성슈즈 > 로퍼')">로퍼</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('여성슈즈 > 부츠')">부츠</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('여성슈즈 > 하이힐/구두')">하이힐/구두</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('여성슈즈 > 기타')">기타</span></div>
+        </div>
+        <div class="cat-group">
+          <h4 onclick="openCategoryList('남성슈즈')" style="cursor:pointer;">남성슈즈</h4>
+          <div class="items"><span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('남성슈즈 > 스니커즈')">스니커즈</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('남성슈즈 > 로퍼')">로퍼</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('남성슈즈 > 구두')">구두</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('남성슈즈 > 기타')">기타</span></div>
+        </div>
+        <div class="cat-group">
+          <h4 onclick="openCategoryList('가방/핸드백')" style="cursor:pointer;">가방/핸드백</h4>
+          <div class="items"><span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('가방/핸드백 > 여성가방')">여성가방</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('가방/핸드백 > 남성가방')">남성가방</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('가방/핸드백 > 여성크로스백')">여성크로스백</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('가방/핸드백 > 남성크로스백')">남성크로스백</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('가방/핸드백 > 백팩')">백팩</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('가방/핸드백 > 서류가방')">서류가방</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('가방/핸드백 > 여행가방/캐리어')">여행가방/캐리어</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('가방/핸드백 > 토트백/버킷백')">토트백/버킷백</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('가방/핸드백 > 숄더백/체인백')">숄더백/체인백</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('가방/핸드백 > 슬링백/웨이스트백')">슬링백/웨이스트백</span></div>
+        </div>
+        <div class="cat-group">
+          <h4 onclick="openCategoryList('지갑/벨트')" style="cursor:pointer;">지갑/벨트</h4>
+          <div class="items"><span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('지갑/벨트 > 여성지갑')">여성지갑</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('지갑/벨트 > 남성지갑')">남성지갑</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('지갑/벨트 > 여성벨트')">여성벨트</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('지갑/벨트 > 남성벨트')">남성벨트</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('지갑/벨트 > 카드지갑/코인케이스')">카드지갑/코인케이스</span></div>
+        </div>
+        <div class="cat-group">
+          <h4 onclick="openCategoryList('시계')" style="cursor:pointer;">시계</h4>
+          <div class="items"><span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('시계 > 남성시계')">남성시계</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('시계 > 여성시계')">여성시계</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('시계 > 시계밴드')">시계밴드</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('시계 > 기타')">기타</span></div>
+        </div>
+        <div class="cat-group">
+          <h4 onclick="openCategoryList('주얼리')" style="cursor:pointer;">주얼리</h4>
+          <div class="items"><span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('주얼리 > 목걸이/펜던트')">목걸이/펜던트</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('주얼리 > 팔찌/뱅글')">팔찌/뱅글</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('주얼리 > 반지')">반지</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('주얼리 > 브로치/뱃지')">브로치/뱃지</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('주얼리 > 귀걸이')">귀걸이</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('주얼리 > 기타')">기타</span></div>
+        </div>
+        <div class="cat-group" style="border-bottom:1px solid var(--line);">
+          <h4 onclick="openCategoryList('아이웨어')" style="cursor:pointer;">아이웨어</h4>
+          <div class="items"><span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('아이웨어 > 선글라스')">선글라스</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('아이웨어 > 안경테')">안경테</span></div>
+        </div>
+        <div class="cat-group">
+          <h4 onclick="openCategoryList('유아동(남)')" style="cursor:pointer;">유아동(남)</h4>
+          <div class="items"><span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('유아동(남) > 티셔츠')">티셔츠</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('유아동(남) > 셔츠')">셔츠</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('유아동(남) > 팬츠')">팬츠</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('유아동(남) > 니트/가디건')">니트/가디건</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('유아동(남) > 점퍼/자켓')">점퍼/자켓</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('유아동(남) > 코트')">코트</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('유아동(남) > 다운재킷')">다운재킷</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('유아동(남) > 수영복')">수영복</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('유아동(남) > 기타')">기타</span></div>
+        </div>
+        <div class="cat-group">
+          <h4 onclick="openCategoryList('유아동(여)')" style="cursor:pointer;">유아동(여)</h4>
+          <div class="items"><span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('유아동(여) > 티셔츠')">티셔츠</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('유아동(여) > 셔츠')">셔츠</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('유아동(여) > 팬츠')">팬츠</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('유아동(여) > 니트/가디건')">니트/가디건</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('유아동(여) > 점퍼/자켓')">점퍼/자켓</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('유아동(여) > 코트')">코트</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('유아동(여) > 다운재킷')">다운재킷</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('유아동(여) > 수영복')">수영복</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('유아동(여) > 기타')">기타</span></div>
+        </div>
+        <div class="cat-group">
+          <h4 onclick="openCategoryList('가전')" style="cursor:pointer;">가전</h4>
+          <div class="items"><span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('가전 > 핸드폰')">핸드폰</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('가전 > 이어폰')">이어폰</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('가전 > 헤드폰')">헤드폰</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('가전 > 스피커/엠프')">스피커/엠프</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('가전 > 조명기기')">조명기기</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('가전 > 카메라')">카메라</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('가전 > 카메라렌즈')">카메라렌즈</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('가전 > 카메라용품')">카메라용품</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('가전 > 스타일러')">스타일러</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('가전 > 세탁기')">세탁기</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('가전 > 건조기')">건조기</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('가전 > 공기청정기')">공기청정기</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('가전 > 청소기')">청소기</span></div>
+        </div>
+        <div class="cat-group" style="border-bottom:none;">
+          <h4 onclick="openCategoryList('가구')" style="cursor:pointer;">가구</h4>
+          <div class="items"><span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('가구 > 침대')">침대</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('가구 > 의자')">의자</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('가구 > 책상')">책상</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('가구 > 식탁')">식탁</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('가구 > 협탁')">협탁</span>, <span class="cat-sub" onclick="event.stopPropagation(); openCategoryList('가구 > 장식장')">장식장</span></div>
+        </div>
+      </div>
+    </div>
+    <!-- /screen-category -->
+
+    <div id="screen-catlist" class="screen">
+      <span class="annot">카테고리 대분류 클릭 시 이동하는 상품 리스팅 화면</span>
+      <div class="sell-topbar">
+        <div class="icon-btn" onclick="goBack()">←</div>
+        <div class="title" id="catlist-title">여성의류</div>
+      </div>
+      <div class="result-count"><span id="catlist-count">32</span>건의 상품</div>
+      <div class="result-list">
+        <div class="result-row" onclick="viewNormalDetail()">
+          <div class="result-row-thumb"><div class="badge">정품인증</div></div>
+          <div class="result-row-info">
+            <div class="b">HERMÈS</div>
+            <div class="n">버킨백 30 토고 블랙 골드하드웨어</div>
+            <div class="meta">가방/핸드백 · 국내백화점 · 사이즈 없음 · A+</div>
+            <div class="p">18,900,000원</div>
+          </div>
+        </div>
+        <div class="result-row" onclick="viewNormalDetail()">
+          <div class="result-row-thumb"><div class="badge">정품인증</div></div>
+          <div class="result-row-info">
+            <div class="b">LORO PIANA</div>
+            <div class="n">여성 셀렉티드 로퍼</div>
+            <div class="meta">여성슈즈 · 해외면세점 · 245 · A</div>
+            <div class="p">780,000원</div>
+          </div>
+        </div>
+        <div class="result-row" onclick="viewNormalDetail()">
+          <div class="result-row-thumb"><div class="badge">정품인증</div></div>
+          <div class="result-row-info">
+            <div class="b">GUCCI</div>
+            <div class="n">마몬트 크로스백</div>
+            <div class="meta">가방/핸드백 · 국내면세점 · 사이즈 없음 · NEW</div>
+            <div class="p">1,900,000원</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /screen-catlist -->
+
+    <div id="screen-search" class="screen">
+      <span class="annot">Search 탭 클릭 시 이동하는 화면</span>
+      <div class="topbar">
+        <div class="brand" onclick="showScreen('home')">Real HAVE</div>
+        <div class="top-right">
+          <div class="top-icon-btn" onclick="requireLogin('wishlist')"><img class="ic" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAEMUlEQVR4nO2dS3LjMAxE21NzEu+c+5/F3vkqnkVKNYqiD0UBID79tqmIINAESEqkAUIIIYQQQgghhBBCCCGEEEIIIQm5jWz86/74nP2f5/s11OYjovVpSMM9TlrDixgi98ekQSkHbTFKCBn6pdqAtoOWWAkhU7/+aD3Y2klWbWbrl4oA9gzWHqVf98dHw2Faz52z5xuttsUFMGKErCFpR8Y+TYiOxlYDn+/X7ev++PRkg7NOuJpxLNqbfHHGf2fb2ELkQWecJGl8q+N622x5bq+Qe9tctn+1vb9XH9CKRu0/M2o0kA4+8N9PVv26bHyLoRbLM+ksoJVVJG2QsKP7n0fUqyOkguYh+K22TPTaJLYKWDPAeofuqL0WZ3oK/lZ7kjZ0CWDNSct6OHKfvnc9PXL/Yo+lX7f83/Ns8dmxhxc0vaPY2+hfQ9r3pzOAl02RPXpKQYTgH9ETG9GdQE9OkrQla7+AkwLwnvqXtM4FsvarBbW3gSQG6QVwNFqijX5pmgVQ3VHekCoD6TMA2YcCKA4FUByz18EjOdr5qzyHYQYIjIRwKYDgPN+v25oQWlcCJUpAZrYC3ZodmAECI/FijgIoTukSUHn2P8EMUBwKoDgUQHGaBbCsl1vrT2LLWhzOxEXssATFYItULFgCikMBFOeUAEZcYEB+I1mKRTMARaCPtI9PC0Di/B3pQ+PwivgcYPSZ/axo3EUAdAqAc4ExaCzDuzMAS4EdmucWL5UAikAf7UOrl+cAewZwPnCNo7rv/ptABv862j4UEQBLgTxW9xWo3hE0hyJox/KyCrMLIjgfaMOi7s8xexnE4Ldj6SuVncC9v1MI24y4p0jtIw4vN4hGYKSv1ErAkcGcE3zTsscf8hdDjpiCX1kEHnygKgCpu3kz4uWuZfUMQBH8xkvwAePfDeTE0J8PTOcALR3LnAm8BR9w/suhWbKB5/4OWQW0dDTLMrH1U65RYg/x49FRM0GE/g09GJJ5hRAh+ICDk0EZRRAl+MDgErAkkuPWiGj/8AwwJ/Lk0PtkbwtXxkxEG0nR7J3jKgNMRJoXRA4+4FQAQAwRRA8+4LQELPG4herRph7cGzjhZbR5sUMKtyVgiYcVQtSZ/h5hDJ0YNQKzjfyJMBlgYsTkMGvwgYACAGxFkDn4QMASsERzNp5lpr9HyAwwR+srowrBBxIIAJAXQZXgA0kEAMgdRBl9UMOaNAI4QjoDZCGNkuf0HrIccThzNCkzQM89Bdbn8r2QUgBA3yi/+hNsEUkrgCPmwa5U85ekVfbE1eBmHv1AgQxwJYDZgw8UEADZp4QAekZyhdEPFBEAcC6gVYIPFBIA0P5VkYUtXiglAOB4k8jSFg+UEwD5SUkBrI30iqMfKCoAQgB87xJW3gYGmAHKQwEUhwIghBBCCCGEEEIIIYQQQgghhBBC8vEP70nZk9vOZWsAAAAASUVORK5CYII=" alt=""></div>
+          <div class="top-icon-btn" onclick="requireLogin('chatlist')"><img class="ic" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAACNUlEQVR4nO3dTVIbQQyAUZOjsEvuf5Zkl6uQFZtAQbtb0nSP3jsApqRvfgyu8eMBAAAAAAAAAAAA3MHLVS/86/Xn21Wvvavff/+U76P0BS19XFUMJS9i8fOyQ0j94RYfJyuEHxk/9PGw/GhZ80wJwPJzZMw1PADLzxU939AALL9G5JzDbixmfqkr3vfu6qr5hSzgmV/e0r9XOc+0dwGfsfwxlXNaDmC0Vst/zui8Vu8HSs4Alj+nYm5LAYzUZ/lrRua3chZIPQNYfozMOZbeBLKf6QD80Wcvs/tIOwM4/cc67r+BnEEAzQmgOQE0J4DmBNCcAJoTQHMCaE4AzQmgOQE0J4DmBNCcAJoTQHMCaE4AzQmgOQE0J4DmBNCcAJoTQHMCaE4AzQmgOQE0J4DmBNCcAJoTQHOeFn6I7Z4W7gkge5ndh0tAc6kBuAzEyJzjUgDZDzEk/2GcJZcAEcypmNtyAFUPNe6m6iHcpTeBIhhTOSffGLKJo78x5J0jvE7UwRN6CXBE14icc/g9gAhyRc835SZQBDky5upp4YfImqdvD9/c0d8e/j8hjKs6g152mhbDR1dcNre7TkeH4V7ka7f+PIDlf++2AVj+mFsGYPnjbhkA424XgKP/ObcKwPKfd5sALH/OLQKw/HnHB2D5a44OwPLXHRuA5cc4MgDLj3NcAJYf66gALD/eMQFYfo5jAiDHEQE4+vNsH4Dl59o6AMvPt20Alt+UTwsDAAAAAAAAAADAlH8pudPxzodiNQAAAABJRU5ErkJggg==" alt=""></div>
+          <div class="btn-sell-top" onclick="requireLogin('sell')">상품등록</div>
+        </div>
+      </div>
+      <div class="search-topbar">
+        <div class="search-input"><span>에르메스 버킨백<span class="cursor"></span></span><img class="ic" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAADL0lEQVR4nO2dQVLkMAxFPdSchB3c/yzDbq7CrLqgMnRix7b0Jb23hAbL1ovsTnXUrQEAAAAAAAAAAAAAAAAAAEA2fnkH0MP769tn72v//P0IMScVJBdrJOFXIMQ5UouzMvFHEOFn3BdlZ9KfgQxfvHgO7pF8z3EVcbkSlBJQvRqYVwCl5LemF481pgKoLrZqXBaYlb/ZRe4p1RZjZMNkwncSsyIZXuNGYvtkR5OwIwEKMaiydaJqt3DV4lFg2yFQcbFHxqlyMNwigGLy74xXQYLfXgN7ltjH2BUSfMXyCpBtUbPN58hSAXoXS+WA1RtHZgnMbwWrJP+BWjzWmAqgutiqcVmwTIDMZbK1vPMzqwDqV5l6fLtYIkDWq+NIxnmaVIAoV1eUOFfi+pEw8AcBijMtQMZ98Yxs891eAaLtq9HinYUtoDgIUBwEKA4CFAcBioMAxUGA4iBAcbYLEO3OWbR4Z5kWoNqds2zzZQsoDgIUx0SAKPtqlDhXskSAbPviMzLO02wLUL+61OPbxTIBMl4d38k6P3oENd24LKBLmFg81iwVINrDltEeZt3B8gqQbbGyzeeIW4OIx9XnscAqFUiBLWcA5TYsyu1rPNh2CFSUgOT/j1RrttboE2gNnUI7x31/ffvMKAa9gjvG+P5/s0lgOhnl03dP8q9eGxF6BLWx5J/9PCJ0CRtMfu/vo+CaDM9FPBOx0ttF14+EeS3equTfeb0aUvZ6f2/gzPhRK4Fk0J7fHFpNghABW+/JlSQIFawlVSTguYAnzCQx0sEQAU6oIAECXJBdAgToILMECNBJVgkQYICMEiDAINkkQIAbZJIAAW6SRQIEmCCDBAgwSXQJEGABkSVAgEVElQABFhJRAgRYTDQJEGADkSRAgE1EkQABNhJBAgTYjLoECGCAsgQIYISqBAhgiKIECGCMmgQI4ICSBAjghIoECOCIggQI4Iy3BAgggKcECCCClwQIIISHBAgghrUECCCIpQQIIMpdCUb/DgGEGU3mHWkQQJzepN6tGAgQgKvkzpwZECAIz5I825AKAQJxTHakbmSwEO/HyQAAAAAAAAAAAAAgFP8AHpbFhsHzyzUAAAAASUVORK5CYII=" alt=""></div>
+        <div class="search-cancel" onclick="goBack()" style="cursor:pointer;">취소</div>
+      </div>
+
+      <div class="result-count">'<b>에르메스 버킨백</b>' 검색결과 <b>12</b>건</div>
+      <div class="result-list">
+        <div class="result-row" onclick="viewNormalDetail()">
+          <div class="result-row-thumb"><div class="badge">정품인증</div></div>
+          <div class="result-row-info">
+            <div class="b">HERMÈS</div>
+            <div class="n">버킨백 30 토고 블랙 골드하드웨어</div>
+            <div class="meta">가방/핸드백 · 국내백화점 · 사이즈 없음 · A+</div>
+            <div class="p">18,900,000원</div>
+          </div>
+        </div>
+        <div class="result-row" onclick="viewNormalDetail()">
+          <div class="result-row-thumb"><div class="badge">정품인증</div></div>
+          <div class="result-row-info">
+            <div class="b">HERMÈS</div>
+            <div class="n">버킨백 25 에프수아 그레이</div>
+            <div class="meta">가방/핸드백 · 해외면세점 · 사이즈 없음 · NEW</div>
+            <div class="p">22,400,000원</div>
+          </div>
+        </div>
+        <div class="result-row" onclick="viewNormalDetail()">
+          <div class="result-row-thumb"><div class="badge">정품인증</div></div>
+          <div class="result-row-info">
+            <div class="b">HERMÈS</div>
+            <div class="n">버킨백 35 토고 에토프</div>
+            <div class="meta">가방/핸드백 · 국내면세점 · 사이즈 없음 · A</div>
+            <div class="p">24,100,000원</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /screen-search -->
+
+    <div id="screen-designers" class="screen">
+      <span class="annot">A-Z Designers 탭 클릭 시 이동하는 화면</span>
+      <div class="topbar">
+        <div class="brand" onclick="showScreen('home')">Real HAVE</div>
+        <div class="top-right">
+          <div class="top-icon-btn" onclick="requireLogin('wishlist')"><img class="ic" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAEMUlEQVR4nO2dS3LjMAxE21NzEu+c+5/F3vkqnkVKNYqiD0UBID79tqmIINAESEqkAUIIIYQQQgghhBBCCCGEEEIIIQm5jWz86/74nP2f5/s11OYjovVpSMM9TlrDixgi98ekQSkHbTFKCBn6pdqAtoOWWAkhU7/+aD3Y2klWbWbrl4oA9gzWHqVf98dHw2Faz52z5xuttsUFMGKErCFpR8Y+TYiOxlYDn+/X7ev++PRkg7NOuJpxLNqbfHHGf2fb2ELkQWecJGl8q+N622x5bq+Qe9tctn+1vb9XH9CKRu0/M2o0kA4+8N9PVv26bHyLoRbLM+ksoJVVJG2QsKP7n0fUqyOkguYh+K22TPTaJLYKWDPAeofuqL0WZ3oK/lZ7kjZ0CWDNSct6OHKfvnc9PXL/Yo+lX7f83/Ns8dmxhxc0vaPY2+hfQ9r3pzOAl02RPXpKQYTgH9ETG9GdQE9OkrQla7+AkwLwnvqXtM4FsvarBbW3gSQG6QVwNFqijX5pmgVQ3VHekCoD6TMA2YcCKA4FUByz18EjOdr5qzyHYQYIjIRwKYDgPN+v25oQWlcCJUpAZrYC3ZodmAECI/FijgIoTukSUHn2P8EMUBwKoDgUQHGaBbCsl1vrT2LLWhzOxEXssATFYItULFgCikMBFOeUAEZcYEB+I1mKRTMARaCPtI9PC0Di/B3pQ+PwivgcYPSZ/axo3EUAdAqAc4ExaCzDuzMAS4EdmucWL5UAikAf7UOrl+cAewZwPnCNo7rv/ptABv862j4UEQBLgTxW9xWo3hE0hyJox/KyCrMLIjgfaMOi7s8xexnE4Ldj6SuVncC9v1MI24y4p0jtIw4vN4hGYKSv1ErAkcGcE3zTsscf8hdDjpiCX1kEHnygKgCpu3kz4uWuZfUMQBH8xkvwAePfDeTE0J8PTOcALR3LnAm8BR9w/suhWbKB5/4OWQW0dDTLMrH1U65RYg/x49FRM0GE/g09GJJ5hRAh+ICDk0EZRRAl+MDgErAkkuPWiGj/8AwwJ/Lk0PtkbwtXxkxEG0nR7J3jKgNMRJoXRA4+4FQAQAwRRA8+4LQELPG4herRph7cGzjhZbR5sUMKtyVgiYcVQtSZ/h5hDJ0YNQKzjfyJMBlgYsTkMGvwgYACAGxFkDn4QMASsERzNp5lpr9HyAwwR+srowrBBxIIAJAXQZXgA0kEAMgdRBl9UMOaNAI4QjoDZCGNkuf0HrIccThzNCkzQM89Bdbn8r2QUgBA3yi/+hNsEUkrgCPmwa5U85ekVfbE1eBmHv1AgQxwJYDZgw8UEADZp4QAekZyhdEPFBEAcC6gVYIPFBIA0P5VkYUtXiglAOB4k8jSFg+UEwD5SUkBrI30iqMfKCoAQgB87xJW3gYGmAHKQwEUhwIghBBCCCGEEEIIIYQQQgghhBBC8vEP70nZk9vOZWsAAAAASUVORK5CYII=" alt=""></div>
+          <div class="top-icon-btn" onclick="requireLogin('chatlist')"><img class="ic" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAACNUlEQVR4nO3dTVIbQQyAUZOjsEvuf5Zkl6uQFZtAQbtb0nSP3jsApqRvfgyu8eMBAAAAAAAAAAAA3MHLVS/86/Xn21Wvvavff/+U76P0BS19XFUMJS9i8fOyQ0j94RYfJyuEHxk/9PGw/GhZ80wJwPJzZMw1PADLzxU939AALL9G5JzDbixmfqkr3vfu6qr5hSzgmV/e0r9XOc+0dwGfsfwxlXNaDmC0Vst/zui8Vu8HSs4Alj+nYm5LAYzUZ/lrRua3chZIPQNYfozMOZbeBLKf6QD80Wcvs/tIOwM4/cc67r+BnEEAzQmgOQE0J4DmBNCcAJoTQHMCaE4AzQmgOQE0J4DmBNCcAJoTQHMCaE4AzQmgOQE0J4DmBNCcAJoTQHMCaE4AzQmgOQE0J4DmBNCcAJoTQHOeFn6I7Z4W7gkge5ndh0tAc6kBuAzEyJzjUgDZDzEk/2GcJZcAEcypmNtyAFUPNe6m6iHcpTeBIhhTOSffGLKJo78x5J0jvE7UwRN6CXBE14icc/g9gAhyRc835SZQBDky5upp4YfImqdvD9/c0d8e/j8hjKs6g152mhbDR1dcNre7TkeH4V7ka7f+PIDlf++2AVj+mFsGYPnjbhkA424XgKP/ObcKwPKfd5sALH/OLQKw/HnHB2D5a44OwPLXHRuA5cc4MgDLj3NcAJYf66gALD/eMQFYfo5jAiDHEQE4+vNsH4Dl59o6AMvPt20Alt+UTwsDAAAAAAAAAADAlH8pudPxzodiNQAAAABJRU5ErkJggg==" alt=""></div>
+          <div class="btn-sell-top" onclick="requireLogin('sell')">상품등록</div>
+        </div>
+      </div>
+      <div class="dz-header">
+        <div class="title">A-Z Designers</div>
+        <div class="dz-search"><img class="ic" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAADL0lEQVR4nO2dQVLkMAxFPdSchB3c/yzDbq7CrLqgMnRix7b0Jb23hAbL1ovsTnXUrQEAAAAAAAAAAAAAAAAAAEA2fnkH0MP769tn72v//P0IMScVJBdrJOFXIMQ5UouzMvFHEOFn3BdlZ9KfgQxfvHgO7pF8z3EVcbkSlBJQvRqYVwCl5LemF481pgKoLrZqXBaYlb/ZRe4p1RZjZMNkwncSsyIZXuNGYvtkR5OwIwEKMaiydaJqt3DV4lFg2yFQcbFHxqlyMNwigGLy74xXQYLfXgN7ltjH2BUSfMXyCpBtUbPN58hSAXoXS+WA1RtHZgnMbwWrJP+BWjzWmAqgutiqcVmwTIDMZbK1vPMzqwDqV5l6fLtYIkDWq+NIxnmaVIAoV1eUOFfi+pEw8AcBijMtQMZ98Yxs891eAaLtq9HinYUtoDgIUBwEKA4CFAcBioMAxUGA4iBAcbYLEO3OWbR4Z5kWoNqds2zzZQsoDgIUx0SAKPtqlDhXskSAbPviMzLO02wLUL+61OPbxTIBMl4d38k6P3oENd24LKBLmFg81iwVINrDltEeZt3B8gqQbbGyzeeIW4OIx9XnscAqFUiBLWcA5TYsyu1rPNh2CFSUgOT/j1RrttboE2gNnUI7x31/ffvMKAa9gjvG+P5/s0lgOhnl03dP8q9eGxF6BLWx5J/9PCJ0CRtMfu/vo+CaDM9FPBOx0ttF14+EeS3equTfeb0aUvZ6f2/gzPhRK4Fk0J7fHFpNghABW+/JlSQIFawlVSTguYAnzCQx0sEQAU6oIAECXJBdAgToILMECNBJVgkQYICMEiDAINkkQIAbZJIAAW6SRQIEmCCDBAgwSXQJEGABkSVAgEVElQABFhJRAgRYTDQJEGADkSRAgE1EkQABNhJBAgTYjLoECGCAsgQIYISqBAhgiKIECGCMmgQI4ICSBAjghIoECOCIggQI4Iy3BAgggKcECCCClwQIIISHBAgghrUECCCIpQQIIMpdCUb/DgGEGU3mHWkQQJzepN6tGAgQgKvkzpwZECAIz5I825AKAQJxTHakbmSwEO/HyQAAAAAAAAAAAAAgFP8AHpbFhsHzyzUAAAAASUVORK5CYII=" alt=""> 브랜드명을 검색하세요</div>
+      </div>
+      <div class="dz-body">
+        <div class="dz-list">
+          <div class="dz-letter">B</div>
+          <div class="dz-brand" onclick="openCategoryList('Band &amp; Olufsen')"><div class="dz-logo"></div><div><div class="name">Band &amp; Olufsen</div><div class="origin">덴마크</div></div></div>
+          <div class="dz-letter">C</div>
+          <div class="dz-brand" onclick="openCategoryList('Casima')"><div class="dz-logo"></div><div><div class="name">Casima</div><div class="origin">이탈리아</div></div></div>
+          <div class="dz-brand" onclick="openCategoryList('Chanel')"><div class="dz-logo"></div><div><div class="name">Chanel</div><div class="origin">프랑스</div></div></div>
+          <div class="dz-letter">G</div>
+          <div class="dz-brand" onclick="openCategoryList('Gucci')"><div class="dz-logo"></div><div><div class="name">Gucci</div><div class="origin">이탈리아</div></div></div>
+          <div class="dz-letter">H</div>
+          <div class="dz-brand" onclick="openCategoryList('Hermès')"><div class="dz-logo"></div><div><div class="name">Hermès</div><div class="origin">프랑스</div></div></div>
+          <div class="dz-letter">L</div>
+          <div class="dz-brand" onclick="openCategoryList('Louis Vuitton')"><div class="dz-logo"></div><div><div class="name">Louis Vuitton</div><div class="origin">프랑스</div></div></div>
+          <div class="dz-brand" onclick="openCategoryList('Loro Piana')"><div class="dz-logo"></div><div><div class="name">Loro Piana</div><div class="origin">이탈리아</div></div></div>
+          <div class="dz-letter">R</div>
+          <div class="dz-brand" onclick="openCategoryList('Rolex')"><div class="dz-logo"></div><div><div class="name">Rolex</div><div class="origin">스위스</div></div></div>
+          <div class="dz-letter">T</div>
+          <div class="dz-brand" onclick="openCategoryList('Tiffany &amp; Co.')"><div class="dz-logo"></div><div><div class="name">Tiffany &amp; Co.</div><div class="origin">미국</div></div></div>
+        </div>
+        <div class="dz-index">
+          <span>A</span><span class="on" onclick="jumpToLetter('B')" style="cursor:pointer;">B</span><span class="on" onclick="jumpToLetter('C')" style="cursor:pointer;">C</span><span>D</span><span>E</span><span>F</span>
+          <span class="on" onclick="jumpToLetter('G')" style="cursor:pointer;">G</span><span class="on" onclick="jumpToLetter('H')" style="cursor:pointer;">H</span><span>I</span><span>J</span><span>K</span>
+          <span class="on" onclick="jumpToLetter('L')" style="cursor:pointer;">L</span><span>M</span><span>N</span><span>O</span><span>P</span><span>Q</span>
+          <span class="on" onclick="jumpToLetter('R')" style="cursor:pointer;">R</span><span>S</span><span class="on" onclick="jumpToLetter('T')" style="cursor:pointer;">T</span><span>U</span><span>V</span><span>W</span><span>X</span><span>Y</span><span>Z</span>
+        </div>
+      </div>
+    </div>
+    <!-- /screen-designers -->
+
+    <div id="screen-detail" class="screen">
+      <span class="annot" style="position:relative; display:inline-block; margin-bottom:6px;">상품 카드 클릭 시 이동하는 화면 · 상품등록 입력 항목만 표시</span>
+      <div class="pd-topbar">
+        <div class="icon-btn" onclick="goBack()">←</div>
+        <div style="display:flex; gap:8px;"><div class="icon-btn" id="pd-heart-btn" onclick="toggleLike(this)"><img class="ic" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAEMUlEQVR4nO2dS3LjMAxE21NzEu+c+5/F3vkqnkVKNYqiD0UBID79tqmIINAESEqkAUIIIYQQQgghhBBCCCGEEEIIIQm5jWz86/74nP2f5/s11OYjovVpSMM9TlrDixgi98ekQSkHbTFKCBn6pdqAtoOWWAkhU7/+aD3Y2klWbWbrl4oA9gzWHqVf98dHw2Faz52z5xuttsUFMGKErCFpR8Y+TYiOxlYDn+/X7ev++PRkg7NOuJpxLNqbfHHGf2fb2ELkQWecJGl8q+N622x5bq+Qe9tctn+1vb9XH9CKRu0/M2o0kA4+8N9PVv26bHyLoRbLM+ksoJVVJG2QsKP7n0fUqyOkguYh+K22TPTaJLYKWDPAeofuqL0WZ3oK/lZ7kjZ0CWDNSct6OHKfvnc9PXL/Yo+lX7f83/Ns8dmxhxc0vaPY2+hfQ9r3pzOAl02RPXpKQYTgH9ETG9GdQE9OkrQla7+AkwLwnvqXtM4FsvarBbW3gSQG6QVwNFqijX5pmgVQ3VHekCoD6TMA2YcCKA4FUByz18EjOdr5qzyHYQYIjIRwKYDgPN+v25oQWlcCJUpAZrYC3ZodmAECI/FijgIoTukSUHn2P8EMUBwKoDgUQHGaBbCsl1vrT2LLWhzOxEXssATFYItULFgCikMBFOeUAEZcYEB+I1mKRTMARaCPtI9PC0Di/B3pQ+PwivgcYPSZ/axo3EUAdAqAc4ExaCzDuzMAS4EdmucWL5UAikAf7UOrl+cAewZwPnCNo7rv/ptABv862j4UEQBLgTxW9xWo3hE0hyJox/KyCrMLIjgfaMOi7s8xexnE4Ldj6SuVncC9v1MI24y4p0jtIw4vN4hGYKSv1ErAkcGcE3zTsscf8hdDjpiCX1kEHnygKgCpu3kz4uWuZfUMQBH8xkvwAePfDeTE0J8PTOcALR3LnAm8BR9w/suhWbKB5/4OWQW0dDTLMrH1U65RYg/x49FRM0GE/g09GJJ5hRAh+ICDk0EZRRAl+MDgErAkkuPWiGj/8AwwJ/Lk0PtkbwtXxkxEG0nR7J3jKgNMRJoXRA4+4FQAQAwRRA8+4LQELPG4herRph7cGzjhZbR5sUMKtyVgiYcVQtSZ/h5hDJ0YNQKzjfyJMBlgYsTkMGvwgYACAGxFkDn4QMASsERzNp5lpr9HyAwwR+srowrBBxIIAJAXQZXgA0kEAMgdRBl9UMOaNAI4QjoDZCGNkuf0HrIccThzNCkzQM89Bdbn8r2QUgBA3yi/+hNsEUkrgCPmwa5U85ekVfbE1eBmHv1AgQxwJYDZgw8UEADZp4QAekZyhdEPFBEAcC6gVYIPFBIA0P5VkYUtXiglAOB4k8jSFg+UEwD5SUkBrI30iqMfKCoAQgB87xJW3gYGmAHKQwEUhwIghBBCCCGEEEIIIYQQQgghhBBC8vEP70nZk9vOZWsAAAAASUVORK5CYII=" alt=""></div></div>
+      </div>
+      <div class="pd-photo"></div>
+      <div class="pd-dots"><span class="on"></span><span></span><span></span><span></span></div>
+
+      <div class="pd-main">
+        <div class="pd-brand">HERMÈS</div>
+        <div class="pd-name">버킨백 30 토고 블랙 팝니다</div>
+        <div class="pd-price-row"><div class="pd-price">18,900,000원</div></div>
+      </div>
+
+      <div class="pd-info">
+        <div class="row"><div class="k">브랜드</div><div class="v">HERMÈS</div></div>
+        <div class="row"><div class="k">카테고리</div><div class="v">가방/핸드백 &gt; 여성크로스백</div></div>
+        <div class="row"><div class="k">구매처</div><div class="v">국내H백화점</div></div>
+        <div class="row"><div class="k">사이즈</div><div class="v">사이즈 없음</div></div>
+        <div class="row"><div class="k">거래방식</div><div class="v">직거래, 일반택배</div></div>
+        <div class="row"><div class="k">상태등급</div><div class="v">A+</div></div>
+        <div class="row"><div class="k">색상</div><div class="v">네이비, 핑크 <span class="color-caveat">(등록상품과다를수있음)</span></div></div>
+        <div class="row"><div class="k">판매가격</div><div class="v">18,900,000원</div></div>
+      </div>
+
+      <div class="pd-desc">
+        <h4>내용</h4>
+        <p>사용감 적은 상태입니다. 더스트백, 보증서 포함되어 있고 현대백화점 압구정본점에서 2023년 5월 구입했어요. 직거래 선호합니다 :)</p>
+      </div>
+
+      <div class="pd-footer">
+        <div id="pd-footer-actions" class="pd-footer-actions">
+        <div class="btn-chat" id="pd-heart-footer-btn" style="flex:1;" onclick="toggleLike(this)"><img class="ic" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAEMUlEQVR4nO2dS3LjMAxE21NzEu+c+5/F3vkqnkVKNYqiD0UBID79tqmIINAESEqkAUIIIYQQQgghhBBCCCGEEEIIIQm5jWz86/74nP2f5/s11OYjovVpSMM9TlrDixgi98ekQSkHbTFKCBn6pdqAtoOWWAkhU7/+aD3Y2klWbWbrl4oA9gzWHqVf98dHw2Faz52z5xuttsUFMGKErCFpR8Y+TYiOxlYDn+/X7ev++PRkg7NOuJpxLNqbfHHGf2fb2ELkQWecJGl8q+N622x5bq+Qe9tctn+1vb9XH9CKRu0/M2o0kA4+8N9PVv26bHyLoRbLM+ksoJVVJG2QsKP7n0fUqyOkguYh+K22TPTaJLYKWDPAeofuqL0WZ3oK/lZ7kjZ0CWDNSct6OHKfvnc9PXL/Yo+lX7f83/Ns8dmxhxc0vaPY2+hfQ9r3pzOAl02RPXpKQYTgH9ETG9GdQE9OkrQla7+AkwLwnvqXtM4FsvarBbW3gSQG6QVwNFqijX5pmgVQ3VHekCoD6TMA2YcCKA4FUByz18EjOdr5qzyHYQYIjIRwKYDgPN+v25oQWlcCJUpAZrYC3ZodmAECI/FijgIoTukSUHn2P8EMUBwKoDgUQHGaBbCsl1vrT2LLWhzOxEXssATFYItULFgCikMBFOeUAEZcYEB+I1mKRTMARaCPtI9PC0Di/B3pQ+PwivgcYPSZ/axo3EUAdAqAc4ExaCzDuzMAS4EdmucWL5UAikAf7UOrl+cAewZwPnCNo7rv/ptABv862j4UEQBLgTxW9xWo3hE0hyJox/KyCrMLIjgfaMOi7s8xexnE4Ldj6SuVncC9v1MI24y4p0jtIw4vN4hGYKSv1ErAkcGcE3zTsscf8hdDjpiCX1kEHnygKgCpu3kz4uWuZfUMQBH8xkvwAePfDeTE0J8PTOcALR3LnAm8BR9w/suhWbKB5/4OWQW0dDTLMrH1U65RYg/x49FRM0GE/g09GJJ5hRAh+ICDk0EZRRAl+MDgErAkkuPWiGj/8AwwJ/Lk0PtkbwtXxkxEG0nR7J3jKgNMRJoXRA4+4FQAQAwRRA8+4LQELPG4herRph7cGzjhZbR5sUMKtyVgiYcVQtSZ/h5hDJ0YNQKzjfyJMBlgYsTkMGvwgYACAGxFkDn4QMASsERzNp5lpr9HyAwwR+srowrBBxIIAJAXQZXgA0kEAMgdRBl9UMOaNAI4QjoDZCGNkuf0HrIccThzNCkzQM89Bdbn8r2QUgBA3yi/+hNsEUkrgCPmwa5U85ekVfbE1eBmHv1AgQxwJYDZgw8UEADZp4QAekZyhdEPFBEAcC6gVYIPFBIA0P5VkYUtXiglAOB4k8jSFg+UEwD5SUkBrI30iqMfKCoAQgB87xJW3gYGmAHKQwEUhwIghBBCCCGEEEIIIYQQQgghhBBC8vEP70nZk9vOZWsAAAAASUVURK5CYII=" alt=""> 찜</div>
+        <div class="btn-buy" style="flex:1;" onclick="requireLogin('chat')"><img class="ic" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAACNUlEQVR4nO3dTVIbQQyAUZOjsEvuf5Zkl6uQFZtAQbtb0nSP3jsApqRvfgyu8eMBAAAAAAAAAAAA3MHLVS/86/Xn21Wvvavff/+U76P0BS19XFUMJS9i8fOyQ0j94RYfJyuEHxk/9PGw/GhZ80wJwPJzZMw1PADLzxU939AALL9G5JzDbixmfqkr3vfu6qr5hSzgmV/e0r9XOc+0dwGfsfwxlXNaDmC0Vst/zui8Vu8HSs4Alj+nYm5LAYzUZ/lrRua3chZIPQNYfozMOZbeBLKf6QD80Wcvs/tIOwM4/cc67r+BnEEAzQmgOQE0J4DmBNCcAJoTQHMCaE4AzQmgOQE0J4DmBNCcAJoTQHMCaE4AzQmgOQE0J4DmBNCcAJoTQHMCaE4AzQmgOQE0J4DmBNCcAJoTQHOeFn6I7Z4W7gkge5ndh0tAc6kBuAzEyJzjUgDZDzEk/2GcJZcAEcypmNtyAFUPNe6m6iHcpTeBIhhTOSffGLKJo78x5J0jvE7UwRN6CXBE14icc/g9gAhyRc835SZQBDky5upp4YfImqdvD9/c0d8e/j8hjKs6g152mhbDR1dcNre7TkeH4V7ka7f+PIDlf++2AVj+mFsGYPnjbhkA424XgKP/ObcKwPKfd5sALH/OLQKw/HnHB2D5a44OwPLXHRuA5cc4MgDLj3NcAJYf66gALD/eMQFYfo5jAiDHEQE4+vNsH4Dl59o6AMvPt20Alt+UTwsDAAAAAAAAAADAlH8pudPxzodiNQAAAABJRU5ErkJggg==" alt=""> 메시지</div>
+        </div>
+        <div id="pd-footer-done" class="pd-footer-done">거래완료</div>
+        <div id="pd-footer-msgonly" class="pd-footer-msgonly">
+          <div class="btn-buy" onclick="requireLogin('chat')"><img class="ic" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAACNUlEQVR4nO3dTVIbQQyAUZOjsEvuf5Zkl6uQFZtAQbtb0nSP3jsApqRvfgyu8eMBAAAAAAAAAAAA3MHLVS/86/Xn21Wvvavff/+U76P0BS19XFUMJS9i8fOyQ0j94RYfJyuEHxk/9PGw/GhZ80wJwPJzZMw1PADLzxU939AALL9G5JzDbixmfqkr3vfu6qr5hSzgmV/e0r9XOc+0dwGfsfwxlXNaDmC0Vst/zui8Vu8HSs4Alj+nYm5LAYzUZ/lrRua3chZIPQNYfozMOZbeBLKf6QD80Wcvs/tIOwM4/cc67r+BnEEAzQmgOQE0J4DmBNCcAJoTQHMCaE4AzQmgOQE0J4DmBNCcAJoTQHMCaE4AzQmgOQE0J4DmBNCcAJoTQHMCaE4AzQmgOQE0J4DmBNCcAJoTQHOeFn6I7Z4W7gkge5ndh0tAc6kBuAzEyJzjUgDZDzEk/2GcJZcAEcypmNtyAFUPNe6m6iHcpTeBIhhTOSffGLKJo78x5J0jvE7UwRN6CXBE14icc/g9gAhyRc835SZQBDky5upp4YfImqdvD9/c0d8e/j8hjKs6g152mhbDR1dcNre7TkeH4V7ka7f+PIDlf++2AVj+mFsGYPnjbhkA424XgKP/ObcKwPKfd5sALH/OLQKw/HnHB2D5a44OwPLXHRuA5cc4MgDLj3NcAJYf66gALD/eMQFYfo5jAiDHEQE4+vNsH4Dl59o6AMvPt20Alt+UTwsDAAAAAAAAAADAlH8pudPxzodiNQAAAABJRU5ErkJggg==" alt=""> 메시지</div>
+        </div>
+      </div>
+    </div>
+    <!-- /screen-detail -->
+
+    <div id="screen-sell" class="screen">
+      <span class="annot">상단 '판매하기' 클릭 시 이동 · 당근st. 글쓰기 한 화면으로 등록</span>
+      <div class="sell-topbar">
+        <div class="icon-btn" onclick="goBack()">←</div>
+        <div class="title">상품등록</div>
+      </div>
+
+      <div class="form-wrap" style="padding-top:14px;">
+        <div class="form-group">
+          <label>사진등록</label>
+          <div class="photo-row">
+            <div class="photo-slot cert"><div class="tag">정품인증용</div></div>
+            <div class="photo-slot"></div>
+            <div class="photo-slot"></div>
+            <div class="photo-add">+<span>0/10</span></div>
+          </div>
+          <div class="form-autofill" style="margin-top:10px;">✓ AI 정품인증 완료 · HERMÈS 버킨백 일치</div>
+        </div>
+
+        <div class="form-group">
+          <label>제목</label>
+          <div class="form-input">버킨백 30 토고 블랙 팝니다</div>
+        </div>
+
+        <div class="form-group">
+          <label>브랜드</label>
+          <div class="form-input" id="sell-brand-value" onclick="showScreen('brandpick')" style="cursor:pointer;"><img class="ic" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAADL0lEQVR4nO2dQVLkMAxFPdSchB3c/yzDbq7CrLqgMnRix7b0Jb23hAbL1ovsTnXUrQEAAAAAAAAAAAAAAAAAAEA2fnkH0MP769tn72v//P0IMScVJBdrJOFXIMQ5UouzMvFHEOFn3BdlZ9KfgQxfvHgO7pF8z3EVcbkSlBJQvRqYVwCl5LemF481pgKoLrZqXBaYlb/ZRe4p1RZjZMNkwncSsyIZXuNGYvtkR5OwIwEKMaiydaJqt3DV4lFg2yFQcbFHxqlyMNwigGLy74xXQYLfXgN7ltjH2BUSfMXyCpBtUbPN58hSAXoXS+WA1RtHZgnMbwWrJP+BWjzWmAqgutiqcVmwTIDMZbK1vPMzqwDqV5l6fLtYIkDWq+NIxnmaVIAoV1eUOFfi+pEw8AcBijMtQMZ98Yxs891eAaLtq9HinYUtoDgIUBwEKA4CFAcBioMAxUGA4iBAcbYLEO3OWbR4Z5kWoNqds2zzZQsoDgIUx0SAKPtqlDhXskSAbPviMzLO02wLUL+61OPbxTIBMl4d38k6P3oENd24LKBLmFg81iwVINrDltEeZt3B8gqQbbGyzeeIW4OIx9XnscAqFUiBLWcA5TYsyu1rPNh2CFSUgOT/j1RrttboE2gNnUI7x31/ffvMKAa9gjvG+P5/s0lgOhnl03dP8q9eGxF6BLWx5J/9PCJ0CRtMfu/vo+CaDM9FPBOx0ttF14+EeS3equTfeb0aUvZ6f2/gzPhRK4Fk0J7fHFpNghABW+/JlSQIFawlVSTguYAnzCQx0sEQAU6oIAECXJBdAgToILMECNBJVgkQYICMEiDAINkkQIAbZJIAAW6SRQIEmCCDBAgwSXQJEGABkSVAgEVElQABFhJRAgRYTDQJEGADkSRAgE1EkQABNhJBAgTYjLoECGCAsgQIYISqBAhgiKIECGCMmgQI4ICSBAjghIoECOCIggQI4Iy3BAgggKcECCCClwQIIISHBAgghrUECCCIpQQIIMpdCUb/DgGEGU3mHWkQQJzepN6tGAgQgKvkzpwZECAIz5I825AKAQJxTHakbmSwEO/HyQAAAAAAAAAAAAAgFP8AHpbFhsHzyzUAAAAASUVORK5CYII=" alt=""> HERMÈS</div>
+        </div>
+
+        <div class="form-group">
+          <label>카테고리</label>
+          <div class="form-input">가방/핸드백 &gt; 여성크로스백</div>
+        </div>
+
+        <div class="form-group">
+          <label>구매처</label>
+          <div class="purchase-group">
+            <div class="purchase-label">국내</div>
+            <div class="form-chips grid6">
+              <div class="chip2 sel">국내H백화점</div><div class="chip2">국내L백화점</div><div class="chip2">국내S백화점</div>
+              <div class="chip2">국내로드샵</div><div class="chip2">국내면세점</div><div class="chip2">국내구매</div>
+            </div>
+          </div>
+          <div class="purchase-group">
+            <div class="purchase-label">해외</div>
+            <div class="form-chips grid4">
+              <div class="chip2">해외백화점</div><div class="chip2">해외로드샵</div><div class="chip2">해외면세점</div><div class="chip2">해외구매</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>사이즈 <span class="dev-note">🛠 개발 코멘트: 신발·의류 카테고리일때만 클릭 가능하도록 활성화</span></label>
+          <div class="form-chips grid4">
+            <div class="chip2">44</div><div class="chip2">55</div><div class="chip2">66</div><div class="chip2 sel">77</div>
+            <div class="chip2">90</div><div class="chip2">95</div><div class="chip2">100</div><div class="chip2">103</div>
+            <div class="chip2">105</div><div class="chip2">110</div><div class="chip2">115</div><div class="chip2">그외</div>
+          </div>
+          <div class="dev-note">🛠 개발 코멘트: 카테고리가 신발이면 180~300(5단위) 옵션으로 자동 전환</div>
+        </div>
+
+        <div class="form-group">
+          <label>거래방식 <span class="dev-note">🛠 개발 코멘트: 복수선택 가능하도록 구현 필요 (예: 직거래+일반택배 동시 선택)</span></label>
+          <div class="form-chips">
+            <div class="chip2 sel">직거래</div><div class="chip2 sel">일반택배</div><div class="chip2">반값택배</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>상태등급</label>
+          <div class="form-chips grid6">
+            <div class="chip2 sel">NEW</div><div class="chip2">A+</div><div class="chip2">A</div>
+            <div class="chip2">B+</div><div class="chip2">B</div><div class="chip2">C</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>색상 <span class="dev-note">🛠 개발 코멘트: 복수선택 가능하도록 구현 필요 (예: 네이비 + 핑크 동시 선택)</span></label>
+          <div class="color-grid">
+            <div class="color-item"><div class="color-swatch" style="background:#111;"></div><span>블랙</span></div>
+            <div class="color-item"><div class="color-swatch" style="background:#1E3A8A;"></div><span>블루</span></div>
+            <div class="color-item"><div class="color-swatch" style="background:#6B5B34;"></div><span>브라운</span></div>
+            <div class="color-item"><div class="color-swatch" style="background:#0F7B4E;"></div><span>그린</span></div>
+            <div class="color-item"><div class="color-swatch" style="background:#8B8F97;"></div><span>그레이</span></div>
+            <div class="color-item"><div class="color-swatch multicolor"></div><span>멀티컬러</span></div>
+            <div class="color-item sel"><div class="color-swatch" style="background:#F07C99;"></div><span>핑크</span></div>
+            <div class="color-item"><div class="color-swatch" style="background:#4B2E9E;"></div><span>퍼플</span></div>
+            <div class="color-item"><div class="color-swatch" style="background:#D2123B;"></div><span>레드</span></div>
+            <div class="color-item"><div class="color-swatch" style="background:#fff; border:1px solid var(--line);"></div><span>화이트</span></div>
+            <div class="color-item"><div class="color-swatch" style="background:#F5C518;"></div><span>옐로우</span></div>
+            <div class="color-item sel"><div class="color-swatch" style="background:#1B2A4A;"></div><span>네이비</span></div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>판매가격</label>
+          <div class="form-input">18,900,000원</div>
+        </div>
+
+        <div class="form-group">
+          <label>자세한 설명</label>
+          <div class="form-textarea">사용감 적은 상태입니다. 더스트백, 보증서 포함되어 있고 현대백화점 압구정본점에서 2023년 5월 구입했어요. 직거래 선호합니다 :)</div>
+        </div>
+      </div>
+      <div class="sell-footer"><div class="btn-full" onclick="showScreen('home')">작성 완료</div></div>
+    </div>
+    <!-- /screen-sell -->
+
+    <div id="screen-brandpick" class="screen">
+      <span class="annot">상품등록의 '브랜드' 클릭 시 이동 · 검색 후 선택하면 상품등록으로 복귀</span>
+      <div class="sell-topbar">
+        <div class="icon-btn" onclick="goBack()">←</div>
+        <div class="title">브랜드 선택</div>
+      </div>
+      <div class="dz-header" style="border-top:none;">
+        <div class="dz-search"><img class="ic" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAADL0lEQVR4nO2dQVLkMAxFPdSchB3c/yzDbq7CrLqgMnRix7b0Jb23hAbL1ovsTnXUrQEAAAAAAAAAAAAAAAAAAEA2fnkH0MP769tn72v//P0IMScVJBdrJOFXIMQ5UouzMvFHEOFn3BdlZ9KfgQxfvHgO7pF8z3EVcbkSlBJQvRqYVwCl5LemF481pgKoLrZqXBaYlb/ZRe4p1RZjZMNkwncSsyIZXuNGYvtkR5OwIwEKMaiydaJqt3DV4lFg2yFQcbFHxqlyMNwigGLy74xXQYLfXgN7ltjH2BUSfMXyCpBtUbPN58hSAXoXS+WA1RtHZgnMbwWrJP+BWjzWmAqgutiqcVmwTIDMZbK1vPMzqwDqV5l6fLtYIkDWq+NIxnmaVIAoV1eUOFfi+pEw8AcBijMtQMZ98Yxs891eAaLtq9HinYUtoDgIUBwEKA4CFAcBioMAxUGA4iBAcbYLEO3OWbR4Z5kWoNqds2zzZQsoDgIUx0SAKPtqlDhXskSAbPviMzLO02wLUL+61OPbxTIBMl4d38k6P3oENd24LKBLmFg81iwVINrDltEeZt3B8gqQbbGyzeeIW4OIx9XnscAqFUiBLWcA5TYsyu1rPNh2CFSUgOT/j1RrttboE2gNnUI7x31/ffvMKAa9gjvG+P5/s0lgOhnl03dP8q9eGxF6BLWx5J/9PCJ0CRtMfu/vo+CaDM9FPBOx0ttF14+EeS3equTfeb0aUvZ6f2/gzPhRK4Fk0J7fHFpNghABW+/JlSQIFawlVSTguYAnzCQx0sEQAU6oIAECXJBdAgToILMECNBJVgkQYICMEiDAINkkQIAbZJIAAW6SRQIEmCCDBAgwSXQJEGABkSVAgEVElQABFhJRAgRYTDQJEGADkSRAgE1EkQABNhJBAgTYjLoECGCAsgQIYISqBAhgiKIECGCMmgQI4ICSBAjghIoECOCIggQI4Iy3BAgggKcECCCClwQIIISHBAgghrUECCCIpQQIIMpdCUb/DgGEGU3mHWkQQJzepN6tGAgQgKvkzpwZECAIz5I825AKAQJxTHakbmSwEO/HyQAAAAAAAAAAAAAgFP8AHpbFhsHzyzUAAAAASUVORK5CYII=" alt=""> 브랜드명을 검색하세요</div>
+      </div>
+      <div class="dz-body">
+        <div class="dz-list">
+          <div class="dz-letter">B</div>
+          <div class="dz-brand" onclick="selectBrand('Band &amp; Olufsen')"><div class="dz-logo"></div><div><div class="name">Band &amp; Olufsen</div><div class="origin">덴마크</div></div></div>
+          <div class="dz-letter">C</div>
+          <div class="dz-brand" onclick="selectBrand('Casima')"><div class="dz-logo"></div><div><div class="name">Casima</div><div class="origin">이탈리아</div></div></div>
+          <div class="dz-brand" onclick="selectBrand('Chanel')"><div class="dz-logo"></div><div><div class="name">Chanel</div><div class="origin">프랑스</div></div></div>
+          <div class="dz-letter">G</div>
+          <div class="dz-brand" onclick="selectBrand('Gucci')"><div class="dz-logo"></div><div><div class="name">Gucci</div><div class="origin">이탈리아</div></div></div>
+          <div class="dz-letter">H</div>
+          <div class="dz-brand sel-row" onclick="selectBrand('HERMÈS')"><div class="dz-logo"></div><div><div class="name">HERMÈS</div><div class="origin">프랑스</div></div><span class="check">✓</span></div>
+          <div class="dz-letter">L</div>
+          <div class="dz-brand" onclick="selectBrand('Louis Vuitton')"><div class="dz-logo"></div><div><div class="name">Louis Vuitton</div><div class="origin">프랑스</div></div></div>
+          <div class="dz-brand" onclick="selectBrand('Loro Piana')"><div class="dz-logo"></div><div><div class="name">Loro Piana</div><div class="origin">이탈리아</div></div></div>
+          <div class="dz-letter">R</div>
+          <div class="dz-brand" onclick="selectBrand('Rolex')"><div class="dz-logo"></div><div><div class="name">Rolex</div><div class="origin">스위스</div></div></div>
+          <div class="dz-letter">T</div>
+          <div class="dz-brand" onclick="selectBrand('Tiffany &amp; Co.')"><div class="dz-logo"></div><div><div class="name">Tiffany &amp; Co.</div><div class="origin">미국</div></div></div>
+        </div>
+      </div>
+    </div>
+    <!-- /screen-brandpick -->
+
+    <div id="screen-chatlist" class="screen">
+      <span class="annot">💬 채팅 아이콘 · 마이페이지 채팅 클릭 시 이동하는 화면</span>
+      <div class="sell-topbar">
+        <div class="icon-btn" onclick="goBack()">←</div>
+        <div class="title">채팅</div>
+      </div>
+      <div class="chatlist-row" onclick="showScreen('chat')">
+        <div class="chatlist-avatar"></div>
+        <div class="chatlist-info">
+          <div class="top"><span class="name">realhave_seller92</span><span class="time">오후 2:14</span></div>
+          <div class="msg">네! AI 정품인증 완료된 상품이라 인증 이미지 바로 보내드릴게요 :)</div>
+        </div>
+        <div class="chatlist-badge">2</div>
+      </div>
+      <div class="chatlist-row" onclick="showScreen('chat')">
+        <div class="chatlist-avatar"></div>
+        <div class="chatlist-info">
+          <div class="top"><span class="name">luxury_kim</span><span class="time">오전 11:02</span></div>
+          <div class="msg">서브마리너 오늘 오후에 직거래 가능하실까요?</div>
+        </div>
+      </div>
+      <div class="chatlist-row" onclick="showScreen('chat')">
+        <div class="chatlist-avatar"></div>
+        <div class="chatlist-info">
+          <div class="top"><span class="name">vintage_park</span><span class="time">어제</span></div>
+          <div class="msg">택 사진 다시 한번만 보내주실 수 있으실까요?</div>
+        </div>
+      </div>
+    </div>
+    <!-- /screen-chatlist -->
+
+    <div id="screen-chat" class="screen">
+      <span class="annot">상품상세의 '채팅으로 거래하기' 클릭 시 이동 · 결제 없이 직거래 협의</span>
+      <div class="sell-topbar">
+        <div class="icon-btn" onclick="goBack()">←</div>
+        <div class="title">realhave_seller92</div>
+      </div>
+      <div class="chk-section" style="background:#FBF3F7; border-color:#E9CFDD;">
+        <div style="font-size:11.5px; color:var(--wine); font-weight:700;"><img class="ic" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAADv0lEQVR4nO2dS5LbMAwFO6mcJLvk/mdJdrlKsnKNKmPZ+pDEA/B6PxKI16JI2fKAMcYYY4wxxhhjjDHGGGOMMcaU5Of3H3+ja4jkS3QBEbwK/def36160mawV670DjKUHuDI6b2qDCUHNfO+Xk2EMoOJWMxVkCH1AJRW8FllSFe0Uuh7ZJIhRaGz7+md1wyyxUWF0k0GqYLUmq9WzwzCi8jS5Cx1niXsxFkbmrXuPZaesFrzKoxn+kkqNOkIWcc55cBZmzGKTOP3Imky6n35NqKQGWQOfct2HIpPMaUEqBL6HooyhAtQPfQ9VGQIE6Br8M949CJChKUCOPTXRMwKX1ecBBz+WVb1a5kARhML0BwL0BwLMBGVvf4rLMAkHuGrS2ABJvB/6MoSWIDB7IWtKoEFWIiiBBZgIEcCVpPAAgziaLBqT0QtwACyhg8W4DaZwwcLcAu1+/kVLMACVK9+sACXyT71P7AAF6gSPliA01QKHyzAKaqFDxbgMBVW/M+wAIPJdPWDBThExan/gQV4Q+XwwQK8pHr4kFSAFQuyDuFDQgFWfNeu6or/GcsEGNHUFd+1O3PMrL9FtGXpDHBnUGrftasQPiS5BbxryKiGdbnvbxkmwNGmnA1r1dWgEv7qOobOADMkmCXWlb+tFj5MuAVkk6Bz+DBpDZBFApXtXqSE4YvAaAlGnvcK0RJOE+BM0yL28wpTv8Izh6kzwAwJRhzT4X8w/RYwo/g7EiiEf4bZdSxZA0QuCrfHVQlfpQ4Q/JWw2RJEoxQ+LN4FREsQcbwtauFDwDZQWYJu4UPQcwBFCTqGDwIPgt6xQgKF8KMIE0BlAacSftS2M3QGiH5QNJMM4YPALSDyQZGCLNE1hAsAMYtChak/OnwQEQDWSuDwP5AoYku2Bm7JWLvMDPAg6jP/u2QMHwQFOIOKBCp1XEFSAJVnBKPPr3b1g6gAkEOC7OGDsACgLUGF8EFcANBu3hHU65cXAPR2BllX/M9IIQDoSFApfEgkAMRLUC18SCYAxElQMXxIKMAZVr82npGUAqzcHlbZ7u2RUgBYI0H18CGxAKDTdJU6rpBaAIj/ZZLM4UMBAWC8BF3ChyICwDgJOoUPhQSA+xJ0Cx+KCQDXJegYPhQU4AxZ/sX7TErZvGVGqNWufig8A2R6bTySsgJAjtfGoyktAGi/Nq5AeQFA87VxFVoIAOfD7BA+NBIAcr01vIpWApjPtBMg8rVxRdoJADGvjavSUgD4HHbH8A29PwcwxhhjjDHGGGOMMcYY04J/GQ6nceK1pMoAAAAASUVORK5CYII=" alt=""> 직거래 안전 가이드 — 거래 전 정품 인증 서류(한글표기 택·인보이스)를 반드시 채팅으로 확인하세요.</div>
+      </div>
+      <div style="padding:16px 20px; display:flex; flex-direction:column; gap:12px;">
+        <div style="align-self:flex-start; max-width:75%; background:var(--cream); border-radius:12px 12px 12px 2px; padding:10px 14px; font-size:12.5px;">안녕하세요! 버킨백 30 정품 인증 서류 확인 가능할까요?</div>
+        <div style="align-self:flex-end; max-width:75%; background:var(--wine); color:var(--paper); border-radius:12px 12px 2px 12px; padding:10px 14px; font-size:12.5px;">네! AI 정품인증 완료된 상품이라 인증 이미지 바로 보내드릴게요 :)</div>
+        <div style="align-self:flex-start; max-width:75%; background:var(--cream); border-radius:12px 12px 12px 2px; padding:10px 14px; font-size:12.5px;">확인했습니다! 직거래 가능하신 지역이 어디세요?</div>
+      </div>
+      <div class="sell-footer" style="display:flex; gap:10px;">
+        <div class="form-input" style="flex:1;">메시지를 입력하세요</div>
+        <div class="btn-full" style="padding:12px 18px;" onclick="showScreen('home')">전송</div>
+      </div>
+    </div>
+    <!-- /screen-chat -->
+
+    <div id="screen-mypage" class="screen">
+      <span class="annot">My page 탭 클릭 시 이동하는 화면</span>
+      <div class="topbar">
+        <div class="brand" onclick="showScreen('home')">Real HAVE</div>
+        <div class="top-right">
+          <div class="top-icon-btn" onclick="requireLogin('wishlist')"><img class="ic" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAEMUlEQVR4nO2dS3LjMAxE21NzEu+c+5/F3vkqnkVKNYqiD0UBID79tqmIINAESEqkAUIIIYQQQgghhBBCCCGEEEIIIQm5jWz86/74nP2f5/s11OYjovVpSMM9TlrDixgi98ekQSkHbTFKCBn6pdqAtoOWWAkhU7/+aD3Y2klWbWbrl4oA9gzWHqVf98dHw2Faz52z5xuttsUFMGKErCFpR8Y+TYiOxlYDn+/X7ev++PRkg7NOuJpxLNqbfHHGf2fb2ELkQWecJGl8q+N622x5bq+Qe9tctn+1vb9XH9CKRu0/M2o0kA4+8N9PVv26bHyLoRbLM+ksoJVVJG2QsKP7n0fUqyOkguYh+K22TPTaJLYKWDPAeofuqL0WZ3oK/lZ7kjZ0CWDNSct6OHKfvnc9PXL/Yo+lX7f83/Ns8dmxhxc0vaPY2+hfQ9r3pzOAl02RPXpKQYTgH9ETG9GdQE9OkrQla7+AkwLwnvqXtM4FsvarBbW3gSQG6QVwNFqijX5pmgVQ3VHekCoD6TMA2YcCKA4FUByz18EjOdr5qzyHYQYIjIRwKYDgPN+v25oQWlcCJUpAZrYC3ZodmAECI/FijgIoTukSUHn2P8EMUBwKoDgUQHGaBbCsl1vrT2LLWhzOxEXssATFYItULFgCikMBFOeUAEZcYEB+I1mKRTMARaCPtI9PC0Di/B3pQ+PwivgcYPSZ/axo3EUAdAqAc4ExaCzDuzMAS4EdmucWL5UAikAf7UOrl+cAewZwPnCNo7rv/ptABv862j4UEQBLgTxW9xWo3hE0hyJox/KyCrMLIjgfaMOi7s8xexnE4Ldj6SuVncC9v1MI24y4p0jtIw4vN4hGYKSv1ErAkcGcE3zTsscf8hdDjpiCX1kEHnygKgCpu3kz4uWuZfUMQBH8xkvwAePfDeTE0J8PTOcALR3LnAm8BR9w/suhWbKB5/4OWQW0dDTLMrH1U65RYg/x49FRM0GE/g09GJJ5hRAh+ICDk0EZRRAl+MDgErAkkuPWiGj/8AwwJ/Lk0PtkbwtXxkxEG0nR7J3jKgNMRJoXRA4+4FQAQAwRRA8+4LQELPG4herRph7cGzjhZbR5sUMKtyVgiYcVQtSZ/h5hDJ0YNQKzjfyJMBlgYsTkMGvwgYACAGxFkDn4QMASsERzNp5lpr9HyAwwR+srowrBBxIIAJAXQZXgA0kEAMgdRBl9UMOaNAI4QjoDZCGNkuf0HrIccThzNCkzQM89Bdbn8r2QUgBA3yi/+hNsEUkrgCPmwa5U85ekVfbE1eBmHv1AgQxwJYDZgw8UEADZp4QAekZyhdEPFBEAcC6gVYIPFBIA0P5VkYUtXiglAOB4k8jSFg+UEwD5SUkBrI30iqMfKCoAQgB87xJW3gYGmAHKQwEUhwIghBBCCCGEEEIIIYQQQgghhBBC8vEP70nZk9vOZWsAAAAASUVORK5CYII=" alt=""></div>
+          <div class="top-icon-btn" onclick="requireLogin('chatlist')"><img class="ic" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAACNUlEQVR4nO3dTVIbQQyAUZOjsEvuf5Zkl6uQFZtAQbtb0nSP3jsApqRvfgyu8eMBAAAAAAAAAAAA3MHLVS/86/Xn21Wvvavff/+U76P0BS19XFUMJS9i8fOyQ0j94RYfJyuEHxk/9PGw/GhZ80wJwPJzZMw1PADLzxU939AALL9G5JzDbixmfqkr3vfu6qr5hSzgmV/e0r9XOc+0dwGfsfwxlXNaDmC0Vst/zui8Vu8HSs4Alj+nYm5LAYzUZ/lrRua3chZIPQNYfozMOZbeBLKf6QD80Wcvs/tIOwM4/cc67r+BnEEAzQmgOQE0J4DmBNCcAJoTQHMCaE4AzQmgOQE0J4DmBNCcAJoTQHMCaE4AzQmgOQE0J4DmBNCcAJoTQHMCaE4AzQmgOQE0J4DmBNCcAJoTQHOeFn6I7Z4W7gkge5ndh0tAc6kBuAzEyJzjUgDZDzEk/2GcJZcAEcypmNtyAFUPNe6m6iHcpTeBIhhTOSffGLKJo78x5J0jvE7UwRN6CXBE14icc/g9gAhyRc835SZQBDky5upp4YfImqdvD9/c0d8e/j8hjKs6g152mhbDR1dcNre7TkeH4V7ka7f+PIDlf++2AVj+mFsGYPnjbhkA424XgKP/ObcKwPKfd5sALH/OLQKw/HnHB2D5a44OwPLXHRuA5cc4MgDLj3NcAJYf66gALD/eMQFYfo5jAiDHEQE4+vNsH4Dl59o6AMvPt20Alt+UTwsDAAAAAAAAAADAlH8pudPxzodiNQAAAABJRU5ErkJggg==" alt=""></div>
+          <div class="btn-sell-top" onclick="requireLogin('sell')">상품등록</div>
+        </div>
+      </div>
+      <div id="mp-guest">
+        <div class="mp-guest-card">
+          <div class="mp-guest-title">로그인이 필요해요</div>
+          <div class="mp-guest-sub">로그인하고 정품인증 거래를 시작해보세요</div>
+          <div class="btn-full" onclick="showScreen('login')" style="margin-top:14px;">로그인</div>
+          <div class="mp-guest-signup" onclick="showScreen('signup')">아직 회원이 아니신가요? <b>회원가입</b></div>
+        </div>
+        <div class="mp-menu">
+          <div class="mp-item"><span class="mp-item-left"><span class="icon">📢</span>공지사항</span><span class="chev">›</span></div>
+          <div class="mp-item"><span class="mp-item-left"><span class="icon">🎧</span>고객센터</span><span class="chev">›</span></div>
+          <div class="mp-item"><span class="mp-item-left"><span class="icon">📄</span>약관 및 정책</span><span class="chev">›</span></div>
+          <div class="mp-item"><span class="mp-item-left"><span class="icon">⚙️</span>앱설정</span><span class="chev">›</span></div>
+        </div>
+      </div>
+
+      <div id="mp-loggedin">
+      <div class="mp-header">
+        <div class="mp-avatar"></div>
+        <div><div class="name">realhave_user92</div><div class="grade">인증회원 · 거래 18회</div></div>
+      </div>
+      <div class="mp-stats">
+        <div class="cell" onclick="requireLogin('purchases')"><div class="ico"><img class="ic" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAACPklEQVR4nO3dQXLUMBRFUUNlJcxg/2shM7YCA4oBXSls3K2vL71zxknblq5lx+6qHAcAAAAAAAAAsJtPs3eg2rcvX3+e/cz3H+8x47L9gV6Z8DM7B7Htgb1i4h/tGMJ2BzRi4h/tFMLn2TvwShWTX7mdCluUPHNCVl8Nll8BZp+Ns7f/rKUD6DL4XfbjjmWXr7uDfmXJHvnZ3Sy3w8dxb4LuTE7VdmZ6m70Doz0zIX9+d+Ul/sxStR7H9ckYcSbO3PYoS90Ezp6Aq5+70oqxVABXjD77Vjq7r1gmgE5v8Ub+JVFtmQAYY4kAOp39/7O9FVaBJQJgnC0CmHVjtsMN4RYBcF/7AM6uo7PPwrPtd78PaB8AYwkgnADClV0/u18LO6q4v7EChBNAOAGEE0A4AYQTQLiyAGY/sl1N1Xi1+lZwUiRdnou4BIQTQDgBhBNAOAGEE0A4AYQTQDgBhGsVQJenY6N1Os7SAJIe9T6jcpxarQDUE0A4AYQTQDgBhBNAOAGEE0A4AYQTQLh2AXR6Tj5Ct+MrD8D7gH+rHp92KwC1BBBOAOEEEE4A4QQQTgDhBBBOAOEEEE4A4VoG0O2Fyat0PK4pAXgh9LEZ49JyBaCOAMIJIJwAwgkgnADCCSCcAMIJIJwAwrUNoONz82d0PZ5pAXgf8LdZ49F2BaCGAMIJIJwAwgkgnADCCSCcAMIJIJwAwrX617GPuj4/38nUFcD7gN9mjoNLQDgBhBNAOAGEE0A4AQAAAAAAAMCufgHPPZncuRMFWQAAAABJRU5ErkJggg==" alt=""></div><div class="num">3</div><div class="lbl">구매내역</div></div>
+        <div class="cell" onclick="requireLogin('sales')"><div class="ico"><img class="ic" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAClUlEQVR4nO3cO1IjQRRE0WRiVoIH+18LeGyFseT0qFv166r3su6JwCJQUMpLA5JAAgAAAAAAAAAAAAAAAAAADt5G3+Dn+8fv6Ntc5evne/j9E82f1Z9AZE4xnyGAF9wjIIACzhEQQCHXCAiggmMEBFDJLQICaOAUwfTHAaL/bl0zbvSzlOAKcFAzqsOVgACe2CkCAjixSwQEcGGHCAjgBfcICKCAcwQEUMg1AgKo4BgBAVRyi4AAGjhFQACNXCIggA4OERBAp+wREMAAmSMggEGyRkAAA2WMgAAGyxYBAdwgUwQEcJMsERDAjTJEQAA3ix4BAUwQOQICmCRqBOH/LuDZ7WV+PX60vzsIewX4fP/4Pbuzrt4XXbQrQcgASg9OBP3CBVB7YCLoEyqA1oMSQbtQAexodQRhArg63NfP99vjreXjo1sZQZgAzhzvnMy/Al5ZFUH4AHayIgICCGZ2BOEDOB4y8/f6UjMjCPVQcM9hnH42mPlwcfgrwG5mP1cQKoDWA7l89a94oihUAFL9wRi/T7gApPIDMn6/vyNvbKTHQd1eD3C0+vUBYQN4cBr7aPX4UtBvATuIML5EAEtEGV8igOkijS8RwFTRxpcIYJqI40sEMEXU8SUCuF3k8SUCuFX08SUCuE2G8SUCuEWW8SUCGC7T+BIBDJVtfIkAhsk4vkQAQ2QdXyKAbpnHlwigS/bxJQJo5jC+RABNXMaXCKCa0/gSAVRxG18igGKO40sEUMR1fIkAXnIeXyKAS+7jSwRwaofxJQJ4apfxJQL4z07jSwv+Q4gLh/ElrgBNXMaXCKCa0/gSAVRxG18igGKO40sEUMR1fIkAXnIeXyKAS+7jAwAAAAAAAAAAAAAAAAAAAADS+wf9OYYtna4HwAAAAABJRU5ErkJggg==" alt=""></div><div class="num">2</div><div class="lbl">판매내역</div></div>
+        <div class="cell" onclick="requireLogin('wishlist')"><div class="ico"><img class="ic" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAEMUlEQVR4nO2dS3LjMAxE21NzEu+c+5/F3vkqnkVKNYqiD0UBID79tqmIINAESEqkAUIIIYQQQgghhBBCCCGEEEIIIQm5jWz86/74nP2f5/s11OYjovVpSMM9TlrDixgi98ekQSkHbTFKCBn6pdqAtoOWWAkhU7/+aD3Y2klWbWbrl4oA9gzWHqVf98dHw2Faz52z5xuttsUFMGKErCFpR8Y+TYiOxlYDn+/X7ev++PRkg7NOuJpxLNqbfHHGf2fb2ELkQWecJGl8q+N622x5bq+Qe9tctn+1vb9XH9CKRu0/M2o0kA4+8N9PVv26bHyLoRbLM+ksoJVVJG2QsKP7n0fUqyOkguYh+K22TPTaJLYKWDPAeofuqL0WZ3oK/lZ7kjZ0CWDNSct6OHKfvnc9PXL/Yo+lX7f83/Ns8dmxhxc0vaPY2+hfQ9r3pzOAl02RPXpKQYTgH9ETG9GdQE9OkrQla7+AkwLwnvqXtM4FsvarBbW3gSQG6QVwNFqijX5pmgVQ3VHekCoD6TMA2YcCKA4FUByz18EjOdr5qzyHYQYIjIRwKYDgPN+v25oQWlcCJUpAZrYC3ZodmAECI/FijgIoTukSUHn2P8EMUBwKoDgUQHGaBbCsl1vrT2LLWhzOxEXssATFYItULFgCikMBFOeUAEZcYEB+I1mKRTMARaCPtI9PC0Di/B3pQ+PwivgcYPSZ/axo3EUAdAqAc4ExaCzDuzMAS4EdmucWL5UAikAf7UOrl+cAewZwPnCNo7rv/ptABv862j4UEQBLgTxW9xWo3hE0hyJox/KyCrMLIjgfaMOi7s8xexnE4Ldj6SuVncC9v1MI24y4p0jtIw4vN4hGYKSv1ErAkcGcE3zTsscf8hdDjpiCX1kEHnygKgCpu3kz4uWuZfUMQBH8xkvwAePfDeTE0J8PTOcALR3LnAm8BR9w/suhWbKB5/4OWQW0dDTLMrH1U65RYg/x49FRM0GE/g09GJJ5hRAh+ICDk0EZRRAl+MDgErAkkuPWiGj/8AwwJ/Lk0PtkbwtXxkxEG0nR7J3jKgNMRJoXRA4+4FQAQAwRRA8+4LQELPG4herRph7cGzjhZbR5sUMKtyVgiYcVQtSZ/h5hDJ0YNQKzjfyJMBlgYsTkMGvwgYACAGxFkDn4QMASsERzNp5lpr9HyAwwR+srowrBBxIIAJAXQZXgA0kEAMgdRBl9UMOaNAI4QjoDZCGNkuf0HrIccThzNCkzQM89Bdbn8r2QUgBA3yi/+hNsEUkrgCPmwa5U85ekVfbE1eBmHv1AgQxwJYDZgw8UEADZp4QAekZyhdEPFBEAcC6gVYIPFBIA0P5VkYUtXiglAOB4k8jSFg+UEwD5SUkBrI30iqMfKCoAQgB87xJW3gYGmAHKQwEUhwIghBBCCCGEEEIIIYQQQgghhBBC8vEP70nZk9vOZWsAAAAASUVORK5CYII=" alt=""></div><div class="num">7</div><div class="lbl">찜</div></div>
+        <div class="cell" onclick="requireLogin('chatlist')"><div class="ico"><img class="ic" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAACNUlEQVR4nO3dTVIbQQyAUZOjsEvuf5Zkl6uQFZtAQbtb0nSP3jsApqRvfgyu8eMBAAAAAAAAAAAA3MHLVS/86/Xn21Wvvavff/+U76P0BS19XFUMJS9i8fOyQ0j94RYfJyuEHxk/9PGw/GhZ80wJwPJzZMw1PADLzxU939AALL9G5JzDbixmfqkr3vfu6qr5hSzgmV/e0r9XOc+0dwGfsfwxlXNaDmC0Vst/zui8Vu8HSs4Alj+nYm5LAYzUZ/lrRua3chZIPQNYfozMOZbeBLKf6QD80Wcvs/tIOwM4/cc67r+BnEEAzQmgOQE0J4DmBNCcAJoTQHMCaE4AzQmgOQE0J4DmBNCcAJoTQHMCaE4AzQmgOQE0J4DmBNCcAJoTQHMCaE4AzQmgOQE0J4DmBNCcAJoTQHOeFn6I7Z4W7gkge5ndh0tAc6kBuAzEyJzjUgDZDzEk/2GcJZcAEcypmNtyAFUPNe6m6iHcpTeBIhhTOSffGLKJo78x5J0jvE7UwRN6CXBE14icc/g9gAhyRc835SZQBDky5upp4YfImqdvD9/c0d8e/j8hjKs6g152mhbDR1dcNre7TkeH4V7ka7f+PIDlf++2AVj+mFsGYPnjbhkA424XgKP/ObcKwPKfd5sALH/OLQKw/HnHB2D5a44OwPLXHRuA5cc4MgDLj3NcAJYf66gALD/eMQFYfo5jAiDHEQE4+vNsH4Dl59o6AMvPt20Alt+UTwsDAAAAAAAAAADAlH8pudPxzodiNQAAAABJRU5ErkJggg==" alt=""></div><div class="num">5</div><div class="lbl">채팅</div></div>
+      </div>
+
+      <div class="mp-menu">
+        <div class="mp-item"><span class="mp-item-left"><span class="icon"><img class="ic" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAC2klEQVR4nO3dTXLbMAyGYSRH6a65/1nSXa/SrjTjcOJIlAkC+PA+68QDEp8g/0i2GQAAAAAAAAAAAAAAUPMWXcBuH79+/zv7m8+/f9rsS4uFXmn6M+phkF7cK40fqQZBclErGz9SC8J7dAGreTZ/x+PvJhWAXc1RCoFMAHY3RSUEEgGIaoZCCMo/obnThJ+eyK1+vOzKFm4216w7TfJ+/AwkTgFn7janalNnlA3A1aPz1SZe/f+qzwfKBuCKVUew8iQoGYCID3SuPF7FKVAyAGe8jljFSSAZAFxXLgDZx2z2+kblAnDGe0yrnQbkAoA5BKA5AtAcAWiOADRHAJqTCwDXBM4pF4Dsr8Oz1zcqFwCsJRkArzGtNv7NigYg4qNZ1XsKSwbgqlUhUDzyD2UDsOtSrV2XnkUpG4AZd0OgfOQfSqb2EfcFvKZs4Y8ij9TKzTcTOQVENaF6881EAmC2vxkKzTcTCoDZvqaoNN9MLABmXBM4S2oxI74j6JzkokZ8S9hz0ov7jup7+gAAAAAAXNDi9S5vBD0nt7gd1wYohUJiIVwQcl/Z4jNer1cxDOUKztj4UaUglCm0QuNHFYKQvsCKjR9lDkLawhQaP8oYhHQFmfk03/vr4j3r8JSqmFUb7rnJFWqckaIIs9c3NmJDK9Y8Ci/A7P5GZtjAQ9U1hG+g2r141dYTupGzm5W58aMqawu7MaTKBt01W2/Uy96QTe3wa1yPMq93+wTIvBleZtaxexJsDUDH5h+yhiDlzaFqzT9kXNe2AKh/2dJV2X6HcEsAaP5XmUKQ5hTQpfmHLOt1DwB34z6X4cco00wAxHANAEf/uegpEDoBujf/ELkPbgFQvKQrktd+hk0Ajv6v2n0aiBxcAsD49+GxryETgPH/vYh94RTQHAFobnkAzs5TjP+fne3P6ucBTIDmCEBzBKA5AtAcAQAAAAAAAAAAAAAAAAAAAAAAAAAq+g8nHVfey7PqlgAAAABJRU5ErkJggg==" alt=""></span>내정보수정</span><span class="chev">›</span></div>
+        <div class="mp-item"><span class="mp-item-left"><span class="icon"><img class="ic" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAACnElEQVR4nO3dQU4CQRBG4cZ4EnZ6/7PAjqvoxg4dMqLMVHVX1f++vTKmHkXDJNgaAAAAAAAAAGCyz/PH18zHe5/5YPjd7MF3BLDQqqGPCGCBCIPvCGCSSEMfEYCzqIPvCMBB9KGPCMBQpsF3BHBQxqGPCGCn7IPvCOBFVQbfEcA/WA79crueIkVEAE9YDepyu54sfo8HAnhg/Wy3+l1eCOCHwrN9i3QAas/2LZIBMPg7mQAY+rbyATD458oGoHqoe1XJACyGX33wXakAjg5eZeijEgEw+P1SB8CqP+5t9QXsFemGSmbpNgCDt5UmAAbvI3wADN5X6DMAw/cXcgMw+HlCBcDg5wvzEsDw11i+ARj8WssCYPAxTA+Awccy9QzA8OOZsgEYfFyuATD4+FwCYPB5mJ8BGH4uZhuAwecU5pNArEEA4ghAHAGIIwBxBCCOAMQRgDgCEEcA4ghAHAGIIwBxBCCOAMQRgDgCEEcA4ghAHAGIMwvgcrue1L9xKyPzDUAEubi8BLAN8nA9AxBBfBwCxRGAOAIQRwDiQgTAYXGdEAG0RgSrhAmgNT4/WCFUAB0hzBMygI4I/IUOoDW2gbfwAXSE4CNNAB0h2EoXQEcENtIG0JrNNlD/drPUAXRHQ/g8f3yphrD8/wVY6hHsHeb4cyovMSU2wCOL4alshVIbYHR0G3TVt0LJDTCyfNtYcSuU3QCPxgjYCnflN8AWtsKdzAbY4rEVsm2EVBc7g+Wz+bcY/nqMmRERwBNWMTwOlACSsd4KBJDYjAPfzAAk3wUcUe12NAHsVCWE9H9AJF6HRk9sAEMZt0Kqi81oz1ZgAxQSfSuEvbDKIn0OwAZYINJWCHERqHWLGQdkvrUMAAAAAAAAAAAAAACAAL4BLjAdHGb9kNYAAAAASUVORK5CYII=" alt=""></span>공지사항</span><span class="chev">›</span></div>
+        <div class="mp-item"><span class="mp-item-left"><span class="icon"><img class="ic" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAACk0lEQVR4nO3dS07DQBCE4QFxEnZw/7PAjqvAAo0EVhLb8+pq1//tgZ7ucieOSFIKAAAAAAAAAAAAAAAAAAC4gqfoAlZ5f337PvszH1+fl+/PJQ/YMuyjrhaKyxxm5tDvuUIYUh8gYuj3ZA1DyqKVBr+VLQipilUe/FaWIKQoMtPgt9SD8BxdwJ7Mwy9Fv37pdI5sXsuVGP33V5AsakTjZzRcta4eUsWU0tfklc3NUucemUJKaW9qZEMz1vyXRBGl5H+tPmv94QWUcr55Co27J9tZwm8DszVsz9n6om8TQ5t55vDqg78lw/nCNkCG5vQ6U3fUJggJgMPwK/UQhD8HeCT78CvlcywPwNGUKzetxdHzrN4CSwPgOvxKMQTLAuA+/EotBFLPAa4+/ErpnEsCEP1iR1Yr+iazAZSuihVUzjs9AEdSrNKM1Y6ce/YWkNkAiDE1AFz9+6K3ABvAXGgA3K/+KrIP0wLArd9Ys/oZtgG4+v+z+38AaJgSANb/HDP6GrIBWP+3RfSFhwBzBMAcATA3PAB7T1R4/H9srz+jnwiyAcwRAHMEwBwBMEcAzMm+McTV6v4MuyXL+gEJKqL6N2QDtKaWbfArsn/dAegtwj0E0f3rCsCo4bmGQKF/3AWYaw7A6KvWbQuo9I8NYO5l1i++dYvidpX3WNU/NoA5AmCOAJgjAOYIgDkCYI4AmCMA5giAOQJgjgCYIwDmCIA5AmCOAJgjAOYIgDkCYI4AmCMA5giAOQJgjgCYIwDmpr0xhDeB9LH83kCs1xyA0Z/u4fZpISr9YwOY6wrAqBS7Xf2VQv+6N0DvIVyHX0X3b8hDQGsR7sOvIvs3fAB8WWQf+gcAAAAAAAAAAAAAAAAAAAAAOOEH6OwkroJbn7cAAAAASUVORK5CYII=" alt=""></span>고객센터</span><span class="chev">›</span></div>
+        <div class="mp-item"><span class="mp-item-left"><span class="icon"><img class="ic" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAABu0lEQVR4nO3cO27cMBRAUTvwStwl+19L0nkrdhukyowhkk/3nHoAzefiQSSFeXkBAAAAAAAA7ul19QV/vf/8XH3N1X5//Fn+vT7rx+43wF4CiBNAnADiBHCBSTe6ArjIlAgEcKEJERy3DzBhDf3oD3vyZzIBFjh5EghgkVMjEMBCJ0YggMVOi0AAG5wUgQA2OSUCAWx0QgQCuMAj6/7dEbztvPhdPfqj/vv6lRtHJkCcAOIEECeAOAE84eTTvUcJ4El3iUAA33CHCOwDfNMzEeze/PmbCRAngDgBxAkgTgBxAogTQJwA4gQQJ4A4AcQJIE4AcQKIG3McfNIR6v+a8LyACRAngDgBxAkgTgBxY1YBE+6oJzIB4gQQJ4A4AcQJIE4AcQKIE0CcAOIEECeAuDFnAZ4IuoYJECeAOAHECSBOAHFjVgET7qgnMgHiBBAngDgBxAkgTgBxAogTQJwA4gQQJ4C4MWcBO58IuvM5hAkQJ4A4AcQJIE4AcWNWAXe+E9/JBIgTQJwA4gQQJ4A4AcQJIE4AcQKIE0DccVvBE/8KZjITIE4AcQKIE0CcAOIEECcAAAAAAAAAuKsvM/NFk2FfsOwAAAAASUVORK5CYII=" alt=""></span>약관 및 정책</span><span class="chev">›</span></div>
+        <div class="mp-item"><span class="mp-item-left"><span class="icon"><img class="ic" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAEoklEQVR4nO2dS3LjMAxEkak5SXbJ/c/i7HwVz2KKVR6NbJESPg2g39pR2EALpChSFCGEEEJIRz6iG+DB9+fXY+X3t/tPi7iIiPyKbgCJhQZoDg3QHBqgOTRAc2iA5tAAzaEBmkMDNIcGaA4N0BwaoDkuBlh9GUP8YmZugCEkkwm+P78eke31jJnpa889AR6vWi0DZ91+75iZXfhdEiwERdyx2jq8YyZiZICZZGgIQupWrurxitmW0DvxrCCkxG85o8kjZq9wK2GvWBGEnPgts7qsY3aE2oWuJOdIUKbEb3mnzTJms6hcRCNBe4IyJ37LVp9VzFaBqACDZ0Haybfum1fagJJ8EYAxwJbb/ecDKUDPoFQkyDHAIDJInuv5o3RCPwUMPIODsInDS2+KeYCBdVAQEr8l4xS02csgywQhJl/Erl0p3wUMNO8K1MTvoaXbWrP562AtAZmSL6LTXg/N8KPmbInfI3q69x1uS8LOCKqQfJF1HZ66XdcErgirkvwBqh5XA8yWQtRgXcXyDeFZ3AzQPfkDNBNArQqunvwBkglg9gV0Sf4ARa/bsnByDuv4QVQAlLvBGwTdpgaIWumaiRn9llUAogKQOMwMwLt/nsgqEFYBmPx/iYqHiQE48rfBIq6/tS84Q/TdH7EHbwatBbErhBgggtnAPv8u2qgeqHcBaOX/yl7/6O8E7KHdHvdBYMal25VXOZfsAiwSNq5ZrVtQrQAI5dK6DdU0ulYAlLvHaseuFp5PA6Wmgo+Cdrv/fByZcOY3CCbRoowBZpK/cr0uJihjgHec7XpQuixL3D7KYBlM65m9qJlD7aq2R8nHwIHmriTEkq+x2aZFF0Bek94Ar+4C7dL86nqIlWGF9AYg16ABmkMDNIcGaA4N0BwaoDnpDeD1eOb1uOlNegOQa/w3FVzpG/7fn1+PagdTaOP6reCML4QqvwgSadIFXFkVrN0WNMoYQHsBR2Q186SMAUTmTHCU2JnfVEm+iPN6AK1BmUY7otvwjrRfCUNIrnUbqmksuSJI82iW7TWr4T4GyLjNKuN2tlnUDYB2p8ys87f4Wyu021OyC9hj9kQytIRbk/rs4GpExM1kDMDk2mAR17CJIPRncW+i4hF6aBRN8JfILrPUVDBZx9QArALHRA+YISpAVxMg6E5zbFxX0p8bOAvC3eAJil4XAyAdkYIA0hE6cOcGVjcBUvJFgLqAZ6qaAC35IoDHxp39PToretKuCHpF91W5Z3R4aU9zfHzGx0kN7akfAzVdnK0aZPlQddjOlisgV4Nsn9lLeWQMajWwbJfVtdVd5Z0chGqQcaHrwHVzqDWVV+8+o6lT7UKaI17U0bNWu5D0qVzEQpD2HXYmYJZtQDEBRAWo+hXOZ/Y0WsRslfAxQPVVQxbnDkCOAQYrglaFZDLCijbLmB2RcmMIshEsv7FkMbBN982e2f/hTdaDKUyfm/cEWQmJMIPXo6bl/Ibr20CviZrs7yE8Y+aWkOgp2+jR9ipeMQufR/dk1QTRpvUAck0g8YMGaA4N0BwaoDk0QHNogObQAM2hAZpDAzSHBmgODdAcGqA5NAAhhBDSkz9Xf+eKGE2R7wAAAABJRU5ErkJggg==" alt=""></span>앱설정</span><span class="chev">›</span></div>
+        <div class="mp-item" onclick="showScreen('withdrawblocked')"><span class="mp-item-left"><span class="icon"><img class="ic" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAABt0lEQVR4nO3cQU7DMBRAwYA4CTu4/1lgx1Vgi1DTVIJiO2/mAo3jJ6fJ4m8bAAAAAAAAcE4Poy/g9fnlc/Q13Mvbx/vw+3vkceSPn3nzt22N9Q0LYIWb8xdmX+eQAGa/KX9t5vX+ewAz34x7mnXdQ/8DMJ4A4gQQ9zT6An5a4d15z6zP+WucAHECiBNAnADiBBAngDgBxAkgTgBxAogTQJwA4gQQJ4A4AcQJIE4AcQKIE0CcAOIEECeAOAHECSBOAHECiBNAnADiBBAngDgBxAkgTgBxAogTQNx0M4JmdGn2z8qzjL5zAhzYG/y04kCoSwRwxdEmnyECAey4dXNXj0AAcQKIE0CcAOIEsOPW9/zVvwcI4IqjzV1987dNAIf2NvkMm79tPgXf5CybfYkTIE4AcQKIE0CcAOIEECeAOAHECSBOAHECiBNAnADiBBAngDgBxAkgTgBxAogTQJwA4gQQJ4A4AcQJIE4AcQKIE0CcAOIEECeAOAHECSBOAHECiBNAnADippsStvr07dU4AeIEECeAuF9PwPTMvp//mFDqBIgTQJwA4gQQJ4A4AcQJAAAAAAAKvgB/9Th52Ab2VwAAAABJRU5ErkJggg==" alt=""></span>탈퇴하기</span><span class="chev">›</span></div>
+      </div>
+      <div class="mp-logout" onclick="isLoggedIn=false; showScreen('mypage', true);">로그아웃</div>
+      </div>
+    </div>
+    <!-- /screen-mypage -->
+
+    <div id="screen-withdrawblocked" class="screen">
+      <span class="annot">마이페이지 '탈퇴하기' 클릭 시 이동 · 등록된 상품이 있는 경우</span>
+      <div class="sell-topbar">
+        <div class="icon-btn" onclick="goBack()">←</div>
+        <div class="title">회원탈퇴</div>
+      </div>
+      <div class="wd-wrap">
+        <div class="wd-icon">⚠️</div>
+        <div class="wd-title">등록된 상품이 있어요</div>
+        <div class="wd-desc">회원탈퇴를 진행하려면<br>판매중인 상품을 먼저 삭제해주세요.</div>
+        <div class="wd-count">판매중 상품 <b>3개</b></div>
+        <div class="btn-full" onclick="showScreen('sales'); showSalesTab('ongoing');">판매내역에서 상품 삭제하기</div>
+        <div class="wd-skip" onclick="showScreen('withdrawconfirm')">(테스트) 모든 상품을 삭제했어요</div>
+      </div>
+    </div>
+    <!-- /screen-withdrawblocked -->
+
+    <div id="screen-withdrawconfirm" class="screen">
+      <span class="annot">등록상품이 모두 삭제된 상태에서 이동하는 최종 확인 화면</span>
+      <div class="sell-topbar">
+        <div class="icon-btn" onclick="goBack()">←</div>
+        <div class="title">회원탈퇴</div>
+      </div>
+      <div class="wd-wrap">
+        <div class="wd-icon">🚪</div>
+        <div class="wd-title">정말로 탈퇴하시겠습니까?</div>
+        <div class="wd-desc">대화내용, 기존 거래내용은<br>모두 삭제되며 복구할 수 없습니다.</div>
+        <div style="margin-top:16px; background:var(--warn); color:#fff; border-radius:8px; padding:15px; text-align:center; font-size:14.5px; font-weight:800; cursor:pointer;" onclick="isLoggedIn=false; showScreen('login');">예, 탈퇴합니다</div>
+        <div style="margin-top:14px; text-align:center; font-size:13.5px; font-weight:700; color:var(--ink-soft); cursor:pointer; text-decoration:underline;" onclick="showScreen('mypage')">아니요</div>
+      </div>
+    </div>
+    <!-- /screen-withdrawconfirm -->
+
+    <div id="screen-wishlist" class="screen">
+      <span class="annot">♡ 찜 아이콘 · 마이페이지 찜 클릭 시 이동하는 화면</span>
+      <div class="sell-topbar">
+        <div class="icon-btn" onclick="goBack()">←</div>
+        <div class="title">찜한 상품</div>
+      </div>
+      <div class="result-count">찜한 상품 <b>7</b>건</div>
+      <div class="result-grid">
+        <div class="result-card" onclick="viewNormalDetail()">
+          <div class="result-thumb"><div class="badge">정품인증</div></div>
+          <div class="result-info"><div class="b">HERMÈS</div><div class="n">버킨백 30 토고</div><div class="p">18,900,000원</div></div>
+        </div>
+        <div class="result-card" onclick="viewNormalDetail()">
+          <div class="result-thumb"><div class="badge">정품인증</div></div>
+          <div class="result-info"><div class="b">CHANEL</div><div class="n">클래식 플랩</div><div class="p">12,400,000원</div></div>
+        </div>
+        <div class="result-card" onclick="viewNormalDetail()">
+          <div class="result-thumb"><div class="badge">정품인증</div></div>
+          <div class="result-info"><div class="b">ROLEX</div><div class="n">서브마리너</div><div class="p">15,200,000원</div></div>
+        </div>
+        <div class="result-card" onclick="viewNormalDetail()">
+          <div class="result-thumb"><div class="badge">정품인증</div></div>
+          <div class="result-info"><div class="b">TIFFANY&amp;CO</div><div class="n">화이트골드 목걸이</div><div class="p">890,000원</div></div>
+        </div>
+      </div>
+    </div>
+    <!-- /screen-wishlist -->
+
+    <div id="screen-sales" class="screen">
+      <span class="annot">마이페이지 판매내역 클릭 시 이동하는 화면 · 당근마켓 판매관리 참고</span>
+      <div class="sell-topbar">
+        <div class="icon-btn" onclick="goBack()">←</div>
+        <div class="title">판매내역</div>
+      </div>
+
+      <div class="sales-tabs">
+        <div class="sales-tab active" id="sales-tab-ongoing" onclick="showSalesTab('ongoing')">판매중 3</div>
+        <div class="sales-tab" id="sales-tab-done" onclick="showSalesTab('done')">거래완료 2</div>
+      </div>
+
+      <div class="sales-list" id="sales-panel-ongoing">
+        <div class="sales-card">
+          <div class="sales-status-row"><div class="sales-status">판매중</div><div class="sales-dots" onclick="openSalesSheet('ongoing')">⋮</div></div>
+          <div class="sales-body" onclick="viewOwnListingDetail()">
+            <div class="sales-thumb"><div class="badge">정품인증</div></div>
+            <div class="sales-info">
+              <div class="n">HERMÈS 버킨백 30 토고 블랙</div>
+              <div class="meta">등록 9시간 전</div>
+              <div class="p">18,900,000원</div>
+            </div>
+          </div>
+          <div class="sales-counts">
+            <span class="cnt">조회 132</span>
+          </div>
+          <div class="sales-actions">
+            <div class="sales-btn" onclick="bumpListing(this)">끌어올리기</div>
+          </div>
+        </div>
+
+        <div class="sales-card">
+          <div class="sales-status-row"><div class="sales-status">판매중</div><div class="sales-dots" onclick="openSalesSheet('ongoing')">⋮</div></div>
+          <div class="sales-body" onclick="viewOwnListingDetail()">
+            <div class="sales-thumb"><div class="badge">정품인증</div></div>
+            <div class="sales-info">
+              <div class="n">LORO PIANA 여성 로퍼</div>
+              <div class="meta">등록 1일 전</div>
+              <div class="p">780,000원</div>
+            </div>
+          </div>
+          <div class="sales-counts">
+            <span class="cnt">조회 64</span>
+          </div>
+          <div class="sales-actions">
+            <div class="sales-btn" onclick="bumpListing(this)">끌어올리기</div>
+          </div>
+        </div>
+
+        <div class="sales-card">
+          <div class="sales-status-row"><div class="sales-status">판매중</div><div class="sales-dots" onclick="openSalesSheet('ongoing')">⋮</div></div>
+          <div class="sales-body" onclick="viewOwnListingDetail()">
+            <div class="sales-thumb"><div class="badge">정품인증</div></div>
+            <div class="sales-info">
+              <div class="n">GUCCI 카드지갑</div>
+              <div class="meta">등록 2일 전</div>
+              <div class="p">590,000원</div>
+            </div>
+          </div>
+          <div class="sales-counts">
+            <span class="cnt">조회 41</span>
+          </div>
+          <div class="sales-actions">
+            <div class="sales-btn" onclick="bumpListing(this)">끌어올리기</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sales-list" id="sales-panel-done" style="display:none;">
+        <div class="sales-card">
+          <div class="sales-status-row"><div class="sales-status" style="color:var(--ink-soft);">거래완료</div><div class="sales-dots" onclick="openSalesSheet('done')">⋮</div></div>
+          <div class="sales-body" onclick="viewPurchasedDetail()" style="opacity:.6;">
+            <div class="sales-thumb"><div class="badge">정품인증</div></div>
+            <div class="sales-info">
+              <div class="n">TIFFANY&amp;CO 목걸이</div>
+              <div class="meta">거래완료 · 3일 전</div>
+              <div class="p">890,000원</div>
+            </div>
+          </div>
+          <div class="sales-counts">
+            <span class="cnt">조회 88</span>
+          </div>
+        </div>
+
+        <div class="sales-card">
+          <div class="sales-status-row"><div class="sales-status" style="color:var(--ink-soft);">거래완료</div><div class="sales-dots" onclick="openSalesSheet('done')">⋮</div></div>
+          <div class="sales-body" onclick="viewPurchasedDetail()" style="opacity:.6;">
+            <div class="sales-thumb"><div class="badge">정품인증</div></div>
+            <div class="sales-info">
+              <div class="n">CASIMA 숄더백</div>
+              <div class="meta">거래완료 · 6일 전</div>
+              <div class="p">590,000원</div>
+            </div>
+          </div>
+          <div class="sales-counts">
+            <span class="cnt">조회 52</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /screen-sales -->
+
+    <div id="screen-buyerselect" class="screen">
+      <span class="annot">판매중 > 거래완료로 변경 클릭 시 이동하는 화면</span>
+      <div class="sell-topbar">
+        <div class="icon-btn" onclick="goBack()">←</div>
+        <div class="title">구매자 선택</div>
+      </div>
+
+      <div class="buyer-item">
+        <div class="buyer-item-thumb"></div>
+        <div class="buyer-item-info">
+          <div class="n">HERMÈS 버킨백 30 토고 블랙</div>
+          <div class="p">18,900,000원</div>
+        </div>
+      </div>
+
+      <div class="buyer-confirm-btn" id="buyer-confirm-btn">구매자 선택</div>
+
+      <div class="buyer-find-link" id="buyer-find-link" onclick="showBuyerList()">최근 채팅 목록에서 구매자 찾기</div>
+
+      <div class="buyer-list" id="buyer-list" style="display:none;">
+        <div class="buyer-row" onclick="selectBuyer(this, 'realhave_seller92')">
+          <div class="buyer-avatar"></div>
+          <div class="buyer-row-info">
+            <div class="name">realhave_seller92</div>
+            <div class="msg">네! AI 정품인증 완료된 상품이라 인증 이미지 바로 보내드릴게요 :)</div>
+          </div>
+        </div>
+        <div class="buyer-row" onclick="selectBuyer(this, 'luxury_kim')">
+          <div class="buyer-avatar"></div>
+          <div class="buyer-row-info">
+            <div class="name">luxury_kim</div>
+            <div class="msg">서브마리너 오늘 오후에 직거래 가능하실까요?</div>
+          </div>
+        </div>
+        <div class="buyer-row" onclick="selectBuyer(this, 'vintage_park')">
+          <div class="buyer-avatar"></div>
+          <div class="buyer-row-info">
+            <div class="name">vintage_park</div>
+            <div class="msg">택 사진 다시 한번만 보내주실 수 있으실까요?</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="buyer-skip" onclick="showScreen('sales'); showSalesTab('ongoing');">선택하지 않을래요</div>
+    </div>
+    <!-- /screen-buyerselect -->
+
+    <div id="screen-purchases" class="screen">
+      <span class="annot">마이페이지 구매내역 클릭 시 이동하는 화면</span>
+      <div class="sell-topbar">
+        <div class="icon-btn" onclick="goBack()">←</div>
+        <div class="title">구매내역</div>
+      </div>
+
+      <div class="sales-list" style="padding-top:14px;">
+        <div class="sales-card">
+          <div class="sales-status-row"><div class="sales-status">구매완료</div></div>
+          <div class="sales-body" onclick="viewPurchasedDetail()">
+            <div class="sales-thumb"><div class="badge">정품인증</div></div>
+            <div class="sales-info">
+              <div class="n">HERMÈS 버킨백 30 토고 블랙</div>
+              <div class="meta">realhave_seller92 · 구매일 2026.09.10</div>
+              <div class="p">18,900,000원</div>
+            </div>
+          </div>
+          <div class="sales-actions">
+            <div class="sales-btn" onclick="requireLogin('chat')">채팅하기</div>
+          </div>
+        </div>
+
+        <div class="sales-card">
+          <div class="sales-status-row"><div class="sales-status">구매완료</div></div>
+          <div class="sales-body" onclick="viewPurchasedDetail()">
+            <div class="sales-thumb"><div class="badge">정품인증</div></div>
+            <div class="sales-info">
+              <div class="n">TIFFANY&amp;CO 목걸이</div>
+              <div class="meta">luxury_kim · 구매일 2026.09.03</div>
+              <div class="p">890,000원</div>
+            </div>
+          </div>
+          <div class="sales-actions">
+            <div class="sales-btn" onclick="requireLogin('chat')">채팅하기</div>
+          </div>
+        </div>
+
+        <div class="sales-card">
+          <div class="sales-status-row"><div class="sales-status">구매완료</div></div>
+          <div class="sales-body" onclick="viewPurchasedDetail()">
+            <div class="sales-thumb"><div class="badge">정품인증</div></div>
+            <div class="sales-info">
+              <div class="n">GUCCI 마몬트 크로스백</div>
+              <div class="meta">vintage_park · 구매일 2026.08.27</div>
+              <div class="p">1,900,000원</div>
+            </div>
+          </div>
+          <div class="sales-actions">
+            <div class="sales-btn" onclick="requireLogin('chat')">채팅하기</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /screen-purchases -->
+
+    <div id="screen-login" class="screen">
+      <span class="annot">마이페이지 '로그아웃' 클릭 시 이동 · 앱 최초 실행 시 진입 화면</span>
+      <div class="auth-wrap">
+        <div class="auth-logo" onclick="showScreen('home')"><span class="r-accent">R</span>eal HAVE</div>
+        <div class="auth-form">
+          <div class="form-input">이메일</div>
+          <div class="form-input">비밀번호</div>
+        </div>
+        <div class="auth-link" onclick="showScreen('forgot')">비밀번호를 잊으셨나요?</div>
+        <div class="btn-full" onclick="isLoggedIn=true; showScreen('home')">로그인</div>
+        <div class="auth-divider"><div class="line"></div>또는<div class="line"></div></div>
+        <div class="auth-social">
+          <div class="soc" onclick="isLoggedIn=true; showScreen('home')">카카오로 시작하기</div>
+          <div class="soc" onclick="isLoggedIn=true; showScreen('home')">Apple로 시작하기</div>
+          <div class="soc" onclick="isLoggedIn=true; showScreen('home')">Google로 시작하기</div>
+        </div>
+        <div class="auth-foot">아직 회원이 아니신가요? <b onclick="showScreen('signup')">회원가입</b></div>
+      </div>
+    </div>
+    <!-- /screen-login -->
+
+    <div id="screen-signup" class="screen">
+      <span class="annot">로그인 화면 '회원가입' 클릭 시 이동</span>
+      <div class="auth-topbar">
+        <div class="icon-btn" onclick="goBack()">←</div>
+        <div class="title">회원가입</div>
+      </div>
+      <div class="auth-body">
+        <div class="auth-form">
+          <div class="form-input">이메일</div>
+          <div class="form-input">비밀번호</div>
+          <div class="form-input">비밀번호 확인</div>
+          <div class="form-input">닉네임</div>
+          <div class="form-input">휴대폰번호</div>
+        </div>
+        <div class="auth-agree" onclick="toggleAgree(this)"><div class="box">✓</div>이용약관 및 개인정보처리방침에 동의합니다</div>
+        <div class="btn-full" onclick="isLoggedIn=true; showScreen('home')">가입하기</div>
+      </div>
+    </div>
+    <!-- /screen-signup -->
+
+    <div id="screen-forgot" class="screen">
+      <span class="annot">로그인 화면 '비밀번호를 잊으셨나요' 클릭 시 이동</span>
+      <div class="auth-topbar">
+        <div class="icon-btn" onclick="goBack()">←</div>
+        <div class="title">비밀번호 찾기</div>
+      </div>
+      <div class="auth-body">
+        <div class="auth-form">
+          <div class="form-input">가입한 이메일 주소</div>
+        </div>
+        <div class="btn-outline" style="margin-bottom:14px;" onclick="sendAuthCode(this)">인증코드 받기</div>
+        <div class="auth-form">
+          <div class="form-input">인증코드 입력</div>
+        </div>
+        <div class="auth-hint">이메일로 받은 6자리 인증코드를 입력해주세요.</div>
+        <div class="btn-full" style="margin-top:20px;" onclick="showScreen('login')">확인</div>
+      </div>
+    </div>
+    <!-- /screen-forgot -->
+    <div class="tabbar">
+      <div class="tab active" id="tab-home" onclick="showScreen('home')"><div class="tab-icon"></div>Home</div>
+      <div class="tab" id="tab-category" onclick="showScreen('category')"><div class="tab-icon"></div>Category</div>
+      <div class="tab" id="tab-designers" onclick="showScreen('designers')"><div class="tab-icon"></div>A-Z Designers</div>
+      <div class="tab" id="tab-mypage" onclick="handleMypageTab()"><div class="tab-icon"></div>My page<span id="mypage-tab-sub" class="tab-sub"> (Log in)</span></div>
+    </div>
+
+    <div id="sales-sheet-backdrop" class="sheet-backdrop" onclick="closeSalesSheet()"></div>
+    <div id="sales-sheet" class="bottom-sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-option" id="sheet-opt-relist" onclick="closeSalesSheet(); showScreen('sell');">재등록</div>
+      <div class="sheet-option" id="sheet-opt-complete" onclick="closeSalesSheet(); showScreen('buyerselect');">거래완료로 변경</div>
+      <div class="sheet-option" id="sheet-opt-edit" onclick="closeSalesSheet()">게시글 수정</div>
+      <div class="sheet-option danger" onclick="closeSalesSheet()">삭제</div>
+      <div class="sheet-close" onclick="closeSalesSheet()">닫기</div>
+    </div>
+  </div>
+  <div class="caption">RealHave 메인화면 구조안 · 하단 Category 탭을 눌러 화면 전환을 확인해보세요</div>
+</div>
+<script>
+  let screenHistory = ['home'];
+  let isLoggedIn = false;
+  function updateMypageView(){
+    const guest = document.getElementById('mp-guest');
+    const loggedin = document.getElementById('mp-loggedin');
+    if (guest && loggedin) {
+      if (isLoggedIn) {
+        guest.classList.remove('active');
+        loggedin.classList.remove('hidden');
+      } else {
+        guest.classList.add('active');
+        loggedin.classList.add('hidden');
+      }
+    }
+    const sub = document.getElementById('mypage-tab-sub');
+    if (sub) sub.style.display = isLoggedIn ? 'none' : 'inline';
+  }
+  function handleMypageTab(){
+    if (isLoggedIn) {
+      showScreen('mypage');
+    } else {
+      showScreen('login');
+    }
+  }
+  function requireLogin(target){
+    if (isLoggedIn) {
+      showScreen(target);
+    } else {
+      showScreen('login');
+    }
+  }
+  function toggleLike(el){
+    if (!isLoggedIn) { showScreen('login'); return; }
+    el.classList.toggle('liked');
+  }
+  function showBuyerList(){
+    document.getElementById('buyer-list').style.display = 'block';
+    document.getElementById('buyer-find-link').style.display = 'none';
+  }
+  function selectBuyer(el, name){
+    document.querySelectorAll('.buyer-row').forEach(r => r.classList.remove('selected'));
+    el.classList.add('selected');
+    const btn = document.getElementById('buyer-confirm-btn');
+    btn.textContent = name + '님으로 거래완료';
+    btn.classList.add('ready');
+    btn.onclick = function(){ showScreen('sales'); showSalesTab('done'); };
+  }
+  function bumpListing(el){
+    const original = el.textContent;
+    el.textContent = '끌어올렸어요 ✓';
+    el.style.color = 'var(--wine)';
+    setTimeout(function(){ el.textContent = original; el.style.color = ''; }, 1500);
+  }
+  function toggleAgree(el){
+    const box = el.querySelector('.box');
+    const off = box.classList.toggle('off');
+    box.textContent = off ? '' : '✓';
+  }
+  function sendAuthCode(el){
+    const original = el.textContent;
+    el.textContent = '인증코드를 발송했어요';
+    setTimeout(function(){ el.textContent = original; }, 1800);
+  }
+  function jumpToLetter(letter){
+    const screen = document.querySelector('.screen.active');
+    if (!screen) return;
+    const letters = screen.querySelectorAll('.dz-letter');
+    for (const el of letters) {
+      if (el.textContent.trim() === letter) {
+        el.scrollIntoView({behavior:'smooth', block:'start'});
+        break;
+      }
+    }
+  }
+  function openSalesSheet(mode){
+    const showEdit = mode !== 'done';
+    document.getElementById('sheet-opt-relist').style.display = showEdit ? 'none' : 'block';
+    document.getElementById('sheet-opt-complete').style.display = showEdit ? 'block' : 'none';
+    document.getElementById('sheet-opt-edit').style.display = showEdit ? 'block' : 'none';
+    document.getElementById('sales-sheet-backdrop').classList.add('show');
+    document.getElementById('sales-sheet').classList.add('show');
+  }
+  function closeSalesSheet(){
+    document.getElementById('sales-sheet-backdrop').classList.remove('show');
+    document.getElementById('sales-sheet').classList.remove('show');
+  }
+  function showSalesTab(which){
+    document.getElementById('sales-panel-ongoing').style.display = (which === 'ongoing') ? 'flex' : 'none';
+    document.getElementById('sales-panel-done').style.display = (which === 'done') ? 'flex' : 'none';
+    document.getElementById('sales-tab-ongoing').classList.toggle('active', which === 'ongoing');
+    document.getElementById('sales-tab-done').classList.toggle('active', which === 'done');
+  }
+  function setDetailFooter(mode){
+    document.getElementById('pd-footer-actions').classList.toggle('hidden', mode !== 'normal');
+    document.getElementById('pd-footer-done').classList.toggle('show', mode === 'done');
+    document.getElementById('pd-footer-msgonly').classList.toggle('show', mode === 'msgonly');
+    document.getElementById('pd-heart-btn').style.display = (mode === 'normal') ? 'flex' : 'none';
+  }
+  function viewPurchasedDetail(){
+    setDetailFooter('done');
+    showScreen('detail');
+  }
+  function viewNormalDetail(){
+    setDetailFooter('normal');
+    showScreen('detail');
+  }
+  function viewOwnListingDetail(){
+    setDetailFooter('msgonly');
+    showScreen('detail');
+  }
+  function openCategoryList(name){
+    document.getElementById('catlist-title').textContent = name;
+    showScreen('catlist');
+  }
+  function showScreen(name, fromBack){
+    if (!fromBack && screenHistory[screenHistory.length-1] !== name) {
+      screenHistory.push(name);
+    }
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-' + name).classList.add('active');
+    document.querySelectorAll('.tabbar .tab').forEach(t => t.classList.remove('active'));
+    const tab = document.getElementById('tab-' + name);
+    if (tab) tab.classList.add('active');
+    updateMypageView();
+  }
+  function goBack(){
+    if (screenHistory.length > 1) {
+      screenHistory.pop();
+      const prev = screenHistory[screenHistory.length - 1];
+      showScreen(prev, true);
+    } else {
+      showScreen('home', true);
+    }
+  }
+  function selectBrand(name){
+    document.getElementById('sell-brand-value').innerHTML = '<img class="ic" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAADL0lEQVR4nO2dQVLkMAxFPdSchB3c/yzDbq7CrLqgMnRix7b0Jb23hAbL1ovsTnXUrQEAAAAAAAAAAAAAAAAAAEA2fnkH0MP769tn72v//P0IMScVJBdrJOFXIMQ5UouzMvFHEOFn3BdlZ9KfgQxfvHgO7pF8z3EVcbkSlBJQvRqYVwCl5LemF481pgKoLrZqXBaYlb/ZRe4p1RZjZMNkwncSsyIZXuNGYvtkR5OwIwEKMaiydaJqt3DV4lFg2yFQcbFHxqlyMNwigGLy74xXQYLfXgN7ltjH2BUSfMXyCpBtUbPN58hSAXoXS+WA1RtHZgnMbwWrJP+BWjzWmAqgutiqcVmwTIDMZbK1vPMzqwDqV5l6fLtYIkDWq+NIxnmaVIAoV1eUOFfi+pEw8AcBijMtQMZ98Yxs891eAaLtq9HinYUtoDgIUBwEKA4CFAcBioMAxUGA4iBAcbYLEO3OWbR4Z5kWoNqds2zzZQsoDgIUx0SAKPtqlDhXskSAbPviMzLO02wLUL+61OPbxTIBMl4d38k6P3oENd24LKBLmFg81iwVINrDltEeZt3B8gqQbbGyzeeIW4OIx9XnscAqFUiBLWcA5TYsyu1rPNh2CFSUgOT/j1RrttboE2gNnUI7x31/ffvMKAa9gjvG+P5/s0lgOhnl03dP8q9eGxF6BLWx5J/9PCJ0CRtMfu/vo+CaDM9FPBOx0ttF14+EeS3equTfeb0aUvZ6f2/gzPhRK4Fk0J7fHFpNghABW+/JlSQIFawlVSTguYAnzCQx0sEQAU6oIAECXJBdAgToILMECNBJVgkQYICMEiDAINkkQIAbZJIAAW6SRQIEmCCDBAgwSXQJEGABkSVAgEVElQABFhJRAgRYTDQJEGADkSRAgE1EkQABNhJBAgTYjLoECGCAsgQIYISqBAhgiKIECGCMmgQI4ICSBAjghIoECOCIggQI4Iy3BAgggKcECCCClwQIIISHBAgghrUECCCIpQQIIMpdCUb/DgGEGU3mHWkQQJzepN6tGAgQgKvkzpwZECAIz5I825AKAQJxTHakbmSwEO/HyQAAAAAAAAAAAAAgFP8AHpbFhsHzyzUAAAAASUVORK5CYII=" alt=""> ' + name;
+    showScreen('sell');
+  }
+</script>
+</body>
+</html>

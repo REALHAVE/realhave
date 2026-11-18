@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>RealHave 관리자</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700;900&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --wine:#4D1437; --wine-deep:#34092A; --brass:#B08D57;
+    --cream:#F5F1EA; --paper:#FFFFFF; --ink:#2A2229; --ink-soft:#867A80; --line:#E7DED3;
+    --ok:#3C7A5B; --warn:#B4552D;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:'Noto Sans KR',sans-serif; background:var(--cream); color:var(--ink);}
+  .display{font-family:'Fraunces',serif;}
+  .layout{display:flex; min-height:100vh;}
+
+  .sidebar{width:220px; background:var(--wine-deep); color:#E7D3DE; flex-shrink:0; padding:24px 0;}
+  .sb-logo{font-family:'Fraunces',serif; font-weight:900; font-size:20px; color:var(--paper); padding:0 24px 28px;}
+  .sb-logo span{color:var(--brass);}
+  .sb-item{display:flex; align-items:center; gap:10px; padding:12px 24px; font-size:13.5px; font-weight:600; color:#CBB2C4; border-left:3px solid transparent; cursor:pointer;}
+  .sb-item.active{background:rgba(255,255,255,.06); color:var(--paper); border-left-color:var(--brass);}
+  .sb-dot{width:6px; height:6px; border-radius:50%; background:currentColor; opacity:.6;}
+  .sb-logout{margin-top:40px; padding:12px 24px; font-size:12px; color:#CBB2C4; cursor:pointer;}
+
+  .main{flex:1; padding:26px 34px 40px;}
+  .screen{display:none;}
+  .screen.active{display:block;}
+  .topbar{display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;}
+  .topbar h1{font-size:20px; font-weight:800;}
+  .topbar .who{font-size:13px; color:var(--ink-soft);}
+  .topbar .who b{color:var(--wine);}
+
+  .kpi-row{display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:24px;}
+  .kpi-card{background:var(--paper); border:1px solid var(--line); border-radius:12px; padding:18px 20px;}
+  .kpi-card .lbl{font-size:12.5px; color:var(--ink-soft); font-weight:700; margin-bottom:10px;}
+  .kpi-card .val{font-size:24px; font-weight:900; color:var(--wine);}
+  .kpi-card .delta{font-size:11.5px; margin-top:6px; font-weight:700;}
+  .kpi-card .delta.up{color:var(--ok);}
+  .kpi-card .delta.warn{color:var(--warn);}
+
+  .content-grid{display:grid; grid-template-columns:1.4fr 1fr; gap:18px; margin-bottom:20px;}
+  .panel{background:var(--paper); border:1px solid var(--line); border-radius:12px; padding:20px 22px; margin-bottom:18px;}
+  .panel h3{font-size:14.5px; font-weight:800; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center;}
+  .panel h3 .more{font-size:11.5px; color:var(--ink-soft); font-weight:600; cursor:pointer;}
+
+  .chart{display:flex; align-items:flex-end; gap:10px; height:150px; padding-top:10px;}
+  .chart .bar{flex:1; background:linear-gradient(180deg,var(--wine),var(--wine-deep)); border-radius:4px 4px 0 0; position:relative;}
+  .chart .bar span{position:absolute; bottom:-20px; left:0; right:0; text-align:center; font-size:10px; color:var(--ink-soft);}
+
+  table{width:100%; border-collapse:collapse; font-size:12.5px;}
+  th{text-align:left; color:var(--ink-soft); font-weight:700; padding:8px 6px; border-bottom:1px solid var(--line); font-size:11.5px;}
+  td{padding:10px 6px; border-bottom:1px solid var(--line);}
+  .badge{padding:3px 9px; border-radius:10px; font-size:10.5px; font-weight:800;}
+  .badge.wait{background:#FBEFE6; color:var(--warn);}
+  .badge.ok{background:#EAF3EE; color:var(--ok);}
+  .badge.new{background:#FBF0F5; color:var(--wine);}
+
+  .queue-item{display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--line); font-size:12.5px;}
+  .queue-item:last-child{border-bottom:none;}
+  .queue-item .name{font-weight:700;}
+  .queue-item .meta{color:var(--ink-soft); font-size:11px; margin-top:2px;}
+
+  .a-tabs{display:flex; gap:8px; margin-bottom:18px;}
+  .a-tab{padding:8px 16px; border-radius:16px; font-size:12.5px; font-weight:700; background:var(--paper); border:1px solid var(--line); color:var(--ink-soft); cursor:pointer;}
+  .a-tab.active{background:var(--wine); color:var(--paper); border-color:var(--wine);}
+  .tabpanel{display:none;}
+  .tabpanel.active{display:block;}
+
+  .btn{padding:8px 14px; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer; display:inline-block;}
+  .btn.approve{background:var(--ok); color:#fff;}
+  .btn.reject{background:var(--warn); color:#fff;}
+  .btn.ghost{background:var(--cream); color:var(--ink);}
+  .btn.primary{background:var(--wine); color:#fff;}
+
+  .login-wrap{min-height:100vh; display:flex; align-items:center; justify-content:center; background:var(--wine-deep);}
+  .login-card{background:var(--paper); border-radius:16px; padding:40px 36px; width:340px;}
+  .login-card .logo{font-family:'Fraunces',serif; font-weight:900; font-size:24px; color:var(--wine); text-align:center; margin-bottom:28px;}
+  .login-card input{width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:8px; margin-bottom:12px; font-size:13px; font-family:inherit;}
+  .login-card .btn.primary{width:100%; text-align:center; padding:12px;}
+
+  @media(max-width:1000px){
+    .kpi-row{grid-template-columns:repeat(2,1fr);}
+    .content-grid{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<div id="screen-login" class="login-wrap">
+  <div class="login-card">
+    <div class="logo">Real<span style="color:var(--brass)">HAVE</span> Admin</div>
+    <input type="text" placeholder="관리자 아이디">
+    <input type="password" placeholder="비밀번호">
+    <div class="btn primary" onclick="enterAdmin()">로그인</div>
+  </div>
+</div>
+
+<div id="screen-app" class="layout" style="display:none;">
+  <div class="sidebar">
+    <div class="sb-logo">Real<span>HAVE</span> <span style="font-size:11px; color:#CBB2C4; font-family:'Noto Sans KR';">Admin</span></div>
+    <div class="sb-item active" data-s="dashboard" onclick="showAdmin('dashboard')"><div class="sb-dot"></div>대시보드</div>
+    <div class="sb-item" data-s="products" onclick="showAdmin('products')"><div class="sb-dot"></div>상품 관리</div>
+    <div class="sb-item" data-s="members" onclick="showAdmin('members')"><div class="sb-dot"></div>회원 관리</div>
+    <div class="sb-item" data-s="deals" onclick="showAdmin('deals')"><div class="sb-dot"></div>거래관리</div>
+    <div class="sb-item" data-s="reports" onclick="showAdmin('reports')"><div class="sb-dot"></div>신고/CS 관리</div>
+    <div class="sb-item" data-s="notices" onclick="showAdmin('notices')"><div class="sb-dot"></div>공지사항/이벤트</div>
+    <div class="sb-item" data-s="settings" onclick="showAdmin('settings')"><div class="sb-dot"></div>계정/권한 설정</div>
+    <div class="sb-logout" onclick="location.reload()">로그아웃</div>
+  </div>
+
+  <div class="main">
+
+    <!-- 대시보드 -->
+    <div id="admin-dashboard" class="screen active">
+      <div class="topbar"><h1 class="display">대시보드</h1><div class="who"><b>관리자</b>님, 반갑습니다</div></div>
+      <div class="kpi-row">
+        <div class="kpi-card"><div class="lbl">오늘 신규 등록</div><div class="val">24건</div><div class="delta up">▲ 전일 대비 8%</div></div>
+        <div class="kpi-card"><div class="lbl">신규 가입</div><div class="val">128명</div><div class="delta up">▲ 전일 대비 5%</div></div>
+        <div class="kpi-card"><div class="lbl">정품인증 심사 대기</div><div class="val">17건</div><div class="delta warn">⏱ 24시간 초과 3건</div></div>
+        <div class="kpi-card"><div class="lbl">미처리 신고</div><div class="val">4건</div><div class="delta warn">우선 확인 필요</div></div>
+      </div>
+      <div class="content-grid">
+        <div class="panel">
+          <h3>주간 신규 등록 추이 <span class="more">최근 7일</span></h3>
+          <div class="chart">
+            <div class="bar" style="height:55%;"><span>월</span></div><div class="bar" style="height:70%;"><span>화</span></div>
+            <div class="bar" style="height:48%;"><span>수</span></div><div class="bar" style="height:82%;"><span>목</span></div>
+            <div class="bar" style="height:65%;"><span>금</span></div><div class="bar" style="height:90%;"><span>토</span></div>
+            <div class="bar" style="height:100%;"><span>일</span></div>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>정품인증 심사 대기 <span class="more" onclick="showAdmin('products')">전체보기 ›</span></h3>
+          <div class="queue-item"><div><div class="name">HERMÈS 버킨백 30</div><div class="meta">판매자 realhave_seller92 · AI 검증 통과</div></div><span class="badge wait">대기중</span></div>
+          <div class="queue-item"><div><div class="name">ROLEX 서브마리너</div><div class="meta">판매자 luxury_kim · AI 검증 통과</div></div><span class="badge wait">대기중</span></div>
+          <div class="queue-item"><div><div class="name">CHANEL 클래식 플랩</div><div class="meta">판매자 vintage_park · 택 인식 재확인 필요</div></div><span class="badge new">확인필요</span></div>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>최근 거래 현황 <span class="more" onclick="showAdmin('deals')">전체보기 ›</span></h3>
+        <table>
+          <tr><th>상품</th><th>구매자</th><th>판매자</th><th>거래방식</th><th>금액</th><th>상태</th></tr>
+          <tr><td>HERMÈS 버킨백 30</td><td>realhave_user92</td><td>realhave_seller92</td><td>직거래</td><td>18,900,000원</td><td><span class="badge ok">거래완료</span></td></tr>
+          <tr><td>TIFFANY&amp;CO 목걸이</td><td>user_kim22</td><td>luxury_kim</td><td>일반택배</td><td>890,000원</td><td><span class="badge wait">채팅중</span></td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- 상품관리 -->
+    <div id="admin-products" class="screen">
+      <div class="topbar"><h1 class="display">상품 관리</h1></div>
+      <div class="a-tabs">
+        <div class="a-tab active" data-t="review" onclick="showTab('products','review')">정품인증 심사대기 17</div>
+        <div class="a-tab" data-t="all" onclick="showTab('products','all')">전체 상품</div>
+        <div class="a-tab" data-t="cat" onclick="showTab('products','cat')">카테고리/브랜드</div>
+      </div>
+
+      <div id="products-review" class="tabpanel active panel">
+        <table>
+          <tr><th>상품</th><th>판매자</th><th>구매처</th><th>AI 분석결과</th><th>등록</th><th>처리</th></tr>
+          <tr><td>HERMÈS 버킨백 30</td><td>realhave_seller92</td><td>국내H백화점</td><td><span class="badge ok">한글택 일치</span></td><td>2시간 전</td><td><span class="btn approve">승인</span> <span class="btn reject">반려</span></td></tr>
+          <tr><td>ROLEX 서브마리너</td><td>luxury_kim</td><td>국내면세점</td><td><span class="badge ok">한글택 일치</span></td><td>5시간 전</td><td><span class="btn approve">승인</span> <span class="btn reject">반려</span></td></tr>
+          <tr><td>CHANEL 클래식 플랩</td><td>vintage_park</td><td>해외면세점</td><td><span class="badge new">재확인 필요</span></td><td>9시간 전</td><td><span class="btn approve">승인</span> <span class="btn reject">반려</span></td></tr>
+        </table>
+      </div>
+
+      <div id="products-all" class="tabpanel panel">
+        <table>
+          <tr><th>상품</th><th>판매자</th><th>카테고리</th><th>상태</th><th>가격</th></tr>
+          <tr><td>HERMÈS 버킨백 30</td><td>realhave_seller92</td><td>가방/핸드백</td><td><span class="badge ok">판매중</span></td><td>18,900,000원</td></tr>
+          <tr><td>LORO PIANA 로퍼</td><td>realhave_seller92</td><td>여성슈즈</td><td><span class="badge ok">판매중</span></td><td>780,000원</td></tr>
+          <tr><td>TIFFANY&amp;CO 목걸이</td><td>luxury_kim</td><td>주얼리</td><td><span class="badge wait">거래완료</span></td><td>890,000원</td></tr>
+        </table>
+      </div>
+
+      <div id="products-cat" class="tabpanel panel">
+        <h3>카테고리 (13개 대분류) <span class="btn ghost" onclick="addRow('cat-tbody','카테고리')">+ 추가</span></h3>
+        <table><tr><th>대분류</th><th>등록 상품수</th><th>관리</th></tr>
+        <tbody id="cat-tbody">
+        <tr><td>여성의류</td><td>142</td><td><span class="btn ghost" onclick="editRow(this)">수정</span> <span class="btn reject" onclick="deleteRow(this)">삭제</span></td></tr>
+        <tr><td>가방/핸드백</td><td>318</td><td><span class="btn ghost" onclick="editRow(this)">수정</span> <span class="btn reject" onclick="deleteRow(this)">삭제</span></td></tr>
+        <tr><td>시계</td><td>96</td><td><span class="btn ghost" onclick="editRow(this)">수정</span> <span class="btn reject" onclick="deleteRow(this)">삭제</span></td></tr>
+        </tbody></table>
+        <h3 style="margin-top:20px;">브랜드 <span class="btn ghost" onclick="addRow('brand-tbody','브랜드')">+ 추가</span></h3>
+        <table><tr><th>브랜드</th><th>등록 상품수</th><th>관리</th></tr>
+        <tbody id="brand-tbody">
+        <tr><td>HERMÈS</td><td>54</td><td><span class="btn ghost" onclick="editRow(this)">수정</span> <span class="btn reject" onclick="deleteRow(this)">삭제</span></td></tr>
+        <tr><td>CHANEL</td><td>48</td><td><span class="btn ghost" onclick="editRow(this)">수정</span> <span class="btn reject" onclick="deleteRow(this)">삭제</span></td></tr>
+        <tr><td>ROLEX</td><td>31</td><td><span class="btn ghost" onclick="editRow(this)">수정</span> <span class="btn reject" onclick="deleteRow(this)">삭제</span></td></tr>
+        </tbody></table>
+      </div>
+    </div>
+
+    <!-- 회원관리 -->
+    <div id="admin-members" class="screen">
+      <div class="topbar"><h1 class="display">회원 관리</h1></div>
+      <div class="panel">
+        <table><tr><th>닉네임</th><th>가입일</th><th>구매내역</th><th>판매내역</th><th>상태</th><th>관리</th></tr>
+        <tr><td>realhave_user92</td><td>2026.03.02</td><td>3건</td><td>0건</td><td><span class="badge ok mstatus">정상</span></td>
+          <td><span class="btn ghost" onclick="suspendMember(this)">자격중지</span> <span class="btn ghost" onclick="allowMember(this)">자격허용</span> <span class="btn reject" onclick="deleteMember(this)">회원삭제</span></td></tr>
+        <tr><td>user_kim22</td><td>2026.05.14</td><td>1건</td><td>0건</td><td><span class="badge ok mstatus">정상</span></td>
+          <td><span class="btn ghost" onclick="suspendMember(this)">자격중지</span> <span class="btn ghost" onclick="allowMember(this)">자격허용</span> <span class="btn reject" onclick="deleteMember(this)">회원삭제</span></td></tr>
+        <tr><td>realhave_seller92</td><td>2026.02.10</td><td>0건</td><td>3건 · 거래완료 18건</td><td><span class="badge ok mstatus">정상</span></td>
+          <td><span class="btn ghost" onclick="suspendMember(this)">자격중지</span> <span class="btn ghost" onclick="allowMember(this)">자격허용</span> <span class="btn reject" onclick="deleteMember(this)">회원삭제</span></td></tr>
+        <tr><td>luxury_kim</td><td>2026.04.21</td><td>0건</td><td>1건 · 거래완료 6건</td><td><span class="badge ok mstatus">정상</span></td>
+          <td><span class="btn ghost" onclick="suspendMember(this)">자격중지</span> <span class="btn ghost" onclick="allowMember(this)">자격허용</span> <span class="btn reject" onclick="deleteMember(this)">회원삭제</span></td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- 거래관리 -->
+    <div id="admin-deals" class="screen">
+      <div class="topbar"><h1 class="display">거래관리</h1></div>
+      <div class="panel">
+        <table>
+          <tr><th>상품</th><th>구매자</th><th>판매자</th><th>거래방식</th><th>금액</th><th>진행상태</th></tr>
+          <tr><td>HERMÈS 버킨백 30</td><td>realhave_user92</td><td>realhave_seller92</td><td>직거래</td><td>18,900,000원</td><td><span class="badge ok">거래완료</span></td></tr>
+          <tr><td>TIFFANY&amp;CO 목걸이</td><td>user_kim22</td><td>luxury_kim</td><td>일반택배</td><td>890,000원</td><td><span class="badge wait">채팅중</span></td></tr>
+          <tr><td>GUCCI 마몬트백</td><td>park_j</td><td>vintage_park</td><td>반값택배</td><td>1,900,000원</td><td><span class="badge new">구매자 선택 대기</span></td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- 신고/CS관리 -->
+    <div id="admin-reports" class="screen">
+      <div class="topbar"><h1 class="display">신고/CS 관리</h1></div>
+      <div class="panel">
+        <h3>신고 접수 <span class="more">4건 미처리</span></h3>
+        <table><tr><th>신고대상</th><th>사유</th><th>신고자</th><th>접수일</th><th>상태</th></tr>
+        <tr><td>CHANEL 클래식 플랩</td><td>정품 의심</td><td>user_kim22</td><td>1시간 전</td><td><span class="badge wait">미처리</span></td></tr>
+        <tr><td>vintage_park</td><td>응답 지연</td><td>park_j</td><td>어제</td><td><span class="badge wait">미처리</span></td></tr></table>
+      </div>
+      <div class="panel">
+        <h3>1:1 문의</h3>
+        <table><tr><th>작성자</th><th>제목</th><th>접수일</th><th>상태</th></tr>
+        <tr><td>realhave_user92</td><td>정산 일정 문의</td><td>3시간 전</td><td><span class="badge new">답변대기</span></td></tr>
+        <tr><td>luxury_kim</td><td>상품등록 사이즈 오류</td><td>어제</td><td><span class="badge ok">답변완료</span></td></tr></table>
+      </div>
+    </div>
+
+    <!-- 공지/이벤트 -->
+    <div id="admin-notices" class="screen">
+      <div class="topbar"><h1 class="display">공지사항/이벤트</h1><div class="btn primary">새 글 작성</div></div>
+      <div class="panel">
+        <table><tr><th>구분</th><th>제목</th><th>등록일</th><th>상태</th></tr>
+        <tr><td>공지</td><td>정품인증 기준 개정 안내</td><td>2026.09.20</td><td><span class="badge ok">게시중</span></td></tr>
+        <tr><td>이벤트</td><td>첫 판매 수수료 무료 이벤트</td><td>2026.09.15</td><td><span class="badge ok">게시중</span></td></tr></table>
+      </div>
+    </div>
+
+    <!-- 계정/권한 -->
+    <div id="admin-settings" class="screen">
+      <div class="topbar"><h1 class="display">계정/권한 설정</h1><div class="btn primary">관리자 추가</div></div>
+      <div class="panel">
+        <table><tr><th>관리자</th><th>권한</th><th>최근 로그인</th></tr>
+        <tr><td>admin_master</td><td>전체 권한</td><td>방금 전</td></tr>
+        <tr><td>cs_team1</td><td>신고/CS만</td><td>오늘 09:12</td></tr>
+        <tr><td>product_team1</td><td>상품관리만</td><td>어제</td></tr></table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function enterAdmin(){
+    document.getElementById('screen-login').style.display = 'none';
+    document.getElementById('screen-app').style.display = 'flex';
+  }
+  function showAdmin(name){
+    document.querySelectorAll('.main > .screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('admin-' + name).classList.add('active');
+    document.querySelectorAll('.sidebar .sb-item').forEach(i => i.classList.remove('active'));
+    document.querySelector('.sb-item[data-s="' + name + '"]').classList.add('active');
+  }
+  function addRow(tbodyId, label){
+    const name = prompt(label + '명을 입력하세요');
+    if (!name) return;
+    const tbody = document.getElementById(tbodyId);
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td>' + name + '</td><td>0</td><td><span class="btn ghost" onclick="editRow(this)">수정</span> <span class="btn reject" onclick="deleteRow(this)">삭제</span></td>';
+    tbody.appendChild(tr);
+  }
+  function editRow(el){
+    const tr = el.closest('tr');
+    const cell = tr.querySelector('td');
+    const name = prompt('이름 수정', cell.textContent);
+    if (!name) return;
+    cell.textContent = name;
+  }
+  function deleteRow(el){
+    const tr = el.closest('tr');
+    if (confirm('삭제하시겠습니까?')) tr.remove();
+  }
+  function suspendMember(el){
+    const badge = el.closest('tr').querySelector('.mstatus');
+    badge.textContent = '자격중지';
+    badge.classList.remove('ok'); badge.classList.add('warn');
+  }
+  function allowMember(el){
+    const badge = el.closest('tr').querySelector('.mstatus');
+    badge.textContent = '정상';
+    badge.classList.remove('warn2'); badge.classList.add('ok');
+  }
+  function deleteMember(el){
+    const tr = el.closest('tr');
+    if (confirm('이 회원을 삭제하시겠습니까?')) tr.remove();
+  }
+  function showTab(section, tab){
+    document.querySelectorAll('#admin-' + section + ' .tabpanel').forEach(p => p.classList.remove('active'));
+    document.getElementById(section + '-' + tab).classList.add('active');
+    document.querySelectorAll('#admin-' + section + ' .a-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector('#admin-' + section + ' .a-tab[data-t="' + tab + '"]').classList.add('active');
+  }
+</script>
+</body>
+</html>

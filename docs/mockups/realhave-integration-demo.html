@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>RealHave 연동 데모 — 정품인증 심사 플로우</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700;900&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{ --wine:#4D1437; --wine-deep:#34092A; --brass:#B08D57; --cream:#F5F1EA; --paper:#fff; --ink:#2A2229; --ink-soft:#867A80; --line:#E7DED3; --ok:#3C7A5B; --warn:#B4552D; }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:'Noto Sans KR',sans-serif; background:var(--cream); color:var(--ink); padding:28px;}
+  .display{font-family:'Fraunces',serif;}
+  h1{font-size:18px; font-weight:800; color:var(--wine); margin-bottom:4px;}
+  .sub{font-size:12.5px; color:var(--ink-soft); margin-bottom:22px;}
+  .wrap{display:flex; gap:28px; align-items:flex-start; flex-wrap:wrap;}
+
+  /* Mobile panel */
+  .phone{width:320px; background:var(--paper); border-radius:28px; border:7px solid var(--ink); overflow:hidden; box-shadow:0 20px 40px rgba(59,27,46,.2);}
+  .phone-head{background:var(--wine); color:#fff; padding:14px 16px; font-weight:800; font-size:14px;}
+  .phone-body{padding:14px 16px;}
+  .reg-form input{width:100%; padding:9px 10px; border:1px solid var(--line); border-radius:7px; font-size:12.5px; margin-bottom:8px; font-family:inherit;}
+  .reg-btn{background:var(--wine); color:#fff; text-align:center; padding:10px; border-radius:7px; font-size:12.5px; font-weight:800; cursor:pointer;}
+  .mp-label{font-size:11.5px; font-weight:800; color:var(--ink-soft); margin:16px 0 8px;}
+  .mp-card{border:1px solid var(--line); border-radius:8px; padding:10px 12px; margin-bottom:8px;}
+  .mp-card .n{font-size:12.5px; font-weight:700;}
+  .mp-card .b{font-size:10.5px; color:var(--ink-soft); margin-top:2px;}
+  .badge{display:inline-block; margin-top:6px; padding:3px 9px; border-radius:10px; font-size:10px; font-weight:800;}
+  .badge.wait{background:#FBEFE6; color:var(--warn);}
+  .badge.ok{background:#EAF3EE; color:var(--ok);}
+  .badge.no{background:#F6E4E0; color:#A5362B;}
+
+  /* Admin panel */
+  .admin{flex:1; min-width:400px; background:var(--paper); border:1px solid var(--line); border-radius:14px; overflow:hidden;}
+  .admin-head{background:var(--wine-deep); color:#fff; padding:14px 20px; font-weight:800; font-size:14px;}
+  .admin-body{padding:16px 20px;}
+  table{width:100%; border-collapse:collapse; font-size:12.5px;}
+  th{text-align:left; color:var(--ink-soft); font-size:11px; font-weight:700; padding:8px 6px; border-bottom:1px solid var(--line);}
+  td{padding:9px 6px; border-bottom:1px solid var(--line);}
+  .btn{padding:6px 12px; border-radius:7px; font-size:11.5px; font-weight:700; cursor:pointer; display:inline-block;}
+  .btn.approve{background:var(--ok); color:#fff;}
+  .btn.reject{background:var(--warn); color:#fff;}
+  .empty{color:var(--ink-soft); font-size:12px; padding:16px 6px;}
+</style>
+</head>
+<body>
+<h1 class="display">RealHave ↔ 관리자 연동 데모</h1>
+<div class="sub">왼쪽(모바일)에서 상품을 등록하면 오른쪽(관리자) 심사대기 목록에 바로 나타나고, 관리자가 승인/반려하면 왼쪽 상태도 즉시 바뀌어요. 같은 화면 안에서 하나의 데이터로 움직이는 걸 보여주는 연동 시연본이에요.</div>
+
+<div class="wrap">
+  <div class="phone">
+    <div class="phone-head">Real HAVE · 상품등록</div>
+    <div class="phone-body">
+      <div class="reg-form">
+        <input id="reg-title" placeholder="상품명 (예: 버킨백 30 블랙)">
+        <input id="reg-brand" placeholder="브랜드 (예: HERMÈS)">
+        <div class="reg-btn" onclick="registerProduct()">등록하고 심사요청</div>
+      </div>
+      <div class="mp-label">내 판매 상품 상태</div>
+      <div id="mobile-list"></div>
+    </div>
+  </div>
+
+  <div class="admin">
+    <div class="admin-head">관리자 · 정품인증 심사대기</div>
+    <div class="admin-body">
+      <table>
+        <tr><th>상품</th><th>브랜드</th><th>판매자</th><th>상태</th><th>처리</th></tr>
+        <tbody id="admin-rows"></tbody>
+      </table>
+      <div id="admin-empty" class="empty" style="display:none;">대기 중인 심사 건이 없습니다.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let products = [
+    {id:1, title:'버킨백 30 토고 블랙', brand:'HERMÈS', seller:'realhave_seller92', status:'wait'},
+    {id:2, title:'서브마리너', brand:'ROLEX', seller:'luxury_kim', status:'wait'}
+  ];
+  let nextId = 3;
+
+  function badge(status){
+    if (status==='wait') return '<span class="badge wait">심사대기</span>';
+    if (status==='ok') return '<span class="badge ok">승인완료</span>';
+    return '<span class="badge no">반려됨</span>';
+  }
+
+  function renderAll(){
+    const mobileList = document.getElementById('mobile-list');
+    mobileList.innerHTML = products.filter(p => p.seller==='realhave_seller92').map(p =>
+      '<div class="mp-card"><div class="n">'+p.title+'</div><div class="b">'+p.brand+'</div>'+badge(p.status)+'</div>'
+    ).join('') || '<div class="b">등록된 상품이 없어요</div>';
+
+    const waiting = products.filter(p => p.status==='wait');
+    const rows = document.getElementById('admin-rows');
+    rows.innerHTML = waiting.map(p =>
+      '<tr><td>'+p.title+'</td><td>'+p.brand+'</td><td>'+p.seller+'</td><td>'+badge(p.status)+'</td>'+
+      '<td><span class="btn approve" onclick="decide('+p.id+',\'ok\')">승인</span> <span class="btn reject" onclick="decide('+p.id+',\'no\')">반려</span></td></tr>'
+    ).join('');
+    document.getElementById('admin-empty').style.display = waiting.length ? 'none' : 'block';
+  }
+
+  function registerProduct(){
+    const title = document.getElementById('reg-title').value.trim();
+    const brand = document.getElementById('reg-brand').value.trim();
+    if (!title || !brand){ alert('상품명과 브랜드를 입력해주세요'); return; }
+    products.push({id: nextId++, title, brand, seller:'realhave_seller92', status:'wait'});
+    document.getElementById('reg-title').value = '';
+    document.getElementById('reg-brand').value = '';
+    renderAll();
+  }
+
+  function decide(id, status){
+    const p = products.find(p => p.id === id);
+    if (p) p.status = status;
+    renderAll();
+  }
+
+  renderAll();
+</script>
+</body>
+</html>
