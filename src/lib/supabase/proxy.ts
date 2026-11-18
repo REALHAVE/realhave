@@ -15,7 +15,16 @@ const PROTECTED_PREFIXES = [
 // 모든 요청마다: 로그인 쿠키 갱신 + 보호된 주소면 로그인 화면으로 보냄
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
-  const { url, key } = supabaseEnv();
+
+  // 환경변수가 빠져 있어도 사이트 전체가 멈추지 않게 (로그인 기능만 동작 안 함)
+  let env: ReturnType<typeof supabaseEnv>;
+  try {
+    env = supabaseEnv();
+  } catch (e) {
+    console.error(e);
+    return response;
+  }
+  const { url, key } = env;
 
   const supabase = createServerClient(url, key, {
     cookies: {
