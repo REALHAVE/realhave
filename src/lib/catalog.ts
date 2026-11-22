@@ -194,6 +194,61 @@ export async function getProductDetail(id: string) {
 
 export { productImageUrl } from "./catalog-url";
 
+// 상품등록 화면에 필요한 선택지 전부
+export type SellOptions = Awaited<ReturnType<typeof getSellOptions>>;
+
+export async function getSellOptions() {
+  const supabase = await createClient();
+  const [brands, cats, places, colors, trades] = await Promise.all([
+    getAllBrands(),
+    supabase
+      .from("categories")
+      .select("id, parent_id, name, size_type, sort_order")
+      .eq("is_active", true)
+      .order("sort_order"),
+    supabase
+      .from("purchase_places")
+      .select("code, region, name")
+      .eq("is_active", true)
+      .order("sort_order"),
+    supabase.from("colors").select("code, name, hex").eq("is_active", true).order("sort_order"),
+    supabase.from("trade_methods").select("code, name").order("sort_order"),
+  ]);
+
+  type Cat = Category & { size_type: "none" | "clothing" | "shoes" | "kids" };
+  const all = (cats.data ?? []) as Cat[];
+  const categories = all
+    .filter((c) => !c.parent_id)
+    .map((top) => ({
+      id: top.id,
+      name: top.name,
+      sizeType: top.size_type,
+      children: all.filter((c) => c.parent_id === top.id).map((c) => ({ id: c.id, name: c.name })),
+    }));
+
+  return {
+    brands,
+    categories,
+    places: (places.data ?? []) as { code: string; region: "domestic" | "overseas"; name: string }[],
+    colors: (colors.data ?? []) as { code: string; name: string; hex: string | null }[],
+    trades: (trades.data ?? []) as { code: string; name: string }[],
+  };
+}
+
+// 내 상품 (판매내역). 삭제된 것 제외, 최근 순
+export async function listMyProducts(userId: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("product_cards")
+    .select(CARD_COLUMNS)
+    .eq("seller_id", userId)
+    .neq("status", "deleted")
+    .order("created_at", { ascending: false })
+    .limit(100);
+  if (error) console.error("[listMyProducts]", error.message);
+  return (data ?? []) as unknown as ProductCard[];
+}
+
 // uuid 형식 검사 (주소창에 이상한 값이 들어와도 DB 오류가 나지 않게)
 export function isUuid(v: unknown): v is string {
   return (

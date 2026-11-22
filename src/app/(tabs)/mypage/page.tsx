@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { logout } from "@/app/(auth)/actions";
 import { getSessionUser } from "@/lib/auth/session";
+import { listMyProducts } from "@/lib/catalog";
 import tabs from "../tabs.module.css";
 import styles from "./mypage.module.css";
 
@@ -45,6 +46,15 @@ async function MyPageContent() {
   const user = await getSessionUser();
   if (!user) return <GuestView />;
 
+  const myProducts = await listMyProducts(user.id);
+  // 판매내역은 6단계부터 실제 개수. 나머지는 8~9단계에서 연결
+  const stats = [
+    { label: "구매내역", num: 0, href: null },
+    { label: "판매내역", num: myProducts.length, href: "/sales" },
+    { label: "찜", num: 0, href: "/wishlist" },
+    { label: "채팅", num: 0, href: "/chat" },
+  ];
+
   return (
     <>
       <div className={styles.header}>
@@ -57,14 +67,24 @@ async function MyPageContent() {
         </div>
       </div>
 
-      {/* 숫자는 각 기능을 만드는 단계(8~9단계)에서 실제 값으로 연결 */}
       <div className={styles.stats}>
-        {["구매내역", "판매내역", "찜", "채팅"].map((label) => (
-          <div key={label} className={styles.cell}>
-            <div className={styles.num}>0</div>
-            <div className={styles.lbl}>{label}</div>
-          </div>
-        ))}
+        {stats.map((s) => {
+          const inner = (
+            <>
+              <div className={styles.num}>{s.num}</div>
+              <div className={styles.lbl}>{s.label}</div>
+            </>
+          );
+          return s.href ? (
+            <Link key={s.label} href={s.href} className={styles.cell}>
+              {inner}
+            </Link>
+          ) : (
+            <div key={s.label} className={styles.cell}>
+              {inner}
+            </div>
+          );
+        })}
       </div>
 
       <Menu items={["내정보수정", ...MENU_COMMON, "탈퇴하기"]} />

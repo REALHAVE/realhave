@@ -1,0 +1,472 @@
+/* 목업 상품등록 (form-*, chip2, photo-*) */
+.blocked {
+  padding: 60px 20px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--ink-soft);
+  line-height: 1.7;
+}
+
+.wrap {
+  padding: 4px 20px 110px;
+}
+
+.error {
+  background: #fbefe9;
+  border: 1px solid #efcdbd;
+  color: var(--warn);
+  font-size: 12.5px;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin: 6px 0 14px;
+  line-height: 1.5;
+}
+
+.group {
+  margin-bottom: 22px;
+}
+
+.label {
+  display: block;
+  font-size: 13px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.req {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--paper);
+  background: var(--wine);
+  border-radius: 4px;
+  padding: 2px 5px;
+  margin-left: 4px;
+  vertical-align: 1px;
+}
+
+.multi {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  margin-left: 4px;
+}
+
+.hint {
+  font-size: 11.5px;
+  color: var(--ink-soft);
+  line-height: 1.6;
+  margin: 6px 0 8px;
+}
+
+.hint b {
+  color: var(--ink);
+}
+
+.disabled {
+  font-size: 12px;
+  color: var(--ink-soft);
+  background: var(--cream);
+  border-radius: 8px;
+  padding: 11px 13px;
+}
+
+/* ---------- 사진 ---------- */
+.photoRow {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 4px 0;
+}
+
+.slot,
+.add {
+  flex: 0 0 76px;
+  height: 76px;
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+  background: var(--cream);
+  border: 1px solid var(--line);
+}
+
+.slot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.certSlot {
+  flex-basis: 88px;
+  height: 104px;
+  border-color: var(--wine);
+}
+
+.certSlot img {
+  height: 76px;
+}
+
+.kind {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 28px;
+  border: none;
+  border-top: 1px solid var(--line);
+  background: var(--paper);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--wine);
+  text-align: center;
+}
+
+.add {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: var(--ink-soft);
+  border-style: dashed;
+  cursor: pointer;
+}
+
+.add span {
+  font-size: 10.5px;
+  font-weight: 700;
+}
+
+.addCert {
+  flex-basis: 88px;
+  height: 104px;
+  color: var(--wine);
+  border-color: var(--wine);
+  background: #fbf3f7;
+}
+
+.main {
+  position: absolute;
+  left: 4px;
+  bottom: 4px;
+  background: var(--wine);
+  color: var(--paper);
+  font-size: 9px;
+  font-weight: 800;
+  padding: 2px 5px;
+  border-radius: 4px;
+}
+
+.remove {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(42, 34, 41, 0.7);
+  color: #fff;
+  font-size: 14px;
+  line-height: 1;
+}
+
+/* ---------- 입력칸 ---------- */
+.input {
+  width: 100%;
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 11px 13px;
+  font: inherit;
+  font-size: 16px;
+  color: var(--ink);
+  outline: none;
+}
+
+.input:focus {
+  border-color: var(--wine);
+  background: var(--paper);
+}
+
+.input:disabled {
+  opacity: 0.6;
+}
+
+.input::placeholder,
+.placeholder {
+  color: var(--ink-soft);
+  font-size: 13.5px;
+}
+
+.pick {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: left;
+  font-weight: 700;
+}
+
+.selectRow {
+  display: flex;
+  gap: 8px;
+}
+
+.textarea {
+  min-height: 140px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.counter {
+  text-align: right;
+  font-size: 11px;
+  color: var(--ink-soft);
+  margin-top: 4px;
+}
+
+.priceBox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+}
+
+.priceBox .input {
+  text-align: right;
+  font-weight: 700;
+}
+
+/* ---------- 선택칩 ---------- */
+.placeGroup {
+  margin-bottom: 10px;
+}
+
+.placeLabel {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--ink-soft);
+  margin-bottom: 6px;
+}
+
+.chips {
+  display: grid;
+  gap: 6px;
+}
+
+.grid3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.grid4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.grid6 {
+  grid-template-columns: repeat(6, 1fr);
+}
+
+.chip {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 9px 2px;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--paper);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sel {
+  border-color: var(--wine);
+  background: var(--wine);
+  color: var(--paper);
+  font-weight: 800;
+}
+
+.colorGrid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px 4px;
+}
+
+.color {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 10.5px;
+  color: var(--ink-soft);
+}
+
+.swatch {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+}
+
+.multicolor {
+  background: conic-gradient(#d2123b, #f5c518, #0f7b4e, #1e3a8a, #4b2e9e, #d2123b);
+}
+
+.colorSel {
+  color: var(--wine);
+  font-weight: 800;
+}
+
+.colorSel .swatch {
+  box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px var(--wine);
+}
+
+.notice {
+  font-size: 12px;
+  color: var(--ink-soft);
+  background: var(--cream);
+  border-radius: 8px;
+  padding: 12px;
+  line-height: 1.6;
+}
+
+.notice b {
+  color: var(--wine);
+}
+
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: var(--app-max-width);
+  background: var(--paper);
+  border-top: 1px solid var(--line);
+  padding: 12px 20px calc(14px + env(safe-area-inset-bottom));
+  z-index: 10;
+}
+
+.submit {
+  width: 100%;
+  background: var(--wine);
+  color: var(--paper);
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.submit:disabled {
+  opacity: 0.7;
+}
+
+/* ---------- 브랜드 선택 창 ---------- */
+.picker {
+  position: fixed;
+  inset: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: var(--app-max-width);
+  background: var(--paper);
+  z-index: 100;
+  overflow-y: auto;
+}
+
+.pickerBar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  position: sticky;
+  top: 0;
+  background: var(--paper);
+}
+
+.pickerBar h2 {
+  font-size: 14.5px;
+  font-weight: 800;
+}
+
+.back {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--cream);
+  font-size: 14px;
+}
+
+.pickerSearch {
+  padding: 0 20px 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.pickerEmpty {
+  padding: 40px 20px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--ink-soft);
+  line-height: 1.7;
+}
+
+.letter {
+  background: var(--cream);
+  padding: 6px 20px;
+  font-size: 12px;
+  font-weight: 900;
+  color: var(--wine);
+  border-bottom: 1px solid var(--line);
+}
+
+.brandRow {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+}
+
+.brandSel {
+  background: #fbf3f7;
+}
+
+.logo {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 13px;
+  color: var(--wine);
+  flex-shrink: 0;
+}
+
+.brandText {
+  flex: 1;
+}
+
+.brandName {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 700;
+}
+
+.origin {
+  display: block;
+  font-size: 10.5px;
+  color: var(--ink-soft);
+  margin-top: 2px;
+}
+
+.check {
+  color: var(--wine);
+  font-weight: 900;
+  font-size: 15px;
+}
