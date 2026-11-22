@@ -1,0 +1,156 @@
+/* 상품 카드·목록 (목업 listed-card / result-row) */
+
+.img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.noImg {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 28px;
+  color: var(--line);
+}
+
+/* ---------- 목록 한 줄 ---------- */
+.list {
+  display: flex;
+  flex-direction: column;
+  padding: 0 20px 22px;
+}
+
+.row {
+  display: flex;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.rowThumb {
+  width: 96px;
+  height: 96px;
+  border-radius: 10px;
+  background: var(--cream);
+  border: 1px solid var(--line);
+  position: relative;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.badge {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  background: var(--wine);
+  color: var(--paper);
+  font-size: 9px;
+  font-weight: 800;
+  padding: 3px 6px;
+  border-radius: 4px;
+}
+
+.rowInfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.b {
+  font-size: 11px;
+  color: var(--ink-soft);
+}
+
+.n {
+  font-size: 13.5px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.meta {
+  font-size: 10.5px;
+  color: var(--ink-soft);
+  line-height: 1.5;
+}
+
+.p {
+  font-size: 14.5px;
+  font-weight: 900;
+  color: var(--wine);
+  margin-top: 2px;
+}
+
+.empty {
+  padding: 50px 20px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--ink-soft);
+  line-height: 1.7;
+}
+
+/* ---------- 홈 가로 카드 ---------- */
+.card {
+  flex: 0 0 132px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.cardThumb {
+  height: 132px;
+  background: var(--cream);
+  position: relative;
+  overflow: hidden;
+}
+
+.newBadge {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  background: var(--brass);
+  color: var(--wine-deep);
+  font-size: 9px;
+  font-weight: 800;
+  padding: 3px 6px;
+  border-radius: 4px;
+}
+
+.cardInfo {
+  padding: 9px 10px 11px;
+}
+
+.cardInfo .b {
+  font-size: 10px;
+  margin-bottom: 2px;
+}
+
+.cardName {
+  font-size: 11.5px;
+  font-weight: 700;
+  margin-bottom: 3px;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.used {
+  font-size: 9.5px;
+  color: var(--ink-soft);
+  margin-bottom: 4px;
+}
+
+.cardInfo .p {
+  font-size: 12.5px;
+  margin-top: 0;
+}

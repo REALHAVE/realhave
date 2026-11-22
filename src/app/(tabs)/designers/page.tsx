@@ -1,13 +1,29 @@
-import Placeholder from "@/components/Placeholder";
-import styles from "../tabs.module.css";
+import { Suspense } from "react";
+import TopBar from "@/components/TopBar";
+import { getAllBrands } from "@/lib/catalog";
+import DesignerList from "./DesignerList";
+import styles from "./designers.module.css";
+
+export const metadata = { title: "A-Z Designers · Real HAVE" };
+
+async function Brands() {
+  const brands = await getAllBrands();
+  return <DesignerList brands={brands} />;
+}
 
 export default function DesignersPage() {
   return (
     <>
-      <header className={styles.topbar}>
-        <h1 className={`${styles.title} display`}>A-Z Designers</h1>
-      </header>
-      <Placeholder title="A-Z 브랜드" step="5단계" />
+      <TopBar bordered />
+      <Suspense
+        fallback={
+          <div className={styles.header}>
+            <h1 className={styles.title}>A-Z Designers</h1>
+          </div>
+        }
+      >
+        <Brands />
+      </Suspense>
     </>
   );
 }

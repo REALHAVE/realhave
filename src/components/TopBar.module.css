@@ -1,0 +1,89 @@
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px 0;
+}
+
+.bordered {
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.logo {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 22px;
+  color: var(--wine);
+}
+
+.rAccent {
+  font-family: var(--font-accent);
+  font-weight: 900;
+  font-size: 1.25em;
+  -webkit-text-stroke: 1.18px var(--wine);
+  line-height: 1;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.iconBtn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--wine);
+  flex-shrink: 0;
+}
+
+.iconBtn svg {
+  width: 15px;
+  height: 15px;
+}
+
+.sellBtn {
+  background: var(--wine);
+  color: var(--paper);
+  font-size: 12px;
+  font-weight: 800;
+  padding: 7px 12px;
+  border-radius: 16px;
+  white-space: nowrap;
+}
+
+/* 뒤로가기 + 제목 (목록·상세) */
+.subbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+}
+
+.backBtn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--cream);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.subTitle {
+  font-size: 14.5px;
+  font-weight: 800;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

@@ -1,0 +1,38 @@
+.list {
+  padding: 6px 20px 18px;
+}
+
+.group {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.group:last-child {
+  border-bottom: none;
+}
+
+.group h2 {
+  font-size: 14.5px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  color: var(--ink);
+}
+
+.items {
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  line-height: 1.8;
+}
+
+.sub:active,
+.sub:hover {
+  color: var(--wine);
+  font-weight: 700;
+}
+
+.loading {
+  padding: 60px 20px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
