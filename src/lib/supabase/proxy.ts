@@ -14,17 +14,21 @@ const PROTECTED_PREFIXES = [
 
 // 모든 요청마다: 로그인 쿠키 갱신 + 보호된 주소면 로그인 화면으로 보냄
 export async function updateSession(request: NextRequest) {
-  let response = NextResponse.next({ request });
+  const response = NextResponse.next({ request });
 
-  // 환경변수가 빠져 있어도 사이트 전체가 멈추지 않게 (로그인 기능만 동작 안 함)
-  let env: ReturnType<typeof supabaseEnv>;
+  // 환경변수가 빠지거나 틀려도 사이트 전체가 멈추지 않게 (로그인 기능만 동작 안 함)
+  // 실제 데이터 보호는 DB의 RLS가 담당하므로 여기서 통과시켜도 정보는 새지 않음
   try {
-    env = supabaseEnv();
+    return await refreshAndGuard(request, response);
   } catch (e) {
-    console.error(e);
+    console.error("[proxy] 로그인 확인 실패:", e);
     return response;
   }
-  const { url, key } = env;
+}
+
+async function refreshAndGuard(request: NextRequest, initial: NextResponse) {
+  let response = initial;
+  const { url, key } = supabaseEnv();
 
   const supabase = createServerClient(url, key, {
     cookies: {
