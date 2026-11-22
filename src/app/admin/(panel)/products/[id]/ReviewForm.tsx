@@ -14,23 +14,31 @@ const QUICK_REASONS = [
 export default function ReviewForm({ productId }: { productId: string }) {
   const [state, action, pending] = useActionState<ReviewState, FormData>(reviewProduct, {});
   const [reason, setReason] = useState("");
+  const [approveAsk, setApproveAsk] = useState(false);
 
   return (
     <form action={action} className={styles.decide}>
       <input type="hidden" name="productId" value={productId} />
       {state.error && <p className={styles.error}>{state.error}</p>}
 
-      <button
-        className={`${styles.btn} ${styles.approve} ${styles.full}`}
-        name="decision"
-        value="approve"
-        disabled={pending}
-        onClick={(e) => {
-          if (!confirm("승인하면 바로 홈에 공개됩니다. 승인할까요?")) e.preventDefault();
-        }}
-      >
-        승인 (공개)
-      </button>
+      {/* 확인은 화면 안에서 (앱 안 브라우저는 기본 확인창이 안 뜨는 경우가 있음) */}
+      {approveAsk ? (
+        <div style={{ display: "flex", gap: 8 }}>
+          <button type="button" className={`${styles.btn} ${styles.ghost} ${styles.full}`}
+            disabled={pending} onClick={() => setApproveAsk(false)}>
+            취소
+          </button>
+          <button className={`${styles.btn} ${styles.approve} ${styles.full}`}
+            name="decision" value="approve" disabled={pending}>
+            {pending ? "처리 중…" : "승인 확정 (바로 공개)"}
+          </button>
+        </div>
+      ) : (
+        <button type="button" className={`${styles.btn} ${styles.approve} ${styles.full}`}
+          disabled={pending} onClick={() => setApproveAsk(true)}>
+          승인 (공개)
+        </button>
+      )}
 
       <div>
         <label htmlFor="reason" style={{ fontSize: 12.5, fontWeight: 700 }}>

@@ -27,14 +27,20 @@ export default function SalesCard({
 }) {
   const router = useRouter();
   const [sheet, setSheet] = useState(false);
+  const [askDelete, setAskDelete] = useState(false); // 메뉴 안에서 삭제 확인
   const [result, setResult] = useState<ActionResult>({});
   const [pending, start] = useTransition();
   const s = statusOf(p);
   const isSold = p.status === "sold";
   const canBump = !isSold && p.auth_status === "approved";
 
-  function run(fn: () => Promise<ActionResult>) {
+  function closeSheet() {
     setSheet(false);
+    setAskDelete(false);
+  }
+
+  function run(fn: () => Promise<ActionResult>) {
+    closeSheet();
     start(async () => {
       const r = await fn();
       setResult(r ?? {});
@@ -89,10 +95,26 @@ export default function SalesCard({
 
       {sheet && (
         <>
-          <div className={styles.backdrop} onClick={() => setSheet(false)} />
+          <div className={styles.backdrop} onClick={closeSheet} />
           <div className={styles.sheet} role="dialog" aria-label="상품 메뉴">
             <div className={styles.handle} />
-            {isSold ? (
+            {askDelete ? (
+              <>
+                <p className={styles.sheetConfirm}>
+                  이 상품을 삭제할까요?
+                  <small>삭제하면 되돌릴 수 없어요.</small>
+                </p>
+                <div className={styles.confirmRow} style={{ padding: "0 20px 10px" }}>
+                  <button type="button" className={styles.confirmCancel} onClick={() => setAskDelete(false)}>
+                    취소
+                  </button>
+                  <button type="button" className={`${styles.confirmOk} ${styles.confirmDanger}`}
+                    onClick={() => run(() => deleteProduct(p.id))}>
+                    삭제
+                  </button>
+                </div>
+              </>
+            ) : isSold ? (
               <button type="button" className={styles.option} onClick={() => run(() => relistProduct(p.id))}>
                 재등록
               </button>
@@ -106,15 +128,17 @@ export default function SalesCard({
                 </Link>
               </>
             )}
-            <button type="button" className={`${styles.option} ${styles.danger}`}
-              onClick={() => {
-                if (confirm("이 상품을 삭제할까요? 삭제하면 되돌릴 수 없어요.")) run(() => deleteProduct(p.id));
-              }}>
-              삭제
-            </button>
-            <button type="button" className={styles.close} onClick={() => setSheet(false)}>
-              닫기
-            </button>
+            {!askDelete && (
+              <>
+                <button type="button" className={`${styles.option} ${styles.danger}`}
+                  onClick={() => setAskDelete(true)}>
+                  삭제
+                </button>
+                <button type="button" className={styles.close} onClick={closeSheet}>
+                  닫기
+                </button>
+              </>
+            )}
           </div>
         </>
       )}

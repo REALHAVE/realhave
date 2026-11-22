@@ -297,6 +297,67 @@
   font-weight: 600;
 }
 
+/* 화면 안 확인창 */
+.confirmBox {
+  margin: 0 20px;
+  padding: 16px;
+  border: 1px solid var(--wine);
+  border-radius: 12px;
+  background: #fbf3f7;
+  font-size: 13px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.confirmBox .formError {
+  margin: 10px 0 0;
+}
+
+.confirmRow {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.confirmCancel,
+.confirmOk {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-weight: 800;
+}
+
+.confirmCancel {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  color: var(--ink-soft);
+}
+
+.confirmOk {
+  background: var(--wine);
+  color: var(--paper);
+}
+
+.confirmDanger {
+  background: var(--warn);
+}
+
+.sheetConfirm {
+  padding: 14px 20px 4px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+.sheetConfirm small {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-soft);
+}
+
 .hint {
   margin: 12px 20px;
   font-size: 12px;
