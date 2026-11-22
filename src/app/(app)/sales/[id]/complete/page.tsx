@@ -4,13 +4,14 @@ import Thumb from "@/components/catalog/Thumb";
 import SubTopBar from "@/components/SubTopBar";
 import { getSessionUser } from "@/lib/auth/session";
 import { getProductDetail, isUuid } from "@/lib/catalog";
+import { getBuyerCandidates } from "@/lib/chat";
 import { formatPrice } from "@/lib/format";
 import CompleteForm from "./CompleteForm";
 import styles from "../../sales.module.css";
 
 export const metadata = { title: "구매자 선택 · Real HAVE" };
 
-// 목업 "구매자 선택". 채팅(8단계) 전이라 지금은 "선택하지 않을래요"만 가능
+// 목업 "구매자 선택": 채팅한 사람 중에서 구매자 고르기, 또는 선택하지 않고 거래완료
 async function Content({ params }: { params: PageProps<"/sales/[id]/complete">["params"] }) {
   const [{ id }, user] = await Promise.all([params, getSessionUser()]);
   if (!user) redirect(`/login?next=/sales/${id}/complete`);
@@ -20,6 +21,7 @@ async function Content({ params }: { params: PageProps<"/sales/[id]/complete">["
   if (!p || p.seller_id !== user.id || p.status !== "on_sale") {
     return <p className={styles.empty}>판매중인 내 상품만 거래완료로 바꿀 수 있어요.</p>;
   }
+  const candidates = await getBuyerCandidates(p.id);
 
   return (
     <>
@@ -33,17 +35,11 @@ async function Content({ params }: { params: PageProps<"/sales/[id]/complete">["
         </div>
       </div>
 
-      <div className={styles.findLink}>
-        최근 채팅 목록에서 구매자 찾기
-        <br />
-        <small>(채팅 기능을 만든 뒤 연결돼요)</small>
-      </div>
-
-      <CompleteForm productId={p.id} />
+      <CompleteForm productId={p.id} candidates={candidates} />
 
       <p className={styles.hint}>
-        구매자를 선택하면 구매자의 &lsquo;구매내역&rsquo;에도 기록돼요. 지금은 채팅 기능 준비 중이라
-        구매자 없이 거래완료로만 바꿀 수 있어요.
+        구매자는 이 상품으로 채팅한 회원 중에서만 고를 수 있어요. 선택한 구매자의
+        &lsquo;구매내역&rsquo;에도 기록돼요.
       </p>
     </>
   );

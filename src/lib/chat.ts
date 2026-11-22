@@ -152,3 +152,98 @@ export async function getRoom(roomId: string, userId: string) {
     messages,
   };
 }
+
+// ---------------------------------------------------------------------
+// 구매내역 / 거래완료 구매자 후보
+// ---------------------------------------------------------------------
+
+// 이 상품으로 나와 대화한 구매희망자들 (거래완료 때 구매자 후보)
+export async function getBuyerCandidates(productId: string) {
+  const rooms = await getMyRooms();
+  return rooms
+    .filter((r) => r.product_id === productId && r.i_am_seller)
+    .map((r) => ({
+      buyerId: r.other_id,
+      nickname: r.other_nickname,
+      lastMessage: r.last_message,
+      lastAt: r.last_message_at,
+    }));
+}
+
+export type Purchase = {
+  productId: string;
+  title: string;
+  brand: string;
+  price: number;
+  thumb: string | null;
+  sellerNickname: string;
+  completedAt: string;
+  roomId: string | null;
+};
+
+// 내가 구매자로 선택된 거래 (최근 순)
+export async function listPurchases(userId: string): Promise<Purchase[]> {
+  const supabase = await createClient();
+  const { data: deals } = await supabase
+    .from("deals")
+    .select("product_id, seller_id, price, completed_at")
+    .eq("buyer_id", userId)
+    .order("completed_at", { ascending: false })
+    .limit(200);
+  const rows = (deals ?? []) as { product_id: string; seller_id: string; price: number; completed_at: string }[];
+  if (rows.length === 0) return [];
+
+  const productIds = rows.map((d) => d.product_id);
+  const sellerIds = [...new Set(rows.map((d) => d.seller_id))];
+  const [cards, sellers, rooms] = await Promise.all([
+    supabase
+      .from("product_cards")
+      .select("id, title, brand_name, thumb_path")
+      .in("id", productIds),
+    supabase.from("profiles").select("id, nickname").in("id", sellerIds),
+    supabase.from("chat_rooms").select("id, product_id").eq("buyer_id", userId).in("product_id", productIds),
+  ]);
+
+  const cardMap = new Map(
+    ((cards.data ?? []) as { id: string; title: string; brand_name: string; thumb_path: string | null }[]).map(
+      (c) => [c.id, c],
+    ),
+  );
+  const nameMap = new Map((sellers.data ?? []).map((s) => [s.id as string, s.nickname as string]));
+  const roomMap = new Map((rooms.data ?? []).map((r) => [r.product_id as string, r.id as string]));
+
+  return rows.map((d) => {
+    const c = cardMap.get(d.product_id);
+    return {
+      productId: d.product_id,
+      title: c?.title ?? "(판매자가 삭제한 상품)",
+      brand: c?.brand_name ?? "",
+      price: d.price,
+      thumb: c?.thumb_path ?? null,
+      sellerNickname: nameMap.get(d.seller_id) ?? "(알 수 없음)",
+      completedAt: d.completed_at,
+      roomId: roomMap.get(d.product_id) ?? null,
+    };
+  });
+}
+
+export async function countPurchases(userId: string) {
+  const supabase = await createClient();
+  const { count } = await supabase
+    .from("deals")
+    .select("id", { count: "exact", head: true })
+    .eq("buyer_id", userId);
+  return count ?? 0;
+}
+
+// 이 상품을 내가 샀는지 (상품 상세 하단 표시용)
+export async function didIBuy(productId: string, userId: string | undefined) {
+  if (!userId) return false;
+  const supabase = await createClient();
+  const { count } = await supabase
+    .from("deals")
+    .select("id", { count: "exact", head: true })
+    .eq("product_id", productId)
+    .eq("buyer_id", userId);
+  return (count ?? 0) > 0;
+}

@@ -9,7 +9,7 @@ import { formatPrice, sizeLabel } from "@/lib/format";
 import PhotoSlider from "./PhotoSlider";
 import ViewCounter from "./ViewCounter";
 import DetailActions from "./DetailActions";
-import { isWished } from "@/lib/chat";
+import { didIBuy, isWished } from "@/lib/chat";
 import styles from "./detail.module.css";
 
 export const metadata = { title: "상품 상세 · Real HAVE" };
@@ -30,7 +30,10 @@ async function Detail({ params }: { params: PageProps<"/products/[id]">["params"
   const rejectReason =
     isMine && p.auth_status === "rejected" ? await getLatestRejectReason(p.id) : null;
   const loginHref = `/login?next=${encodeURIComponent(`/products/${p.id}`)}`;
-  const wished = isMine ? false : await isWished(p.id, user?.id);
+  const [wished, bought] = await Promise.all([
+    isMine ? false : isWished(p.id, user?.id),
+    p.status === "sold" ? didIBuy(p.id, user?.id) : false,
+  ]);
 
   return (
     <>
@@ -85,7 +88,7 @@ async function Detail({ params }: { params: PageProps<"/products/[id]">["params"
 
       <footer className={styles.footer}>
         {p.status === "sold" ? (
-          <div className={styles.done}>거래완료</div>
+          <div className={styles.done}>{bought ? "구매완료한 상품이에요" : "거래완료"}</div>
         ) : isMine ? (
           <Link href="/chat" className={styles.btnFill}>
             메시지

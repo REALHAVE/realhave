@@ -44,9 +44,14 @@ export async function relistProduct(id: string): Promise<ActionResult> {
 
 export async function completeDeal(_: ActionResult, form: FormData): Promise<ActionResult> {
   const id = String(form.get("productId") ?? "");
-  if (!isUuid(id)) return { error: "잘못된 요청입니다." };
+  const buyer = String(form.get("buyerId") ?? "");
+  if (!isUuid(id) || (buyer && !isUuid(buyer))) return { error: "잘못된 요청입니다." };
   const supabase = await createClient();
-  const { error } = await supabase.rpc("complete_deal", { p_product_id: id, p_buyer_id: null });
+  // 구매자는 "이 상품으로 채팅한 사람"만 가능 (DB 함수가 확인). 비우면 "선택하지 않을래요"
+  const { error } = await supabase.rpc("complete_deal", {
+    p_product_id: id,
+    p_buyer_id: buyer || null,
+  });
   if (error) return { error: friendly(error.message, "거래완료로 바꾸지 못했어요.") };
   revalidatePath("/sales");
   redirect("/sales?tab=done&completed=1");

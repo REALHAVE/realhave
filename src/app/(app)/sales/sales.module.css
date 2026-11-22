@@ -364,3 +364,96 @@
   color: var(--ink-soft);
   line-height: 1.6;
 }
+
+/* 구매자 선택 목록 */
+.notReady {
+  background: var(--line);
+  color: var(--ink-soft);
+}
+
+.findBtn,
+.skipText {
+  display: block;
+  width: 100%;
+  text-align: center;
+  padding: 18px 20px 6px;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  text-decoration: underline;
+}
+
+.skipText {
+  padding: 22px 20px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.buyerList {
+  list-style: none;
+  margin-top: 10px;
+  border-top: 1px solid var(--line);
+}
+
+.buyerRow {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+}
+
+.buyerSel {
+  background: #fbf3f7;
+}
+
+.buyerAvatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--cream);
+  border: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  color: var(--wine);
+  flex-shrink: 0;
+}
+
+.buyerInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.buyerName {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.buyerName small {
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--ink-soft);
+}
+
+.buyerMsg {
+  display: block;
+  font-size: 11px;
+  color: var(--ink-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+
+.check {
+  color: var(--wine);
+  font-weight: 900;
+  font-size: 15px;
+}
