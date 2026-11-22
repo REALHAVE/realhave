@@ -25,37 +25,93 @@ export default function ChatRoom({
   const bottomRef = useRef<HTMLDivElement>(null);
   const firstScroll = useRef(true);
 
-  // 새 메시지를 목록에 넣기 (같은 메시지가 두 번 오면 한 번만)
+  // 메시지 합치기: 같은 메시지는 한 번만, 보낸 시각 순서대로
+  function merge(incoming: ChatMessage[]) {
+    if (incoming.length === 0) return;
+    setMessages((list) => {
+      const byId = new Map(list.map((m) => [m.id, m]));
+      let changed = false;
+      for (const m of incoming) {
+        const old = byId.get(m.id);
+        if (!old || (!old.image_url && m.image_url)) {
+          byId.set(m.id, { ...old, ...m });
+          changed = true;
+        }
+      }
+      if (!changed) return list;
+      return [...byId.values()].sort((a, b) => a.created_at.localeCompare(b.created_at));
+    });
+  }
   function add(m: ChatMessage) {
-    setMessages((list) => (list.some((x) => x.id === m.id) ? list : [...list, m]));
+    merge([m]);
   }
 
-  // 실시간 수신 + 읽음 처리
+  // 실시간 수신 + 빠진 메시지 다시 확인 + 읽음 처리
+  //  실시간 연결은 연결 직후·화면이 꺼졌다 켜질 때 잠깐 끊길 수 있어서,
+  //  그때마다(그리고 몇 초마다) 최근 메시지를 다시 불러와 빠진 것을 채움
   useEffect(() => {
     const supabase = createClient();
-    supabase.rpc("mark_room_read", { p_room_id: roomId });
-
+    let cancelled = false;
     let channel: ReturnType<typeof supabase.channel> | undefined;
+
+    const markRead = () => {
+      supabase.rpc("mark_room_read", { p_room_id: roomId }).then(() => {});
+    };
+
+    async function withImageUrls(list: ChatMessage[]) {
+      const paths = list.filter((m) => m.image_path && !m.image_url).map((m) => m.image_path as string);
+      if (paths.length === 0) return list;
+      const { data } = await supabase.storage.from("chat-images").createSignedUrls(paths, 3600);
+      const urls = new Map((data ?? []).map((s) => [s.path, s.signedUrl]));
+      return list.map((m) => (m.image_path && !m.image_url ? { ...m, image_url: urls.get(m.image_path) ?? null } : m));
+    }
+
+    async function catchUp() {
+      const { data } = await supabase
+        .from("messages")
+        .select("id, sender_id, body, image_path, created_at")
+        .eq("room_id", roomId)
+        .order("created_at", { ascending: false })
+        .limit(50);
+      if (cancelled || !data) return;
+      merge(await withImageUrls(data as ChatMessage[]));
+      if ((data as ChatMessage[]).some((m) => m.sender_id !== myId)) markRead();
+    }
+
+    markRead();
     supabase.realtime.setAuth().then(() => {
+      if (cancelled) return;
       channel = supabase
         .channel(`room:${roomId}`)
         .on(
           "postgres_changes",
           { event: "INSERT", schema: "public", table: "messages", filter: `room_id=eq.${roomId}` },
           async (payload: { new: Record<string, unknown> }) => {
-            const m = payload.new as unknown as ChatMessage;
-            if (m.image_path) {
-              const { data } = await supabase.storage.from("chat-images").createSignedUrl(m.image_path, 3600);
-              m.image_url = data?.signedUrl ?? null;
-            }
+            const [m] = await withImageUrls([payload.new as unknown as ChatMessage]);
             add(m);
-            if (m.sender_id !== myId) supabase.rpc("mark_room_read", { p_room_id: roomId });
+            if (m.sender_id !== myId) markRead();
           },
         )
-        .subscribe();
+        .subscribe((status: string) => {
+          // 연결(재연결)될 때마다 그 사이 빠진 메시지 확인
+          if (status === "SUBSCRIBED") catchUp();
+        });
     });
 
+    const onVisible = () => {
+      if (document.visibilityState === "visible") catchUp();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    window.addEventListener("online", catchUp);
+    const timer = setInterval(() => {
+      if (document.visibilityState === "visible") catchUp();
+    }, 8000);
+
     return () => {
+      cancelled = true;
+      clearInterval(timer);
+      document.removeEventListener("visibilitychange", onVisible);
+      window.removeEventListener("online", catchUp);
       if (channel) supabase.removeChannel(channel);
     };
   }, [roomId, myId]);
