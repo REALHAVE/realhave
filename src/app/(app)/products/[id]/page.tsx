@@ -7,6 +7,7 @@ import { getSessionUser } from "@/lib/auth/session";
 import { getProductDetail, isUuid } from "@/lib/catalog";
 import { formatPrice, sizeLabel } from "@/lib/format";
 import PhotoSlider from "./PhotoSlider";
+import ViewCounter from "./ViewCounter";
 import styles from "./detail.module.css";
 
 export const metadata = { title: "상품 상세 · Real HAVE" };
@@ -35,6 +36,7 @@ async function Detail({ params }: { params: PageProps<"/products/[id]">["params"
       </div>
 
       <PhotoSlider paths={p.images} brand={p.brand_name} />
+      <ViewCounter productId={p.id} />
 
       {isMine && AUTH_NOTICE[p.auth_status] && (
         <p className={styles.notice}>

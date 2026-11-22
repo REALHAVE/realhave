@@ -24,6 +24,8 @@ export type ProductCard = {
   top_category_name: string;
   purchase_place_name: string;
   thumb_path: string | null;
+  view_count: number;
+  sold_at: string | null;
 };
 
 export type Brand = {
@@ -45,7 +47,7 @@ export type Category = {
 const CARD_COLUMNS =
   "id, seller_id, title, price, condition_grade, size, status, auth_status, bumped_at, is_new, " +
   "brand_id, brand_name, category_id, category_name, top_category_id, top_category_name, " +
-  "purchase_place_name, thumb_path";
+  "purchase_place_name, thumb_path, view_count, sold_at";
 
 export const LIST_LIMIT = 60;
 
@@ -255,4 +257,65 @@ export function isUuid(v: unknown): v is string {
     typeof v === "string" &&
     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v)
   );
+}
+
+// 게시글 수정 화면에 채울 기존 값 (판매자 본인만, RLS가 확인)
+export type EditInitial = NonNullable<Awaited<ReturnType<typeof getEditData>>>;
+
+export async function getEditData(id: string, userId: string) {
+  if (!isUuid(id)) return null;
+  const supabase = await createClient();
+
+  const { data: p } = await supabase
+    .from("products")
+    .select(
+      "id, seller_id, title, brand_id, category_id, purchase_place_code, size, condition_grade, " +
+        "price, description, status, auth_status, category:categories!category_id(parent_id)",
+    )
+    .eq("id", id)
+    .maybeSingle();
+
+  const row = p as unknown as {
+    id: string; seller_id: string; title: string; brand_id: string; category_id: string;
+    purchase_place_code: string; size: string | null; condition_grade: string; price: number;
+    description: string; status: string; auth_status: string;
+    category: { parent_id: string } | { parent_id: string }[] | null;
+  } | null;
+  if (!row || row.seller_id !== userId || row.status !== "on_sale") return null;
+
+  const [images, certs, colors, trades, brand] = await Promise.all([
+    supabase.from("product_images").select("storage_path").eq("product_id", id).order("sort_order"),
+    supabase.from("product_cert_images").select("storage_path, kind").eq("product_id", id).order("created_at"),
+    supabase.from("product_colors").select("color_code").eq("product_id", id),
+    supabase.from("product_trade_methods").select("trade_method_code").eq("product_id", id),
+    getBrand(row.brand_id),
+  ]);
+
+  const certRows = (certs.data ?? []) as { storage_path: string; kind: string }[];
+  const signed = certRows.length
+    ? await supabase.storage.from("cert-docs").createSignedUrls(certRows.map((c) => c.storage_path), 3600)
+    : { data: [] };
+  const cat = Array.isArray(row.category) ? row.category[0] : row.category;
+
+  return {
+    id: row.id,
+    authStatus: row.auth_status,
+    title: row.title,
+    brand,
+    topCategoryId: cat?.parent_id ?? "",
+    categoryId: row.category_id,
+    placeCode: row.purchase_place_code,
+    size: row.size ?? "",
+    grade: row.condition_grade,
+    price: String(row.price),
+    description: row.description,
+    imagePaths: (images.data ?? []).map((i) => i.storage_path as string),
+    certs: certRows.map((c, i) => ({
+      path: c.storage_path,
+      kind: c.kind,
+      url: signed.data?.[i]?.signedUrl ?? "",
+    })),
+    colors: (colors.data ?? []).map((c) => c.color_code as string),
+    trades: (trades.data ?? []).map((t) => t.trade_method_code as string),
+  };
 }

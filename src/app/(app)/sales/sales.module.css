@@ -1,5 +1,6 @@
+/* 목업 판매내역 (sales-*, bottom-sheet) */
 .success {
-  margin: 4px 20px 10px;
+  margin: 4px 20px 6px;
   padding: 12px;
   border-radius: 8px;
   background: #f4f0f8;
@@ -8,6 +9,26 @@
   font-size: 12.5px;
   font-weight: 600;
   line-height: 1.6;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  padding: 10px 20px 14px;
+}
+
+.tab {
+  padding: 8px 16px;
+  border-radius: 16px;
+  font-size: 12.5px;
+  font-weight: 700;
+  background: var(--cream);
+  color: var(--ink-soft);
+}
+
+.tabOn {
+  background: var(--wine);
+  color: var(--paper);
 }
 
 .empty {
@@ -29,42 +50,36 @@
 }
 
 .list {
-  list-style: none;
-  padding: 0 20px 30px;
-}
-
-.row {
-  display: flex;
-  gap: 14px;
-  padding: 14px 0;
-  border-bottom: 1px solid var(--line);
-}
-
-.thumb {
-  width: 84px;
-  height: 84px;
-  border-radius: 10px;
-  background: var(--cream);
-  border: 1px solid var(--line);
-  position: relative;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-.info {
+  padding: 0 20px 24px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  gap: 3px;
-  min-width: 0;
+  gap: 14px;
+}
+
+.card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--paper);
+}
+
+.statusRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px 0;
 }
 
 .status {
-  align-self: flex-start;
-  font-size: 10.5px;
+  font-size: 11px;
   font-weight: 800;
   padding: 3px 7px;
   border-radius: 4px;
+}
+
+.onSale {
+  background: var(--wine);
+  color: var(--paper);
 }
 
 .pending {
@@ -77,29 +92,214 @@
   color: var(--warn);
 }
 
-.onSale {
-  background: var(--wine);
-  color: var(--paper);
-}
-
 .done {
   background: var(--cream);
   color: var(--ink-soft);
 }
 
-.b {
-  font-size: 11px;
+.dots {
+  font-size: 18px;
   color: var(--ink-soft);
+  font-weight: 900;
+  padding: 2px 8px;
+}
+
+.body {
+  display: flex;
+  gap: 12px;
+  padding: 8px 14px 10px;
+}
+
+.thumb {
+  width: 64px;
+  height: 64px;
+  border-radius: 8px;
+  background: var(--cream);
+  border: 1px solid var(--line);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+  min-width: 0;
 }
 
 .n {
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 700;
   line-height: 1.4;
+}
+
+.meta {
+  font-size: 11px;
+  color: var(--ink-soft);
 }
 
 .p {
   font-size: 14px;
   font-weight: 900;
   color: var(--wine);
+}
+
+.counts {
+  padding: 0 14px 10px;
+  font-size: 11px;
+  color: var(--ink-soft);
+}
+
+.cardError,
+.cardMsg {
+  margin: 0 14px 10px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.cardError {
+  background: #fbefe9;
+  color: var(--warn);
+}
+
+.cardMsg {
+  background: #f4f0f8;
+  color: var(--wine);
+}
+
+.actions {
+  border-top: 1px solid var(--line);
+}
+
+.actionBtn {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  text-align: center;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.actionBtn:disabled {
+  color: var(--ink-soft);
+}
+
+/* ---------- ⋮ 메뉴 (아래에서 올라오는 창) ---------- */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 10, 15, 0.4);
+  z-index: 40;
+}
+
+.sheet {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: var(--app-max-width);
+  z-index: 41;
+  background: var(--paper);
+  border-radius: 20px 20px 0 0;
+  padding: 10px 0 calc(6px + env(safe-area-inset-bottom));
+}
+
+.handle {
+  width: 36px;
+  height: 4px;
+  background: var(--line);
+  border-radius: 2px;
+  margin: 4px auto 8px;
+}
+
+.option {
+  display: block;
+  width: 100%;
+  padding: 16px 20px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  border-top: 1px solid var(--line);
+}
+
+.danger {
+  color: var(--warn);
+}
+
+.close {
+  display: block;
+  width: 100%;
+  padding: 16px 20px 6px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+/* ---------- 구매자 선택 (거래완료) ---------- */
+.buyerItem {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin: 6px 20px 18px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.findLink {
+  display: block;
+  margin: 0 20px 10px;
+  padding: 14px;
+  border-radius: 8px;
+  background: var(--cream);
+  color: var(--ink-soft);
+  font-size: 13px;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.skip {
+  display: block;
+  width: calc(100% - 40px);
+  margin: 0 20px;
+  padding: 14px;
+  border-radius: 8px;
+  background: var(--wine);
+  color: var(--paper);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.skip:disabled {
+  opacity: 0.6;
+}
+
+.formError {
+  margin: 0 20px 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #fbefe9;
+  color: var(--warn);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.hint {
+  margin: 12px 20px;
+  font-size: 12px;
+  color: var(--ink-soft);
+  line-height: 1.6;
 }

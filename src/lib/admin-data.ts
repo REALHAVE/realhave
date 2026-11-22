@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 const CARD_COLUMNS =
   "id, seller_id, title, price, condition_grade, size, status, auth_status, bumped_at, is_new, created_at, " +
   "brand_id, brand_name, category_id, category_name, top_category_id, top_category_name, " +
-  "purchase_place_name, thumb_path";
+  "purchase_place_name, thumb_path, view_count, sold_at";
 
 export type AdminProductRow = ProductCard & { created_at: string; seller_nickname: string };
 

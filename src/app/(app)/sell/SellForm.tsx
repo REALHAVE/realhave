@@ -2,36 +2,57 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { Brand, SellOptions } from "@/lib/catalog";
+import type { Brand, EditInitial, SellOptions } from "@/lib/catalog";
+import { productImageUrl } from "@/lib/catalog-url";
 import { prepareImage, randomId } from "@/lib/image";
 import { CERT_KINDS, GRADES, sizeOptions } from "@/lib/sizes";
 import { createClient } from "@/lib/supabase/client";
 import BrandPicker from "./BrandPicker";
 import styles from "./sell.module.css";
 
-type Photo = { key: string; file: File; preview: string };
-type CertPhoto = Photo & { kind: (typeof CERT_KINDS)[number]["code"] };
+// file 이 있으면 새로 고른 사진, path 만 있으면 이미 올라가 있는 사진(수정 화면)
+type Photo = { key: string; preview: string; file?: File; path?: string };
+type CertKind = (typeof CERT_KINDS)[number]["code"];
+type CertPhoto = Photo & { kind: CertKind };
 
 const MAX_PHOTOS = 10;
 const MAX_CERTS = 3;
 
-export default function SellForm({ options }: { options: SellOptions }) {
+// initial 이 있으면 "게시글 수정", 없으면 "새 상품등록"
+export default function SellForm({
+  options,
+  initial,
+}: {
+  options: SellOptions;
+  initial?: EditInitial;
+}) {
   const router = useRouter();
+  const isEdit = Boolean(initial);
 
-  const [photos, setPhotos] = useState<Photo[]>([]);
-  const [certs, setCerts] = useState<CertPhoto[]>([]);
-  const [title, setTitle] = useState("");
-  const [brand, setBrand] = useState<Brand | null>(null);
+  const [photos, setPhotos] = useState<Photo[]>(
+    () => initial?.imagePaths.map((path) => ({ key: path, path, preview: productImageUrl(path) })) ?? [],
+  );
+  const [certs, setCerts] = useState<CertPhoto[]>(
+    () =>
+      initial?.certs.map((c) => ({
+        key: c.path,
+        path: c.path,
+        preview: c.url,
+        kind: c.kind as CertKind,
+      })) ?? [],
+  );
+  const [title, setTitle] = useState(initial?.title ?? "");
+  const [brand, setBrand] = useState<Brand | null>(initial?.brand ?? null);
   const [pickingBrand, setPickingBrand] = useState(false);
-  const [topId, setTopId] = useState("");
-  const [subId, setSubId] = useState("");
-  const [place, setPlace] = useState("");
-  const [size, setSize] = useState("");
-  const [trades, setTrades] = useState<string[]>([]);
-  const [grade, setGrade] = useState("");
-  const [colors, setColors] = useState<string[]>([]);
-  const [price, setPrice] = useState(""); // 숫자만
-  const [description, setDescription] = useState("");
+  const [topId, setTopId] = useState(initial?.topCategoryId ?? "");
+  const [subId, setSubId] = useState(initial?.categoryId ?? "");
+  const [place, setPlace] = useState(initial?.placeCode ?? "");
+  const [size, setSize] = useState(initial?.size ?? "");
+  const [trades, setTrades] = useState<string[]>(initial?.trades ?? []);
+  const [grade, setGrade] = useState(initial?.grade ?? "");
+  const [colors, setColors] = useState<string[]>(initial?.colors ?? []);
+  const [price, setPrice] = useState(initial?.price ?? ""); // 숫자만
+  const [description, setDescription] = useState(initial?.description ?? "");
 
   const [error, setError] = useState("");
   const [busy, setBusy] = useState("");
@@ -90,7 +111,7 @@ export default function SellForm({ options }: { options: SellOptions }) {
       return;
     }
 
-    const pid = crypto.randomUUID();
+    const pid = initial?.id ?? crypto.randomUUID();
     const uploaded: { bucket: string; path: string }[] = [];
 
     async function upload(bucket: string, file: File, name: string, big: boolean) {
@@ -105,22 +126,30 @@ export default function SellForm({ options }: { options: SellOptions }) {
     }
 
     try {
+      // 새로 고른 사진만 올리고, 기존 사진은 경로 그대로 (순서 유지)
+      const newPhotos = photos.filter((p) => p.file).length;
+      const newCerts = certs.filter((c) => c.file).length;
+      let n = 0;
       const imagePaths: string[] = [];
       for (let i = 0; i < photos.length; i++) {
-        setBusy(`상품 사진 올리는 중… (${i + 1}/${photos.length})`);
-        imagePaths.push(await upload("product-images", photos[i].file, `p${i}`, false));
+        const p = photos[i];
+        if (p.file) {
+          setBusy(`상품 사진 올리는 중… (${++n}/${newPhotos})`);
+          imagePaths.push(await upload("product-images", p.file, `p${i}`, false));
+        } else imagePaths.push(p.path!);
       }
+      n = 0;
       const cert: { path: string; kind: string }[] = [];
       for (let i = 0; i < certs.length; i++) {
-        setBusy(`정품인증 사진 올리는 중… (${i + 1}/${certs.length})`);
-        cert.push({
-          path: await upload("cert-docs", certs[i].file, `c${i}`, true),
-          kind: certs[i].kind,
-        });
+        const c = certs[i];
+        if (c.file) {
+          setBusy(`정품인증 사진 올리는 중… (${++n}/${newCerts})`);
+          cert.push({ path: await upload("cert-docs", c.file, `c${i}`, true), kind: c.kind });
+        } else cert.push({ path: c.path!, kind: c.kind });
       }
 
-      setBusy("등록하는 중…");
-      const { error: rpcErr } = await supabase.rpc("create_product", {
+      setBusy(isEdit ? "저장하는 중…" : "등록하는 중…");
+      const { error: rpcErr } = await supabase.rpc(isEdit ? "update_product" : "create_product", {
         p_id: pid,
         p_title: title.trim(),
         p_brand_id: brand!.id,
@@ -136,16 +165,17 @@ export default function SellForm({ options }: { options: SellOptions }) {
         p_trades: trades,
       });
       if (rpcErr) {
-        console.error("[create_product]", rpcErr);
+        console.error("[save_product]", rpcErr);
         // DB가 보낸 한글 안내는 그대로, 그 외는 일반 안내
         throw new Error(
           /[가-힣]/.test(rpcErr.message)
             ? rpcErr.message
-            : "등록하지 못했어요. 잠시 후 다시 시도해 주세요.",
+            : "저장하지 못했어요. 잠시 후 다시 시도해 주세요.",
         );
       }
 
-      router.replace("/sales?created=1");
+      router.replace(isEdit ? "/sales?updated=1" : "/sales?created=1");
+      router.refresh();
     } catch (e) {
       // 실패하면 올린 사진 정리
       for (const b of ["product-images", "cert-docs"]) {
@@ -199,6 +229,7 @@ export default function SellForm({ options }: { options: SellOptions }) {
                 <select
                   className={styles.kind}
                   value={c.kind}
+                  disabled={!c.file /* 이미 올린 서류는 종류 고정 (바꾸려면 지우고 다시 올리기) */}
                   onChange={(e) =>
                     setCerts((l) =>
                       l.map((x) =>
@@ -398,13 +429,22 @@ export default function SellForm({ options }: { options: SellOptions }) {
         </section>
 
         <p className={styles.notice}>
-          작성 완료 후 <b>정품인증 심사</b>를 거쳐 승인되면 다른 회원에게 공개돼요.
+          {!isEdit ? (
+            <>작성 완료 후 <b>정품인증 심사</b>를 거쳐 승인되면 다른 회원에게 공개돼요.</>
+          ) : initial?.authStatus === "rejected" ? (
+            <>저장하면 <b>재심사</b>를 요청해요. 반려 사유를 고쳤는지 확인해 주세요.</>
+          ) : (
+            <>
+              <b>브랜드·카테고리·구매처·정품인증 사진</b>을 바꾸면 다시 심사를 받아요. 심사 중에는
+              다른 회원에게 보이지 않아요. (가격·설명·사진 등은 바로 반영)
+            </>
+          )}
         </p>
       </div>
 
       <div className={styles.footer}>
         <button type="button" className={styles.submit} disabled={Boolean(busy)} onClick={submit}>
-          {busy || "작성 완료"}
+          {busy || (isEdit ? "수정 완료" : "작성 완료")}
         </button>
       </div>
     </>
