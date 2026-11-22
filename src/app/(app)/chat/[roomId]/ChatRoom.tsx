@@ -58,12 +58,16 @@ export default function ChatRoom({
       supabase.rpc("mark_room_read", { p_room_id: roomId }).then(() => {});
     };
 
-    async function withImageUrls(list: ChatMessage[]) {
+    async function withImageUrls(list: ChatMessage[]): Promise<ChatMessage[]> {
       const paths = list.filter((m) => m.image_path && !m.image_url).map((m) => m.image_path as string);
       if (paths.length === 0) return list;
       const { data } = await supabase.storage.from("chat-images").createSignedUrls(paths, 3600);
-      const urls = new Map((data ?? []).map((s) => [s.path, s.signedUrl]));
-      return list.map((m) => (m.image_path && !m.image_url ? { ...m, image_url: urls.get(m.image_path) ?? null } : m));
+      const urls = new Map<string, string>(
+        ((data ?? []) as { path: string | null; signedUrl: string }[]).map((s) => [s.path ?? "", s.signedUrl]),
+      );
+      return list.map((m) =>
+        m.image_path && !m.image_url ? { ...m, image_url: urls.get(m.image_path) ?? null } : m,
+      );
     }
 
     async function catchUp() {
@@ -88,7 +92,7 @@ export default function ChatRoom({
           { event: "INSERT", schema: "public", table: "messages", filter: `room_id=eq.${roomId}` },
           async (payload: { new: Record<string, unknown> }) => {
             const [m] = await withImageUrls([payload.new as unknown as ChatMessage]);
-            add(m);
+            merge([m]);
             if (m.sender_id !== myId) markRead();
           },
         )
