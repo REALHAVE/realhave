@@ -51,13 +51,14 @@ async function refreshAndGuard(request: NextRequest, initial: NextResponse) {
   const isLoggedIn = Boolean(data?.claims?.sub);
 
   const path = request.nextUrl.pathname;
-  const needsLogin = PROTECTED_PREFIXES.some(
-    (p) => path === p || path.startsWith(p + "/"),
-  );
+  const isAdminArea =
+    (path === "/admin" || path.startsWith("/admin/")) && !path.startsWith("/admin/login");
+  const needsLogin =
+    isAdminArea || PROTECTED_PREFIXES.some((p) => path === p || path.startsWith(p + "/"));
 
   if (needsLogin && !isLoggedIn) {
     const loginUrl = request.nextUrl.clone();
-    loginUrl.pathname = "/login";
+    loginUrl.pathname = isAdminArea ? "/admin/login" : "/login";
     loginUrl.search = "";
     loginUrl.searchParams.set("next", path + request.nextUrl.search);
     const redirect = NextResponse.redirect(loginUrl);

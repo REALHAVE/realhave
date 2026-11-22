@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Suspense } from "react";
-import { logout } from "@/app/(auth)/actions";
+import { logout } from "@/app/(app)/(auth)/actions";
 import { getSessionUser } from "@/lib/auth/session";
 import { listMyProducts } from "@/lib/catalog";
 import tabs from "../tabs.module.css";

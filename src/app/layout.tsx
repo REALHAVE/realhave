@@ -39,9 +39,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="ko"
       className={`${notoSansKr.variable} ${fraunces.variable} ${playfair.variable}`}
     >
-      <body>
-        <div className="app-frame">{children}</div>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

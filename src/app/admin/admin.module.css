@@ -1,0 +1,493 @@
+/* 관리자 화면 (목업 realhave-admin-full.html) — PC 폭 */
+.root {
+  --ok: #3c7a5b;
+  --admin-bg: #f5f1ea;
+  min-height: 100vh;
+  background: var(--admin-bg);
+  color: var(--ink);
+}
+
+/* ---------- 로그인 ---------- */
+.loginWrap {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--wine-deep);
+  padding: 20px;
+}
+
+.loginCard {
+  background: #fff;
+  border-radius: 16px;
+  padding: 40px 36px;
+  width: 100%;
+  max-width: 360px;
+}
+
+.loginLogo {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 24px;
+  color: var(--wine);
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.loginLogo span {
+  color: var(--brass);
+}
+
+.loginInput {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  margin-bottom: 12px;
+  font: inherit;
+  font-size: 15px;
+}
+
+/* ---------- 틀 ---------- */
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 220px;
+  background: var(--wine-deep);
+  color: #e7d3de;
+  flex-shrink: 0;
+  padding: 24px 0;
+}
+
+.sbLogo {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 20px;
+  color: #fff;
+  padding: 0 24px 28px;
+  display: block;
+}
+
+.sbLogo span {
+  color: var(--brass);
+}
+
+.sbLogo small {
+  font-size: 11px;
+  color: #cbb2c4;
+  font-family: var(--font-body);
+  margin-left: 4px;
+}
+
+.sbItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 24px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #cbb2c4;
+  border-left: 3px solid transparent;
+}
+
+.sbItem::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.6;
+}
+
+.sbActive {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  border-left-color: var(--brass);
+}
+
+.sbSoon {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.sbSoon small {
+  font-size: 10px;
+  margin-left: auto;
+}
+
+.sbLogout {
+  margin-top: 40px;
+  padding: 12px 24px;
+  font-size: 12px;
+  color: #cbb2c4;
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+  padding: 26px 34px 40px;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  gap: 12px;
+}
+
+.topbar h1 {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.who {
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+.who b {
+  color: var(--wine);
+}
+
+/* ---------- 공통 ---------- */
+.panel {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 20px 22px;
+  margin-bottom: 18px;
+  overflow-x: auto;
+}
+
+.panel h2 {
+  font-size: 14.5px;
+  font-weight: 800;
+  margin-bottom: 16px;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.tab {
+  padding: 8px 16px;
+  border-radius: 16px;
+  font-size: 12.5px;
+  font-weight: 700;
+  background: #fff;
+  border: 1px solid var(--line);
+  color: var(--ink-soft);
+}
+
+.tabOn {
+  background: var(--wine);
+  color: #fff;
+  border-color: var(--wine);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+
+.table th {
+  text-align: left;
+  color: var(--ink-soft);
+  font-weight: 700;
+  padding: 8px 6px;
+  border-bottom: 1px solid var(--line);
+  font-size: 11.5px;
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 10px 6px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+
+.table a.name {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.badge {
+  padding: 3px 9px;
+  border-radius: 10px;
+  font-size: 10.5px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.wait {
+  background: #fbefe6;
+  color: var(--warn);
+}
+
+.ok {
+  background: #eaf3ee;
+  color: var(--ok);
+}
+
+.bad {
+  background: #fbefe9;
+  color: var(--warn);
+}
+
+.muted {
+  background: var(--admin-bg);
+  color: var(--ink-soft);
+}
+
+.btn {
+  display: inline-block;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.primary {
+  background: var(--wine);
+  color: #fff;
+}
+
+.approve {
+  background: var(--ok);
+  color: #fff;
+}
+
+.reject {
+  background: var(--warn);
+  color: #fff;
+}
+
+.ghost {
+  background: var(--admin-bg);
+  color: var(--ink);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+}
+
+.full {
+  width: 100%;
+  text-align: center;
+  padding: 12px;
+}
+
+.flash {
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  background: #eaf3ee;
+  color: var(--ok);
+}
+
+.error {
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  background: #fbefe9;
+  color: var(--warn);
+  line-height: 1.5;
+}
+
+.empty {
+  padding: 30px 0;
+  text-align: center;
+  color: var(--ink-soft);
+  font-size: 13px;
+}
+
+.center {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--ink-soft);
+  padding: 20px;
+}
+
+/* ---------- 심사 화면 ---------- */
+.reviewGrid {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 18px;
+  align-items: start;
+}
+
+.photos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 8px;
+}
+
+.photos a,
+.photos div {
+  aspect-ratio: 1;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--admin-bg);
+  border: 1px solid var(--line);
+  position: relative;
+  display: block;
+}
+
+.photos img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.certs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+.cert {
+  border: 2px solid var(--wine);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--admin-bg);
+}
+
+.cert img {
+  width: 100%;
+  display: block;
+  max-height: 360px;
+  object-fit: contain;
+  background: #000;
+}
+
+.certKind {
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--wine);
+  display: flex;
+  justify-content: space-between;
+}
+
+.certKind a {
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+
+.note {
+  font-size: 11.5px;
+  color: var(--ink-soft);
+  line-height: 1.6;
+  margin-top: 10px;
+}
+
+.info {
+  font-size: 12.5px;
+}
+
+.info div {
+  display: flex;
+  padding: 7px 0;
+  border-bottom: 1px dashed var(--line);
+}
+
+.info dt {
+  width: 90px;
+  flex-shrink: 0;
+  color: var(--ink-soft);
+}
+
+.info dd {
+  font-weight: 600;
+  white-space: pre-wrap;
+}
+
+.textarea {
+  width: 100%;
+  min-height: 80px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font: inherit;
+  font-size: 14px;
+  margin: 8px 0 10px;
+  resize: vertical;
+}
+
+.decide {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.history {
+  list-style: none;
+  font-size: 12px;
+}
+
+.history li {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+  line-height: 1.6;
+}
+
+@media (max-width: 900px) {
+  .layout {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 12px 8px;
+  }
+
+  .sbLogo {
+    padding: 0 12px;
+    font-size: 17px;
+  }
+
+  .sbItem {
+    padding: 8px 12px;
+    border-left: none;
+  }
+
+  .sbSoon {
+    display: none;
+  }
+
+  .sbLogout {
+    margin: 0 0 0 auto;
+    padding: 8px 12px;
+  }
+
+  .main {
+    padding: 18px 16px 30px;
+  }
+
+  .reviewGrid {
+    grid-template-columns: 1fr;
+  }
+}
