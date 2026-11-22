@@ -222,3 +222,20 @@
   font-size: 13.5px;
   font-weight: 800;
 }
+
+.btnLine:disabled,
+.btnFill:disabled {
+  opacity: 0.7;
+}
+
+.wished {
+  background: #fbf3f7;
+}
+
+.footerError {
+  font-size: 12px;
+  color: var(--warn);
+  font-weight: 600;
+  margin-bottom: 8px;
+  text-align: center;
+}

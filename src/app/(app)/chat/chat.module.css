@@ -1,0 +1,292 @@
+/* 목업 채팅 목록 (chatlist-*) · 채팅방 */
+.empty {
+  padding: 60px 20px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--ink-soft);
+  line-height: 1.7;
+}
+
+.empty b {
+  color: var(--wine);
+}
+
+.list {
+  list-style: none;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 10px;
+  background: var(--cream);
+  border: 1px solid var(--line);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.rowInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.name {
+  font-size: 13.5px;
+  font-weight: 800;
+}
+
+.name small {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.time {
+  font-size: 11px;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+.product {
+  font-size: 11px;
+  color: var(--ink-soft);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.msg {
+  font-size: 12.5px;
+  margin-top: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.badge {
+  min-width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  background: var(--warn);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6px;
+  flex-shrink: 0;
+}
+
+/* ---------- 채팅방 ---------- */
+.roomHead {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+}
+
+.productBar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 0 20px 10px;
+}
+
+.productBar .avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+}
+
+.productBar .pName {
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.productBar .pPrice {
+  font-size: 12.5px;
+  font-weight: 900;
+  color: var(--wine);
+}
+
+.guide {
+  margin: 0 20px 10px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  background: #fbf3f7;
+  border: 1px solid #e9cfdd;
+  font-size: 11.5px;
+  color: var(--wine);
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.messages {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 20px calc(90px + env(safe-area-inset-bottom));
+}
+
+.day {
+  align-self: center;
+  font-size: 11px;
+  color: var(--ink-soft);
+  background: var(--cream);
+  border-radius: 10px;
+  padding: 3px 10px;
+  margin: 8px 0;
+}
+
+.line {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.mine {
+  flex-direction: row-reverse;
+}
+
+.bubble {
+  max-width: 75%;
+  background: var(--cream);
+  border-radius: 12px 12px 12px 2px;
+  padding: 10px 14px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.mine .bubble {
+  background: var(--wine);
+  color: var(--paper);
+  border-radius: 12px 12px 2px 12px;
+}
+
+.photo {
+  max-width: 65%;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--cream);
+}
+
+.photo img {
+  display: block;
+  width: 100%;
+  max-height: 320px;
+  object-fit: cover;
+}
+
+.stamp {
+  font-size: 10px;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+.composer {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: var(--app-max-width);
+  background: var(--paper);
+  border-top: 1px solid var(--line);
+  padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  z-index: 10;
+}
+
+.attach {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--cream);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: var(--wine);
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 9px 14px;
+  font: inherit;
+  font-size: 16px;
+  resize: none;
+  max-height: 120px;
+  outline: none;
+}
+
+.input:focus {
+  border-color: var(--wine);
+}
+
+.send {
+  background: var(--wine);
+  color: var(--paper);
+  border-radius: 20px;
+  padding: 10px 16px;
+  font-size: 13.5px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.send:disabled {
+  opacity: 0.5;
+}
+
+.sendError {
+  position: fixed;
+  bottom: calc(70px + env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 40px);
+  max-width: calc(var(--app-max-width) - 40px);
+  background: #fbefe9;
+  color: var(--warn);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  z-index: 11;
+}

@@ -1,0 +1,88 @@
+/* 목업 찜한 상품 (result-grid) */
+.count {
+  padding: 6px 20px 10px;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+}
+
+.count b {
+  color: var(--wine);
+  font-weight: 800;
+}
+
+.empty {
+  padding: 60px 20px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--ink-soft);
+  line-height: 1.7;
+}
+
+.empty b {
+  color: var(--wine);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 0 20px 24px;
+}
+
+.card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.thumb {
+  aspect-ratio: 1;
+  background: var(--cream);
+  position: relative;
+  overflow: hidden;
+}
+
+.badge,
+.sold {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 3px 6px;
+  border-radius: 4px;
+}
+
+.badge {
+  background: var(--wine);
+  color: var(--paper);
+}
+
+.sold {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.info {
+  padding: 9px 10px 11px;
+}
+
+.b {
+  font-size: 10px;
+  color: var(--ink-soft);
+  margin-bottom: 2px;
+}
+
+.n {
+  font-size: 11.5px;
+  font-weight: 700;
+  margin-bottom: 3px;
+  line-height: 1.3;
+}
+
+.p {
+  font-size: 12.5px;
+  font-weight: 900;
+  color: var(--wine);
+}

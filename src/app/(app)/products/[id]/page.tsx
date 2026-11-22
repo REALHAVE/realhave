@@ -8,6 +8,8 @@ import { getProductDetail, isUuid } from "@/lib/catalog";
 import { formatPrice, sizeLabel } from "@/lib/format";
 import PhotoSlider from "./PhotoSlider";
 import ViewCounter from "./ViewCounter";
+import DetailActions from "./DetailActions";
+import { isWished } from "@/lib/chat";
 import styles from "./detail.module.css";
 
 export const metadata = { title: "상품 상세 · Real HAVE" };
@@ -28,6 +30,7 @@ async function Detail({ params }: { params: PageProps<"/products/[id]">["params"
   const rejectReason =
     isMine && p.auth_status === "rejected" ? await getLatestRejectReason(p.id) : null;
   const loginHref = `/login?next=${encodeURIComponent(`/products/${p.id}`)}`;
+  const wished = isMine ? false : await isWished(p.id, user?.id);
 
   return (
     <>
@@ -88,15 +91,12 @@ async function Detail({ params }: { params: PageProps<"/products/[id]">["params"
             메시지
           </Link>
         ) : (
-          <div className={styles.actions}>
-            {/* 찜·채팅 기능은 8단계에서 연결 */}
-            <Link href={user ? "/wishlist" : loginHref} className={styles.btnLine}>
-              ♡ 찜
-            </Link>
-            <Link href={user ? "/chat" : loginHref} className={styles.btnFill}>
-              메시지
-            </Link>
-          </div>
+          <DetailActions
+            productId={p.id}
+            userId={user?.id ?? null}
+            initialWished={wished}
+            loginHref={loginHref}
+          />
         )}
       </footer>
     </>

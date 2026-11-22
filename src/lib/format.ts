@@ -15,6 +15,37 @@ export function sinceLabel(iso: string) {
   return `${Math.floor(sec / 86400)}일 전`;
 }
 
+// 채팅 시간 표시: 오늘이면 "오후 2:14", 어제면 "어제", 그 전이면 "11월 20일"
+export function chatTimeLabel(iso: string) {
+  const d = new Date(iso);
+  const now = new Date();
+  const kst = (x: Date) => new Date(x.getTime() + 9 * 3600_000).toISOString().slice(0, 10);
+  const today = kst(now);
+  const yesterday = kst(new Date(now.getTime() - 86400_000));
+  const day = kst(d);
+  if (day === today) return timeOfDay(iso);
+  if (day === yesterday) return "어제";
+  return `${Number(day.slice(5, 7))}월 ${Number(day.slice(8, 10))}일`;
+}
+
+export function timeOfDay(iso: string) {
+  return new Date(iso).toLocaleTimeString("ko-KR", {
+    timeZone: "Asia/Seoul",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
+export function dateLabel(iso: string) {
+  return new Date(iso).toLocaleDateString("ko-KR", {
+    timeZone: "Asia/Seoul",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    weekday: "short",
+  });
+}
+
 // 끌어올리기까지 남은 시간(시간 단위, 0이면 지금 가능). DB 규칙: 상품별 24시간 1회
 export function bumpWaitHours(bumpedAt: string) {
   const left = new Date(bumpedAt).getTime() + 24 * 3600_000 - Date.now();

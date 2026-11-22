@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { logout } from "@/app/(app)/(auth)/actions";
 import { getSessionUser } from "@/lib/auth/session";
 import { listMyProducts } from "@/lib/catalog";
+import { countWishlist, getMyRooms } from "@/lib/chat";
 import tabs from "../tabs.module.css";
 import styles from "./mypage.module.css";
 
@@ -46,13 +47,18 @@ async function MyPageContent() {
   const user = await getSessionUser();
   if (!user) return <GuestView />;
 
-  const myProducts = await listMyProducts(user.id);
-  // 판매내역은 6단계부터 실제 개수. 나머지는 8~9단계에서 연결
+  const [myProducts, wishCount, rooms] = await Promise.all([
+    listMyProducts(user.id),
+    countWishlist(user.id),
+    getMyRooms(),
+  ]);
+  const unread = rooms.reduce((sum, r) => sum + r.unread, 0);
+  // 구매내역은 구매자 선택 기능과 함께 연결 예정
   const stats = [
     { label: "구매내역", num: 0, href: null },
     { label: "판매내역", num: myProducts.length, href: "/sales" },
-    { label: "찜", num: 0, href: "/wishlist" },
-    { label: "채팅", num: 0, href: "/chat" },
+    { label: "찜", num: wishCount, href: "/wishlist" },
+    { label: unread > 0 ? `채팅 (새 ${unread})` : "채팅", num: rooms.length, href: "/chat" },
   ];
 
   return (
