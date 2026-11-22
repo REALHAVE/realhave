@@ -86,7 +86,15 @@ export async function signup(_: FormState, form: FormData): Promise<FormState> {
     },
   });
 
-  if (error) return { error: authErrorMessage(error.code, "가입하지 못했어요. 다시 시도해 주세요."), values };
+  if (error) {
+    console.error("[signup]", error.code, error.message);
+    if (/sending .*email/i.test(error.message))
+      return {
+        error: "인증 메일을 보내지 못했어요. 잠시 후 다시 시도해 주세요. (계속되면 고객센터로 문의)",
+        values,
+      };
+    return { error: authErrorMessage(error.code, "가입하지 못했어요. 다시 시도해 주세요."), values };
+  }
 
   // 이미 가입·인증된 이메일이면 Supabase는 오류 대신 빈 정보를 돌려줌
   if (data.user && data.user.identities?.length === 0)
