@@ -39,6 +39,11 @@ async function Detail({ params }: { params: PageProps<"/products/[id]">["params"
     <>
       <div className={styles.topbar}>
         <BackButton className={styles.iconBtn} fallback="/" />
+        {!isMine && (
+          <Link href={`/report?product=${p.id}`} className={styles.reportBtn}>
+            신고
+          </Link>
+        )}
       </div>
 
       <PhotoSlider paths={p.images} brand={p.brand_name} />

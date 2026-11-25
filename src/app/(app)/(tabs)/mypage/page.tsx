@@ -9,16 +9,31 @@ import styles from "./mypage.module.css";
 
 export const metadata = { title: "마이페이지 · Real HAVE" };
 
-// 아직 연결 안 된 메뉴 (각 단계에서 연결)
-const MENU_COMMON = ["공지사항", "고객센터", "약관 및 정책", "앱설정"];
+type MenuItem = { label: string; href?: string; note?: string };
 
-function Menu({ items }: { items: string[] }) {
+// href 가 없는 메뉴는 아직 준비 중 (약관은 13단계, 내정보수정·앱설정은 추후)
+const MENU_COMMON: MenuItem[] = [
+  { label: "공지사항", href: "/notices" },
+  { label: "고객센터 · 1:1 문의", href: "/support" },
+  { label: "약관 및 정책", note: "준비 중" },
+];
+
+function Menu({ items }: { items: MenuItem[] }) {
   return (
     <ul className={styles.menu}>
-      {items.map((label) => (
-        <li key={label} className={styles.item}>
-          <span>{label}</span>
-          <span className={styles.chev}>›</span>
+      {items.map((m) => (
+        <li key={m.label}>
+          {m.href ? (
+            <Link href={m.href} className={styles.item}>
+              <span>{m.label}</span>
+              <span className={styles.chev}>›</span>
+            </Link>
+          ) : (
+            <div className={styles.item} style={{ color: "var(--ink-soft)" }}>
+              <span>{m.label}</span>
+              <span className={styles.chev}>{m.note}</span>
+            </div>
+          )}
         </li>
       ))}
     </ul>
@@ -91,7 +106,7 @@ async function MyPageContent() {
         ))}
       </div>
 
-      <Menu items={["내정보수정", ...MENU_COMMON, "탈퇴하기"]} />
+      <Menu items={[...MENU_COMMON, { label: "탈퇴하기", href: "/withdraw" }]} />
 
       <form action={logout}>
         <button className={styles.logout}>로그아웃</button>

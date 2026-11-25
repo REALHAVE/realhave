@@ -290,3 +290,16 @@
   font-weight: 600;
   z-index: 11;
 }
+
+.reportLink {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink-soft);
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}

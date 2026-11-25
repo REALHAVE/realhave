@@ -21,7 +21,10 @@ async function Content({ params }: { params: PageProps<"/chat/[roomId]">["params
   return (
     <>
       <div className={styles.roomHead}>
-        <SubTopBar title={room.otherNickname} fallback="/chat" />
+        <div style={{ position: "relative" }}>
+          <SubTopBar title={room.otherNickname} fallback="/chat" />
+          <Link href={`/report?room=${room.id}`} className={styles.reportLink}>신고</Link>
+        </div>
         {room.product && (
           <Link href={`/products/${room.productId}`} className={styles.productBar}>
             <div className={styles.avatar}>

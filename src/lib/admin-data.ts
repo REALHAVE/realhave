@@ -221,7 +221,26 @@ export type ReportRow = {
   product_id: string | null;
   product: string | null;
   room_id: string | null;
+  evidence: Evidence | null;
+  evidence_room_id: string | null;
 };
+
+// 회원탈퇴 때 보관한 대화 사본 (결정 15)
+export type Evidence = {
+  saved_at: string;
+  withdrawn_user: string | null;
+  product: { title: string; brand: string; price: number; seller: string } | null;
+  target_user: string | null;
+  messages: { sender: string | null; is_seller: boolean; body: string | null; image_path: string | null; created_at: string }[];
+};
+
+// 보관된 대화의 사진 임시 링크 (CS 관리자만 — 저장소 규칙)
+export async function evidenceImageUrls(paths: string[]) {
+  if (paths.length === 0) return new Map<string, string>();
+  const supabase = await createClient();
+  const { data } = await supabase.storage.from("chat-images").createSignedUrls(paths, 600);
+  return new Map<string, string>((data ?? []).map((s) => [s.path ?? "", s.signedUrl ?? ""]));
+}
 
 export const REPORT_REASON: Record<ReportRow["reason"], string> = {
   fake_suspect: "정품 의심",

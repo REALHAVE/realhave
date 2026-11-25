@@ -223,3 +223,17 @@ export async function toggleCatalogActive(kind: "brand" | "category", id: string
   revalidatePath("/designers");
   return { message: active ? "다시 보이게 했어요." : "숨겼어요. (회원 화면에서 안 보임)" };
 }
+
+// ---------- 회원 삭제 (전체 관리자) ----------
+//  신고 처리 중인 대화는 증거로 보관한 뒤 삭제 (결정 15). 되돌릴 수 없음
+export async function deleteMember(_: AdminState, form: FormData): Promise<AdminState> {
+  const id = s(form, "userId");
+  const confirmText = s(form, "confirm");
+  if (!isUuid(id)) return { error: "잘못된 요청입니다." };
+  if (confirmText !== "삭제") return { error: "확인 칸에 '삭제'라고 입력해주세요." };
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("admin_delete_member", { p_user_id: id });
+  if (error) return { error: friendly(error.message, "삭제하지 못했어요.") };
+  revalidatePath("/admin/members");
+  return { message: "회원을 삭제했어요." };
+}

@@ -56,3 +56,11 @@ export function bumpWaitHours(bumpedAt: string) {
 export function conditionLabel(grade: string) {
   return grade === "NEW" ? "NEW · 새상품" : `USED · ${grade}`;
 }
+
+// "2026.11.25" 형식 날짜
+export function ymdLabel(iso: string) {
+  return new Date(iso)
+    .toLocaleDateString("ko-KR", { timeZone: "Asia/Seoul" })
+    .replace(/\s/g, "")
+    .replace(/\.$/, "");
+}

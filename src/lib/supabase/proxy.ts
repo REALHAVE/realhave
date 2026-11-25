@@ -10,6 +10,8 @@ const PROTECTED_PREFIXES = [
   "/sales",
   "/purchases",
   "/withdraw",
+  "/support",
+  "/report",
 ];
 
 // 모든 요청마다: 로그인 쿠키 갱신 + 보호된 주소면 로그인 화면으로 보냄

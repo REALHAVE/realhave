@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { ROLE_NAME } from "@/lib/auth/admin";
 import { listMembers, timeAgo } from "@/lib/admin-data";
 import { NoPermission, requireAdmin } from "../Guard";
+import DeleteMember from "./DeleteMember";
 import MemberActions from "./MemberActions";
 import styles from "../../admin.module.css";
 
@@ -77,7 +78,10 @@ async function Content({ searchParams }: { searchParams: PageProps<"/admin/membe
                       {m.id === admin.id ? (
                         <span style={{ color: "var(--ink-soft)", fontSize: 12 }}>본인</span>
                       ) : (
-                        <MemberActions key={m.id + m.status /* 상태가 바뀌면 새로 그림 */} userId={m.id} nickname={m.nickname} suspended={m.status === "suspended"} />
+                        <>
+                          <MemberActions key={m.id + m.status /* 상태가 바뀌면 새로 그림 */} userId={m.id} nickname={m.nickname} suspended={m.status === "suspended"} />{" "}
+                          <DeleteMember userId={m.id} nickname={m.nickname} />
+                        </>
                       )}
                     </td>
                   )}
@@ -88,7 +92,7 @@ async function Content({ searchParams }: { searchParams: PageProps<"/admin/membe
         )}
         <p className={styles.note}>
           ※ 자격중지된 회원은 로그인은 되지만 상품 등록·채팅·찜·신고를 할 수 없고, 판매 상품은 홈에서
-          숨겨져요. 회원 삭제는 회원탈퇴 기능(11단계)과 함께 만들 예정이에요.
+          숨겨져요. 회원삭제는 되돌릴 수 없어요 (신고 처리 중인 대화만 증거로 보관).
           {!isMaster && " 자격중지·허용은 전체 관리자만 할 수 있어요."}
         </p>
       </div>

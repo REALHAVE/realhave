@@ -1,7 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { getReportedChat, listReports, REPORT_REASON, REPORT_TARGET, timeAgo } from "@/lib/admin-data";
+import {
+  evidenceImageUrls,
+  getReportedChat,
+  listReports,
+  REPORT_REASON,
+  REPORT_TARGET,
+  timeAgo,
+} from "@/lib/admin-data";
 import { isUuid } from "@/lib/catalog";
 import { NoPermission, requireAdmin } from "../../Guard";
 import HandleForm from "./HandleForm";
@@ -17,6 +24,11 @@ async function Content({ params }: { params: PageProps<"/admin/reports/[id]">["p
   const r = (await listReports()).find((x) => x.id === id);
   if (!r) notFound();
   const chat = r.room_id ? await getReportedChat(r.room_id) : null;
+  // 당사자가 탈퇴해 원본이 지워진 경우: 보관해 둔 사본(증거)
+  const ev = !chat && r.evidence ? r.evidence : null;
+  const evUrls = ev
+    ? await evidenceImageUrls(ev.messages.filter((m) => m.image_path).map((m) => m.image_path as string))
+    : new Map<string, string>();
 
   return (
     <div className={styles.reviewGrid}>
@@ -45,6 +57,44 @@ async function Content({ params }: { params: PageProps<"/admin/reports/[id]">["p
             </p>
           )}
         </section>
+
+        {ev && (
+          <section className={styles.panel}>
+            <h2>
+              보관된 증거 <span className={styles.more}>회원탈퇴로 원본 삭제 · {timeAgo(ev.saved_at)} 보관</span>
+            </h2>
+            {ev.withdrawn_user && <p className={styles.note} style={{ marginTop: 0 }}>탈퇴한 회원: {ev.withdrawn_user}</p>}
+            {ev.product && (
+              <p className={styles.note} style={{ marginTop: 0 }}>
+                상품: {ev.product.brand} {ev.product.title} · 판매자 {ev.product.seller}
+              </p>
+            )}
+            {ev.messages.length === 0 ? (
+              <p className={styles.empty}>보관된 대화가 없어요.</p>
+            ) : (
+              <div className={styles.chatLog}>
+                {ev.messages.map((m, i) => (
+                  <div key={i} className={`${styles.chatLine} ${m.is_seller ? styles.chatSeller : ""}`}>
+                    <span className={styles.chatMeta}>
+                      {m.sender ?? "(탈퇴한 회원)"}{m.is_seller ? " (판매자)" : " (구매희망자)"} ·{" "}
+                      {new Date(m.created_at).toLocaleString("ko-KR", { timeZone: "Asia/Seoul" })}
+                    </span>
+                    {m.image_path ? (
+                      evUrls.get(m.image_path) ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={evUrls.get(m.image_path)} alt="보낸 사진" />
+                      ) : (
+                        "(사진)"
+                      )
+                    ) : (
+                      m.body
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
 
         {r.room_id && (
           <section className={styles.panel}>
