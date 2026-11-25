@@ -54,11 +54,15 @@ async function MyPageContent() {
     countPurchases(user.id),
   ]);
   const unread = rooms.reduce((sum, r) => sum + r.unread, 0);
+  // 판매내역 = 지금 판매중인 상품(심사대기·반려 포함), 판매완료 = 거래완료된 상품
+  const onSaleCount = myProducts.filter((p) => p.status === "on_sale").length;
+  const soldCount = myProducts.filter((p) => p.status === "sold").length;
   const stats = [
-    { label: "구매내역", num: purchaseCount, href: "/purchases" },
-    { label: "판매내역", num: myProducts.length, href: "/sales" },
-    { label: "찜", num: wishCount, href: "/wishlist" },
-    { label: unread > 0 ? `채팅 (새 ${unread})` : "채팅", num: rooms.length, href: "/chat" },
+    { label: "구매내역", num: purchaseCount, href: "/purchases", badge: 0 },
+    { label: "판매내역", num: onSaleCount, href: "/sales", badge: 0 },
+    { label: "판매완료", num: soldCount, href: "/sales?tab=done", badge: 0 },
+    { label: "찜", num: wishCount, href: "/wishlist", badge: 0 },
+    { label: "채팅", num: rooms.length, href: "/chat", badge: unread },
   ];
 
   return (
@@ -74,23 +78,17 @@ async function MyPageContent() {
       </div>
 
       <div className={styles.stats}>
-        {stats.map((s) => {
-          const inner = (
-            <>
-              <div className={styles.num}>{s.num}</div>
-              <div className={styles.lbl}>{s.label}</div>
-            </>
-          );
-          return s.href ? (
-            <Link key={s.label} href={s.href} className={styles.cell}>
-              {inner}
-            </Link>
-          ) : (
-            <div key={s.label} className={styles.cell}>
-              {inner}
-            </div>
-          );
-        })}
+        {stats.map((s) => (
+          <Link key={s.label} href={s.href} className={styles.cell}>
+            <div className={styles.num}>{s.num}</div>
+            <div className={styles.lbl}>{s.label}</div>
+            {s.badge > 0 && (
+              <span className={styles.newBadge} aria-label={`안 읽은 메시지 ${s.badge}개`}>
+                {s.badge > 99 ? "99+" : s.badge}
+              </span>
+            )}
+          </Link>
+        ))}
       </div>
 
       <Menu items={["내정보수정", ...MENU_COMMON, "탈퇴하기"]} />

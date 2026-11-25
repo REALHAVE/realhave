@@ -88,9 +88,11 @@
 
 .cell {
   flex: 1;
+  min-width: 0;
   text-align: center;
-  padding: 14px 4px;
+  padding: 14px 2px;
   border-right: 1px solid var(--line);
+  position: relative;
 }
 
 .cell:last-child {
@@ -107,6 +109,23 @@
   font-size: 11px;
   color: var(--ink-soft);
   margin-top: 2px;
+  white-space: nowrap;
+}
+
+/* 채팅 안 읽은 수 */
+.newBadge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  padding: 0 4px;
+  background: var(--warn);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+  line-height: 16px;
 }
 
 .menu {
