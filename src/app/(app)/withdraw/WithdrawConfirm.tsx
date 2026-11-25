@@ -36,8 +36,12 @@ export default function WithdrawConfirm({ userId }: { userId: string }) {
     try {
       // 1) 마지막 확인 (그 사이 상품을 올렸을 수도 있으니)
       setBusy("확인 중…");
-      const { data: left } = await supabase.rpc("withdraw_check");
-      if ((left as number) > 0) throw new Error("판매중인 상품이 있어요. 먼저 삭제해주세요.");
+      const { data: st } = await supabase.rpc("withdraw_status");
+      const row = (Array.isArray(st) ? st[0] : st) as { on_sale: number; open_reports: number } | null;
+      if (!row) throw new Error("탈퇴 가능 여부를 확인하지 못했어요. 잠시 후 다시 시도해 주세요.");
+      if (row.on_sale > 0) throw new Error("판매중인 상품이 있어요. 먼저 삭제해주세요.");
+      if (row.open_reports > 0)
+        throw new Error("처리 중인 신고가 있어 탈퇴할 수 없어요. 신고 처리가 끝난 뒤 다시 시도해주세요.");
 
       // 2) 내가 올린 사진 지우기 (상품사진은 공개 주소라 반드시 지움)
       setBusy("사진 정리 중…");
@@ -85,8 +89,6 @@ export default function WithdrawConfirm({ userId }: { userId: string }) {
         대화내용, 기존 거래내용은
         <br />
         모두 삭제되며 복구할 수 없습니다.
-        <br />
-        <small>(신고 처리 중인 대화는 조사를 위해 보관될 수 있어요)</small>
       </div>
       {error && <p className={styles.error}>{error}</p>}
       <button type="button" className={`${styles.btn} ${styles.btnDanger}`} disabled={Boolean(busy)} onClick={withdraw}>
