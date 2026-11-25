@@ -130,3 +130,263 @@ export function timeAgo(iso: string) {
   if (diff < 86400) return `${Math.floor(diff / 3600)}시간 전`;
   return `${Math.floor(diff / 86400)}일 전`;
 }
+
+// =====================================================================
+// 10단계: 대시보드 · 회원 · 거래 · 신고/CS · 공지 · 카테고리/브랜드 · 관리자
+// (권한 확인은 DB 함수·RLS가 함. 권한이 없으면 빈 값)
+// =====================================================================
+
+export type Dashboard = {
+  today_products: number;
+  today_signups: number;
+  pending: number;
+  pending_over24: number;
+  open_reports: number;
+  waiting_inquiries: number;
+  members: number;
+  on_sale: number;
+  weekly: { day: string; count: number }[];
+  recent_deals: {
+    product: string;
+    buyer: string | null;
+    seller: string;
+    method: string | null;
+    price: number;
+    completed_at: string;
+  }[];
+};
+
+export async function getDashboard(): Promise<Dashboard | null> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("admin_dashboard");
+  if (error) console.error("[admin_dashboard]", error.message);
+  return (data as Dashboard) ?? null;
+}
+
+export type MemberRow = {
+  id: string;
+  nickname: string;
+  email: string;
+  phone: string | null;
+  status: "active" | "suspended";
+  suspended_reason: string | null;
+  created_at: string;
+  last_sign_in_at: string | null;
+  email_confirmed: boolean;
+  on_sale_count: number;
+  sold_count: number;
+  purchase_count: number;
+  admin_role: "master" | "product" | "cs" | null;
+};
+
+export async function listMembers(query?: string): Promise<MemberRow[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("admin_members", { p_query: query ?? null });
+  if (error) console.error("[admin_members]", error.message);
+  return (data ?? []) as MemberRow[];
+}
+
+export type DealRow = {
+  room_id: string | null;
+  product_id: string;
+  product: string;
+  price: number;
+  buyer: string | null;
+  seller: string;
+  last_message_at: string | null;
+  state: "chatting" | "done" | "done_other" | "done_no_buyer" | "closed";
+  method: string | null;
+  reported: boolean;
+};
+
+export async function listDeals(): Promise<DealRow[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("admin_deal_overview");
+  if (error) console.error("[admin_deal_overview]", error.message);
+  return (data ?? []) as DealRow[];
+}
+
+export type ReportRow = {
+  id: string;
+  target_type: "product" | "user" | "chat";
+  reason: "fake_suspect" | "false_listing" | "no_response" | "bad_manner" | "etc";
+  detail: string | null;
+  status: "open" | "resolved" | "dismissed";
+  admin_note: string | null;
+  created_at: string;
+  handled_at: string | null;
+  reporter: string;
+  target_user: string | null;
+  target_user_id: string | null;
+  product_id: string | null;
+  product: string | null;
+  room_id: string | null;
+};
+
+export const REPORT_REASON: Record<ReportRow["reason"], string> = {
+  fake_suspect: "정품 의심",
+  false_listing: "허위매물",
+  no_response: "응답 없음",
+  bad_manner: "비매너",
+  etc: "기타",
+};
+
+export const REPORT_TARGET: Record<ReportRow["target_type"], string> = {
+  product: "상품",
+  user: "회원",
+  chat: "채팅",
+};
+
+export async function listReports(): Promise<ReportRow[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("admin_reports");
+  if (error) console.error("[admin_reports]", error.message);
+  return (data ?? []) as ReportRow[];
+}
+
+// 신고된 채팅방의 대화 (CS는 신고된 방만 볼 수 있음 — RLS)
+export async function getReportedChat(roomId: string) {
+  const supabase = await createClient();
+  const [{ data: room }, { data: msgs }] = await Promise.all([
+    supabase.from("chat_rooms").select("seller_id, buyer_id").eq("id", roomId).maybeSingle(),
+    supabase
+      .from("messages")
+      .select("id, sender_id, body, image_path, created_at")
+      .eq("room_id", roomId)
+      .order("created_at")
+      .limit(500),
+  ]);
+  if (!room) return null;
+  const { data: people } = await supabase
+    .from("profiles")
+    .select("id, nickname")
+    .in("id", [room.seller_id, room.buyer_id]);
+  const names = new Map((people ?? []).map((p) => [p.id as string, p.nickname as string]));
+  const list = (msgs ?? []) as { id: string; sender_id: string; body: string | null; image_path: string | null; created_at: string }[];
+  const paths = list.filter((m) => m.image_path).map((m) => m.image_path as string);
+  const signed = paths.length
+    ? (await supabase.storage.from("chat-images").createSignedUrls(paths, 600)).data ?? []
+    : [];
+  const urls = new Map(signed.map((s) => [s.path, s.signedUrl]));
+  return {
+    sellerId: room.seller_id as string,
+    messages: list.map((m) => ({
+      ...m,
+      sender: names.get(m.sender_id) ?? "(알 수 없음)",
+      isSeller: m.sender_id === room.seller_id,
+      imageUrl: m.image_path ? urls.get(m.image_path) ?? null : null,
+    })),
+  };
+}
+
+export type InquiryRow = {
+  id: string;
+  user_id: string;
+  title: string;
+  body: string;
+  status: "waiting" | "answered";
+  answer: string | null;
+  answered_at: string | null;
+  created_at: string;
+  writer: string;
+};
+
+export async function listInquiries(): Promise<InquiryRow[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("inquiries")
+    .select("id, user_id, title, body, status, answer, answered_at, created_at, writer:profiles!user_id(nickname)")
+    .order("status", { ascending: true }) // waiting(답변대기)이 먼저 (enum 정의 순서)
+    .order("created_at", { ascending: false })
+    .limit(300);
+  if (error) console.error("[inquiries]", error.message);
+  return (data ?? []).map((r) => {
+    const w = Array.isArray(r.writer) ? r.writer[0] : r.writer;
+    return { ...(r as unknown as InquiryRow), writer: (w as { nickname: string } | null)?.nickname ?? "(알 수 없음)" };
+  });
+}
+
+export type NoticeRow = {
+  id: string;
+  kind: "notice" | "event";
+  title: string;
+  body: string;
+  is_published: boolean;
+  published_at: string | null;
+  created_at: string;
+};
+
+export async function listNoticesAdmin(): Promise<NoticeRow[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("notices")
+    .select("id, kind, title, body, is_published, published_at, created_at")
+    .order("created_at", { ascending: false })
+    .limit(300);
+  if (error) console.error("[notices]", error.message);
+  return (data ?? []) as NoticeRow[];
+}
+
+export async function getNoticeAdmin(id: string): Promise<NoticeRow | null> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("notices")
+    .select("id, kind, title, body, is_published, published_at, created_at")
+    .eq("id", id)
+    .maybeSingle();
+  return (data as NoticeRow) ?? null;
+}
+
+export type AdminAccount = {
+  user_id: string;
+  nickname: string;
+  email: string;
+  role: "master" | "product" | "cs";
+  last_sign_in_at: string | null;
+  created_at: string;
+};
+
+export async function listAdmins(): Promise<AdminAccount[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("admin_list_admins");
+  if (error) console.error("[admin_list_admins]", error.message);
+  return (data ?? []) as AdminAccount[];
+}
+
+// 카테고리·브랜드 관리 (숨긴 것까지 전부)
+export async function getCatalogAdmin() {
+  const supabase = await createClient();
+  const [cats, brands, counts] = await Promise.all([
+    supabase
+      .from("categories")
+      .select("id, parent_id, name, size_type, sort_order, is_active")
+      .order("sort_order"),
+    supabase
+      .from("brands")
+      .select("id, name_en, name_ko, origin_country, index_letter, is_popular, popular_order, is_active")
+      .order("index_letter")
+      .order("name_en"),
+    supabase.rpc("admin_catalog_counts"),
+  ]);
+  const countMap = new Map<string, number>();
+  for (const c of (counts.data ?? []) as { kind: string; id: string; cnt: number }[]) {
+    countMap.set(`${c.kind}:${c.id}`, (countMap.get(`${c.kind}:${c.id}`) ?? 0) + c.cnt);
+  }
+  type Cat = { id: string; parent_id: string | null; name: string; size_type: string; sort_order: number; is_active: boolean };
+  const all = (cats.data ?? []) as Cat[];
+  return {
+    categories: all
+      .filter((c) => !c.parent_id)
+      .map((t) => ({
+        ...t,
+        count: countMap.get(`category:${t.id}`) ?? 0,
+        children: all
+          .filter((c) => c.parent_id === t.id)
+          .map((c) => ({ ...c, count: countMap.get(`category:${c.id}`) ?? 0 })),
+      })),
+    brands: ((brands.data ?? []) as {
+      id: string; name_en: string; name_ko: string | null; origin_country: string | null;
+      index_letter: string; is_popular: boolean; popular_order: number | null; is_active: boolean;
+    }[]).map((b) => ({ ...b, count: countMap.get(`brand:${b.id}`) ?? 0 })),
+  };
+}

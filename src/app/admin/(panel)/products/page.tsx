@@ -44,7 +44,7 @@ async function Content({ searchParams }: { searchParams: PageProps<"/admin/produ
         <Link href="/admin/products?tab=all" className={`${styles.tab} ${tab === "all" ? styles.tabOn : ""}`}>
           전체 상품
         </Link>
-        <span className={styles.tab} style={{ opacity: 0.5 }}>카테고리/브랜드 (10단계)</span>
+        <Link href="/admin/catalog" className={styles.tab}>카테고리/브랜드</Link>
       </div>
 
       <div className={styles.panel}>

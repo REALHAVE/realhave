@@ -24,7 +24,7 @@ async function AdminGate({ children }: { children: React.ReactNode }) {
 
   return (
     <div className={styles.layout}>
-      <Sidebar />
+      <Sidebar role={admin.role} />
       <main className={styles.main}>
         <p className={styles.who} style={{ textAlign: "right", marginBottom: 8 }}>
           <b>{admin.nickname}</b>님 ({ROLE_NAME[admin.role]})
