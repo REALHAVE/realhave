@@ -27,12 +27,9 @@ async function Content() {
     return (
       <div className={styles.wd}>
         <div className={styles.wdIcon}>⚠️</div>
+        {/* 신고 처리 중이면 신고 안내만, 신고가 없고 판매중 상품만 있으면 상품 삭제 안내만 */}
         <div className={styles.wdTitle}>
-          {onSale > 0 && openReports > 0
-            ? "지금은 탈퇴할 수 없어요"
-            : onSale > 0
-              ? "등록된 상품이 있어요"
-              : "처리 중인 신고가 있어요"}
+          {openReports > 0 ? "처리 중인 신고가 있어요" : "등록된 상품이 있어요"}
         </div>
 
         {openReports > 0 && (
@@ -46,7 +43,7 @@ async function Content() {
           </div>
         )}
 
-        {onSale > 0 && (
+        {openReports === 0 && onSale > 0 && (
           <>
             <div className={styles.wdDesc}>
               회원탈퇴를 진행하려면
@@ -62,7 +59,7 @@ async function Content() {
           </>
         )}
 
-        {openReports > 0 && onSale === 0 && (
+        {openReports > 0 && (
           <Link href="/support" className={styles.btn}>고객센터 1:1 문의</Link>
         )}
         <Link href="/mypage" className={styles.wdNo}>돌아가기</Link>
