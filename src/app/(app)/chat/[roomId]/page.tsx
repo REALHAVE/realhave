@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import SubTopBar from "@/components/SubTopBar";
 import { getSessionUser } from "@/lib/auth/session";
 import { productImageUrl } from "@/lib/catalog-url";
-import { getMyRoomReport, getRoom } from "@/lib/chat";
+import { getMyRoomReport, getRoom, REPORT_REASON_NAME } from "@/lib/chat";
 import { formatPrice } from "@/lib/format";
 import ChatRoom from "./ChatRoom";
 import styles from "../chat.module.css";
@@ -47,10 +47,10 @@ async function Content({ params }: { params: PageProps<"/chat/[roomId]">["params
         {myReport && (
           <div className={`${styles.reportNotice} ${myReport.status === "open" ? "" : styles.reportDone}`}>
             {myReport.status === "open" ? (
-              <>🚨 <b>신고 접수됨</b> — 리얼해브 관리자가 확인하고 있어요. 결과는 여기에 알려드릴게요.</>
+              <>🚨 <b>신고 접수됨({REPORT_REASON_NAME[myReport.reason]})</b> — 리얼해브 관리자가 확인하고 있어요. 결과는 여기에 알려드릴게요.</>
             ) : (
               <>
-                ✅ <b>신고 처리 결과: {myReport.status === "resolved" ? "조치 완료" : "문제 없음으로 확인"}</b>
+                ✅ <b>신고({REPORT_REASON_NAME[myReport.reason]}) 처리 결과: {myReport.status === "resolved" ? "조치 완료" : "문제 없음으로 확인"}</b>
                 {myReport.result_message && <span className={styles.reportMsg}>{myReport.result_message}</span>}
               </>
             )}

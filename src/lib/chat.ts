@@ -253,6 +253,7 @@ export async function didIBuy(productId: string, userId: string | undefined) {
 // ---------------------------------------------------------------------
 export type MyRoomReport = {
   status: "open" | "resolved" | "dismissed";
+  reason: "fake_suspect" | "false_listing" | "no_response" | "bad_manner" | "etc";
   result_message: string | null;
   created_at: string;
   handled_at: string | null;
@@ -262,7 +263,7 @@ export async function getMyRoomReport(roomId: string, userId: string): Promise<M
   const supabase = await createClient();
   const { data } = await supabase
     .from("reports")
-    .select("status, result_message, created_at, handled_at")
+    .select("status, reason, result_message, created_at, handled_at")
     .eq("target_room_id", roomId)
     .eq("reporter_id", userId)
     .order("created_at", { ascending: false })
@@ -270,6 +271,14 @@ export async function getMyRoomReport(roomId: string, userId: string): Promise<M
     .maybeSingle();
   return (data as MyRoomReport) ?? null;
 }
+
+export const REPORT_REASON_NAME: Record<MyRoomReport["reason"], string> = {
+  fake_suspect: "정품 의심",
+  false_listing: "허위매물",
+  no_response: "응답 없음",
+  bad_manner: "비매너",
+  etc: "기타",
+};
 
 // ---------------------------------------------------------------------
 // 관리자 1:1 대화 (회원 쪽)
