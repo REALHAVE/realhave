@@ -247,3 +247,79 @@ export async function didIBuy(productId: string, userId: string | undefined) {
     .eq("buyer_id", userId);
   return (count ?? 0) > 0;
 }
+
+// ---------------------------------------------------------------------
+// 채팅방 신고 안내 (신고자 본인에게만 — 신고자만 자기 신고를 읽을 수 있음)
+// ---------------------------------------------------------------------
+export type MyRoomReport = {
+  status: "open" | "resolved" | "dismissed";
+  result_message: string | null;
+  created_at: string;
+  handled_at: string | null;
+};
+
+export async function getMyRoomReport(roomId: string, userId: string): Promise<MyRoomReport | null> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("reports")
+    .select("status, result_message, created_at, handled_at")
+    .eq("target_room_id", roomId)
+    .eq("reporter_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  return (data as MyRoomReport) ?? null;
+}
+
+// ---------------------------------------------------------------------
+// 관리자 1:1 대화 (회원 쪽)
+// ---------------------------------------------------------------------
+export type SupportThreadRow = {
+  thread_id: string;
+  subject: string;
+  last_message_at: string;
+  last_message: string | null;
+  unread: number;
+};
+
+export async function getMySupportThreads(): Promise<SupportThreadRow[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("my_support_threads");
+  if (error) return [];
+  return (data ?? []) as SupportThreadRow[];
+}
+
+export type SupportMessage = {
+  id: string;
+  sender_id: string | null;
+  is_admin: boolean;
+  body: string;
+  created_at: string;
+};
+
+// 대화방 한 개 (회원 본인 또는 CS 관리자 — RLS)
+export async function getSupportThread(threadId: string) {
+  if (!isUuid(threadId)) return null;
+  const supabase = await createClient();
+  const { data: t } = await supabase
+    .from("support_threads")
+    .select("id, user_id, subject, report_id, user:profiles!user_id(nickname)")
+    .eq("id", threadId)
+    .maybeSingle();
+  if (!t) return null;
+  const { data: msgs } = await supabase
+    .from("support_messages")
+    .select("id, sender_id, is_admin, body, created_at")
+    .eq("thread_id", threadId)
+    .order("created_at", { ascending: true })
+    .limit(500);
+  const user = Array.isArray(t.user) ? t.user[0] : t.user;
+  return {
+    id: t.id as string,
+    userId: t.user_id as string,
+    nickname: (user as { nickname: string } | null)?.nickname ?? "(알 수 없음)",
+    subject: t.subject as string,
+    reportId: (t.report_id as string | null) ?? null,
+    messages: (msgs ?? []) as SupportMessage[],
+  };
+}

@@ -77,11 +77,13 @@ export async function handleReport(_: AdminState, form: FormData): Promise<Admin
   const id = s(form, "reportId");
   const status = s(form, "status");
   const note = s(form, "note").slice(0, 1000);
+  const result = s(form, "result").slice(0, 1000);
   if (!isUuid(id) || !["open", "resolved", "dismissed"].includes(status)) return { error: "잘못된 요청입니다." };
   const supabase = await createClient();
+  // result_message: 신고자 채팅방에 보이는 결과 안내 / admin_note: 관리자끼리만 보는 메모
   const { error } = await supabase
     .from("reports")
-    .update({ status, admin_note: note || null })
+    .update({ status, admin_note: note || null, result_message: result || null })
     .eq("id", id);
   if (error) return { error: friendly(error.message, "저장하지 못했어요.") };
   revalidatePath("/admin/reports");
@@ -236,4 +238,16 @@ export async function deleteMember(_: AdminState, form: FormData): Promise<Admin
   if (error) return { error: friendly(error.message, "삭제하지 못했어요.") };
   revalidatePath("/admin/members");
   return { message: "회원을 삭제했어요." };
+}
+
+// ---------- 관리자 1:1 대화 시작 (신고 대상 회원 등) ----------
+export async function openSupportThread(userId: string, reportId: string | null): Promise<AdminState> {
+  if (!isUuid(userId) || (reportId && !isUuid(reportId))) return { error: "잘못된 요청입니다." };
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("admin_open_thread", {
+    p_user_id: userId,
+    p_report_id: reportId,
+  });
+  if (error || !data) return { error: friendly(error?.message ?? "", "대화를 열지 못했어요.") };
+  redirect(`/admin/threads/${data as string}`);
 }

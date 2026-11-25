@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { logout } from "@/app/(app)/(auth)/actions";
 import { getSessionUser } from "@/lib/auth/session";
 import { listMyProducts } from "@/lib/catalog";
-import { countPurchases, countWishlist, getMyRooms } from "@/lib/chat";
+import { countPurchases, countWishlist, getMyRooms, getMySupportThreads } from "@/lib/chat";
 import tabs from "../tabs.module.css";
 import styles from "./mypage.module.css";
 
@@ -62,13 +62,16 @@ async function MyPageContent() {
   const user = await getSessionUser();
   if (!user) return <GuestView />;
 
-  const [myProducts, wishCount, rooms, purchaseCount] = await Promise.all([
+  const [myProducts, wishCount, rooms, purchaseCount, threads] = await Promise.all([
     listMyProducts(user.id),
     countWishlist(user.id),
     getMyRooms(),
     countPurchases(user.id),
+    getMySupportThreads(),
   ]);
-  const unread = rooms.reduce((sum, r) => sum + r.unread, 0);
+  // 안 읽은 수 = 거래 채팅 + 관리자 대화
+  const unread =
+    rooms.reduce((sum, r) => sum + r.unread, 0) + threads.reduce((sum, t) => sum + t.unread, 0);
   // 판매내역 = 지금 판매중인 상품(심사대기·반려 포함), 판매완료 = 거래완료된 상품
   const onSaleCount = myProducts.filter((p) => p.status === "on_sale").length;
   const soldCount = myProducts.filter((p) => p.status === "sold").length;

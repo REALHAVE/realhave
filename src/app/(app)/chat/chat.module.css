@@ -303,3 +303,40 @@
   border: 1px solid var(--line);
   border-radius: 14px;
 }
+
+/* 관리자 대화 줄 */
+.adminRow {
+  background: #fbf3f7;
+}
+
+/* 신고자에게만 보이는 안내 */
+.reportNotice {
+  margin: 0 20px 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #fdf3e3;
+  border: 1px solid #f0dcb8;
+  color: #7a5414;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.reportDone {
+  background: #eef6f1;
+  border-color: #cfe5d8;
+  color: #2f6a4c;
+}
+
+.reportMsg {
+  display: block;
+  margin-top: 4px;
+  color: var(--ink);
+  white-space: pre-wrap;
+}
+
+.reportNotice small {
+  display: block;
+  margin-top: 4px;
+  font-size: 10.5px;
+  opacity: 0.8;
+}

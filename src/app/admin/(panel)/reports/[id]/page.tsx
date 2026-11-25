@@ -126,7 +126,15 @@ async function Content({ params }: { params: PageProps<"/admin/reports/[id]">["p
 
       <section className={styles.panel}>
         <h2>처리</h2>
-        <HandleForm reportId={r.id} status={r.status} note={r.admin_note ?? ""} />
+        <HandleForm
+          reportId={r.id}
+          status={r.status}
+          note={r.admin_note ?? ""}
+          result={r.result_message ?? ""}
+          targetUserId={r.target_user_id}
+          targetUser={r.target_user}
+          isChatReport={r.target_type === "chat"}
+        />
       </section>
     </div>
   );

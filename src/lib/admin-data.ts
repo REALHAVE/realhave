@@ -213,6 +213,7 @@ export type ReportRow = {
   detail: string | null;
   status: "open" | "resolved" | "dismissed";
   admin_note: string | null;
+  result_message: string | null;
   created_at: string;
   handled_at: string | null;
   reporter: string;
@@ -408,4 +409,23 @@ export async function getCatalogAdmin() {
       index_letter: string; is_popular: boolean; popular_order: number | null; is_active: boolean;
     }[]).map((b) => ({ ...b, count: countMap.get(`brand:${b.id}`) ?? 0 })),
   };
+}
+
+// 관리자 1:1 대화 목록 (CS)
+export type AdminThreadRow = {
+  thread_id: string;
+  user_id: string;
+  nickname: string;
+  subject: string;
+  report_id: string | null;
+  last_message_at: string | null;
+  last_message: string | null;
+  unread: number;
+};
+
+export async function listSupportThreads(): Promise<AdminThreadRow[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("admin_support_threads");
+  if (error) console.error("[admin_support_threads]", error.message);
+  return (data ?? []) as AdminThreadRow[];
 }

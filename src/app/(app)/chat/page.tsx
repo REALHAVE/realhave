@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import SubTopBar from "@/components/SubTopBar";
 import { getSessionUser } from "@/lib/auth/session";
 import { productImageUrl } from "@/lib/catalog-url";
-import { getMyRooms } from "@/lib/chat";
+import { getMyRooms, getMySupportThreads } from "@/lib/chat";
 import { chatTimeLabel } from "@/lib/format";
 import LiveRefresh from "./LiveRefresh";
 import styles from "./chat.module.css";
@@ -14,13 +14,33 @@ export const metadata = { title: "채팅 · Real HAVE" };
 async function Content() {
   const user = await getSessionUser();
   if (!user) redirect("/login?next=/chat");
-  const rooms = await getMyRooms();
+  const [rooms, threads] = await Promise.all([getMyRooms(), getMySupportThreads()]);
 
   return (
     <>
       {/* 새 메시지가 오면 목록을 자동으로 새로고침 */}
       <LiveRefresh />
-      {rooms.length === 0 ? (
+      {threads.length > 0 && (
+        <ul className={styles.list}>
+          {threads.map((t) => (
+            <li key={t.thread_id}>
+              <Link href={`/chat/support/${t.thread_id}`} className={`${styles.row} ${styles.adminRow}`}>
+                <div className={styles.avatar} style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>🛡</div>
+                <div className={styles.rowInfo}>
+                  <div className={styles.top}>
+                    <span className={styles.name}>리얼해브 관리자</span>
+                    <span className={styles.time}>{chatTimeLabel(t.last_message_at)}</span>
+                  </div>
+                  <div className={styles.product}>{t.subject}</div>
+                  <div className={styles.msg}>{t.last_message}</div>
+                </div>
+                {t.unread > 0 && <span className={styles.badge}>{t.unread}</span>}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+      {rooms.length === 0 && threads.length === 0 ? (
         <p className={styles.empty}>
           아직 채팅이 없어요.
           <br />

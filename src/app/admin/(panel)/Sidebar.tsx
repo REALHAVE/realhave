@@ -15,6 +15,7 @@ const MENU: { href: string; label: string; roles: Role[] | "all"; exact?: boolea
   { href: "/admin/members", label: "회원 관리", roles: ["cs"] },
   { href: "/admin/deals", label: "거래관리", roles: "all" },
   { href: "/admin/reports", label: "신고/CS 관리", roles: ["cs"] },
+  { href: "/admin/threads", label: "관리자 채팅", roles: ["cs"] },
   { href: "/admin/notices", label: "공지사항/이벤트", roles: ["cs"] },
   { href: "/admin/settings", label: "계정/권한 설정", roles: [] }, // master 전용
 ];

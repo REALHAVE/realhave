@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import SubTopBar from "@/components/SubTopBar";
 import { getSessionUser } from "@/lib/auth/session";
 import { productImageUrl } from "@/lib/catalog-url";
-import { getRoom } from "@/lib/chat";
+import { getMyRoomReport, getRoom } from "@/lib/chat";
 import { formatPrice } from "@/lib/format";
 import ChatRoom from "./ChatRoom";
 import styles from "../chat.module.css";
@@ -17,6 +17,8 @@ async function Content({ params }: { params: PageProps<"/chat/[roomId]">["params
 
   const room = await getRoom(roomId, user.id);
   if (!room) notFound();
+  // 내가 이 대화를 신고했다면 (신고자 본인에게만 보임)
+  const myReport = await getMyRoomReport(room.id, user.id);
 
   return (
     <>
@@ -41,6 +43,19 @@ async function Content({ params }: { params: PageProps<"/chat/[roomId]">["params
               <div className={styles.pPrice}>{formatPrice(room.product.price)}</div>
             </div>
           </Link>
+        )}
+        {myReport && (
+          <div className={`${styles.reportNotice} ${myReport.status === "open" ? "" : styles.reportDone}`}>
+            {myReport.status === "open" ? (
+              <>🚨 <b>신고 접수됨</b> — 리얼해브 관리자가 확인하고 있어요. 결과는 여기에 알려드릴게요.</>
+            ) : (
+              <>
+                ✅ <b>신고 처리 결과: {myReport.status === "resolved" ? "조치 완료" : "문제 없음으로 확인"}</b>
+                {myReport.result_message && <span className={styles.reportMsg}>{myReport.result_message}</span>}
+              </>
+            )}
+            <small>이 안내는 나에게만 보여요.</small>
+          </div>
         )}
         <p className={styles.guide}>
           🔒 직거래 안전 가이드 — 거래 전 정품 인증 서류(한글표기 택·인보이스)를 반드시 채팅으로
