@@ -5,6 +5,7 @@ import SubTopBar from "@/components/SubTopBar";
 import { getSessionUser } from "@/lib/auth/session";
 import { listMyProducts } from "@/lib/catalog";
 import { bumpWaitHours, sinceLabel } from "@/lib/format";
+import { createClient } from "@/lib/supabase/server";
 import SalesCard from "./SalesCard";
 import styles from "./sales.module.css";
 
@@ -20,7 +21,13 @@ async function SalesContent({ searchParams }: { searchParams: PageProps<"/sales"
   const [user, sp] = await Promise.all([getSessionUser(), searchParams]);
   if (!user) redirect("/login?next=/sales");
 
-  const all = await listMyProducts(user.id);
+  const supabase = await createClient();
+  const [all, reportedRes] = await Promise.all([
+    listMyProducts(user.id),
+    supabase.rpc("my_reported_products"),
+  ]);
+  // 신고 처리 중인 내 상품 (삭제 불가 안내용)
+  const reported = new Set(((reportedRes.data ?? []) as string[]).map(String));
   const ongoing = all.filter((p) => p.status === "on_sale");
   const done = all.filter((p) => p.status === "sold");
   const tab = sp.tab === "done" ? "done" : "ongoing";
@@ -59,6 +66,7 @@ async function SalesContent({ searchParams }: { searchParams: PageProps<"/sales"
                   : `등록 ${sinceLabel(p.bumped_at)}`
               }
               bumpWait={bumpWaitHours(p.bumped_at)}
+              reported={reported.has(p.id)}
             />
           ))}
         </div>

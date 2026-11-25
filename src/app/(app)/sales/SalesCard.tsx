@@ -20,10 +20,12 @@ export default function SalesCard({
   p,
   meta,
   bumpWait,
+  reported,
 }: {
   p: ProductCard;
   meta: string;
   bumpWait: number;
+  reported: boolean; // 신고 처리 중 → 삭제 불가
 }) {
   const router = useRouter();
   const [sheet, setSheet] = useState(false);
@@ -98,7 +100,22 @@ export default function SalesCard({
           <div className={styles.backdrop} onClick={closeSheet} />
           <div className={styles.sheet} role="dialog" aria-label="상품 메뉴">
             <div className={styles.handle} />
-            {askDelete ? (
+            {askDelete && reported ? (
+              <>
+                <p className={styles.sheetConfirm}>
+                  🚨 신고 처리 중인 상품이에요
+                  <small>
+                    이 상품에 대한 신고를 리얼해브 관리자가 확인하고 있어서 지금은 삭제할 수 없어요.
+                    확인이 끝나면 삭제할 수 있어요.
+                  </small>
+                </p>
+                <div className={styles.confirmRow} style={{ padding: "0 20px 10px" }}>
+                  <button type="button" className={styles.confirmOk} onClick={closeSheet}>
+                    확인
+                  </button>
+                </div>
+              </>
+            ) : askDelete ? (
               <>
                 <p className={styles.sheetConfirm}>
                   이 상품을 삭제할까요?
