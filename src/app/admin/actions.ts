@@ -251,3 +251,18 @@ export async function openSupportThread(userId: string, reportId: string | null)
   if (error || !data) return { error: friendly(error?.message ?? "", "대화를 열지 못했어요.") };
   redirect(`/admin/threads/${data as string}`);
 }
+
+// ---------- 법정 보관함: 보존기간 지난 기록 파기 (전체 관리자) ----------
+export async function purgeExpiredRecords(): Promise<AdminState> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("admin_purge_expired_records");
+  if (error) return { error: friendly(error.message, "파기하지 못했어요.") };
+  const row = (Array.isArray(data) ? data[0] : data) as { deleted: number; image_paths: string[] } | null;
+  const paths = row?.image_paths ?? [];
+  // 광고 기록에 딸린 상품사진 파일도 삭제
+  for (let i = 0; i < paths.length; i += 100) {
+    await supabase.storage.from("product-images").remove(paths.slice(i, i + 100));
+  }
+  revalidatePath("/admin/records");
+  return { message: `보존기간이 지난 기록 ${row?.deleted ?? 0}건과 사진 ${paths.length}개를 파기했어요.` };
+}

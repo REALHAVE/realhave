@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import SubTopBar from "@/components/SubTopBar";
 import { getSessionUser } from "@/lib/auth/session";
 import { getEditData, getSellOptions } from "@/lib/catalog";
+import { createClient } from "@/lib/supabase/server";
 import SellForm from "../../../sell/SellForm";
 import styles from "../../../sell/sell.module.css";
 
@@ -19,7 +20,24 @@ async function EditContent({
   const [{ id }, sp, user] = await Promise.all([params, searchParams, getSessionUser()]);
   if (!user) redirect(`/login?next=/sales/${id}/edit`);
 
-  const [initial, options] = await Promise.all([getEditData(id, user.id), getSellOptions()]);
+  const supabase = await createClient();
+  const [initial, options, reportedRes] = await Promise.all([
+    getEditData(id, user.id),
+    getSellOptions(),
+    supabase.rpc("my_reported_products"),
+  ]);
+  // 신고 처리 중인 상품은 수정 불가 (DB에서도 막음)
+  if (((reportedRes.data ?? []) as string[]).includes(id)) {
+    return (
+      <p className={styles.blocked}>
+        🚨 신고 처리 중인 상품이에요.
+        <br />
+        리얼해브 관리자의 확인이 끝난 뒤 수정할 수 있어요.
+        <br />
+        <Link href="/sales">판매내역으로</Link>
+      </p>
+    );
+  }
   if (!initial) {
     return (
       <p className={styles.blocked}>

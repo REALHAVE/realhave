@@ -30,6 +30,7 @@ export default function SalesCard({
   const router = useRouter();
   const [sheet, setSheet] = useState(false);
   const [askDelete, setAskDelete] = useState(false); // 메뉴 안에서 삭제 확인
+  const [warn, setWarn] = useState<"" | "삭제" | "수정">(""); // 신고 처리 중 안내
   const [result, setResult] = useState<ActionResult>({});
   const [pending, start] = useTransition();
   const s = statusOf(p);
@@ -39,6 +40,7 @@ export default function SalesCard({
   function closeSheet() {
     setSheet(false);
     setAskDelete(false);
+    setWarn("");
   }
 
   function run(fn: () => Promise<ActionResult>) {
@@ -87,6 +89,10 @@ export default function SalesCard({
               onClick={() => run(() => bumpProduct(p.id))}>
               {bumpWait > 0 ? `끌어올리기 (${bumpWait}시간 후 가능)` : "끌어올리기"}
             </button>
+          ) : reported ? (
+            <button type="button" className={styles.actionBtn} onClick={() => { setSheet(true); setWarn("수정"); }}>
+              🚨 신고 처리 중이라 수정할 수 없어요
+            </button>
           ) : (
             <Link href={`/sales/${p.id}/edit`} className={styles.actionBtn}>
               {p.auth_status === "rejected" ? "수정하고 재심사 요청" : "심사 중에도 수정할 수 있어요"}
@@ -100,13 +106,13 @@ export default function SalesCard({
           <div className={styles.backdrop} onClick={closeSheet} />
           <div className={styles.sheet} role="dialog" aria-label="상품 메뉴">
             <div className={styles.handle} />
-            {askDelete && reported ? (
+            {warn ? (
               <>
                 <p className={styles.sheetConfirm}>
                   🚨 신고 처리 중인 상품이에요
                   <small>
-                    이 상품에 대한 신고를 리얼해브 관리자가 확인하고 있어서 지금은 삭제할 수 없어요.
-                    확인이 끝나면 삭제할 수 있어요.
+                    이 상품에 대한 신고를 리얼해브 관리자가 확인하고 있어서 지금은 {warn}할 수 없어요.
+                    확인이 끝나면 {warn}할 수 있어요.
                   </small>
                 </p>
                 <div className={styles.confirmRow} style={{ padding: "0 20px 10px" }}>
@@ -140,15 +146,21 @@ export default function SalesCard({
                 <Link href={`/sales/${p.id}/complete`} className={styles.option}>
                   거래완료로 변경
                 </Link>
-                <Link href={`/sales/${p.id}/edit`} className={styles.option}>
-                  게시글 수정
-                </Link>
+                {reported ? (
+                  <button type="button" className={styles.option} onClick={() => setWarn("수정")}>
+                    게시글 수정
+                  </button>
+                ) : (
+                  <Link href={`/sales/${p.id}/edit`} className={styles.option}>
+                    게시글 수정
+                  </Link>
+                )}
               </>
             )}
-            {!askDelete && (
+            {!askDelete && !warn && (
               <>
                 <button type="button" className={`${styles.option} ${styles.danger}`}
-                  onClick={() => setAskDelete(true)}>
+                  onClick={() => (reported ? setWarn("삭제") : setAskDelete(true))}>
                   삭제
                 </button>
                 <button type="button" className={styles.close} onClick={closeSheet}>

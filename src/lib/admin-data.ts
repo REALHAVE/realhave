@@ -429,3 +429,23 @@ export async function listSupportThreads(): Promise<AdminThreadRow[]> {
   if (error) console.error("[admin_support_threads]", error.message);
   return (data ?? []) as AdminThreadRow[];
 }
+
+// 법정 보관함 (전자상거래법 제6조) — 전체 관리자만
+export type LegalRecord = {
+  id: string;
+  kind: "contract" | "dispute" | "ad";
+  subject_name: string | null;
+  source_table: string;
+  data: Record<string, unknown>;
+  recorded_at: string;
+  retain_until: string;
+  reason: string;
+  expired: boolean;
+};
+
+export async function listLegalRecords(kind?: LegalRecord["kind"]): Promise<LegalRecord[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("admin_legal_records", { p_kind: kind ?? null });
+  if (error) console.error("[admin_legal_records]", error.message);
+  return (data ?? []) as LegalRecord[];
+}

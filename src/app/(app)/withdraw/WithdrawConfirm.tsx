@@ -43,9 +43,11 @@ export default function WithdrawConfirm({ userId }: { userId: string }) {
       if (row.open_reports > 0)
         throw new Error("처리 중인 신고가 있어 탈퇴할 수 없어요. 신고 처리가 끝난 뒤 다시 시도해주세요.");
 
-      // 2) 내가 올린 사진 지우기 (상품사진은 공개 주소라 반드시 지움)
+      // 2) 사진 정리
+      //  - 상품사진: 전자상거래법상 '표시·광고 기록'(6개월) 보관 대상이라 지우지 않음.
+      //    상품 글은 화면에서 사라지고, 6개월 뒤 관리자가 법정 보관함에서 파기할 때 함께 삭제
+      //  - 정품인증 서류: 보관 대상이 아니므로 바로 삭제
       setBusy("사진 정리 중…");
-      await removeAll(supabase, "product-images", await listAll(supabase, "product-images", userId));
       await removeAll(supabase, "cert-docs", await listAll(supabase, "cert-docs", userId));
       // 채팅 사진 (신고된 대화는 증거로 남기므로 DB 규칙이 지우지 못하게 막음)
       const { data: rooms } = await supabase.rpc("my_chat_rooms");
@@ -86,10 +88,15 @@ export default function WithdrawConfirm({ userId }: { userId: string }) {
       <div className={styles.wdIcon}>🚪</div>
       <div className={styles.wdTitle}>정말로 탈퇴하시겠습니까?</div>
       <div className={styles.wdDesc}>
-        대화내용, 기존 거래내용은
+        대화내용, 기존 거래내용(거래완료 상품 포함)은
         <br />
         모두 삭제되며 복구할 수 없습니다.
       </div>
+      <p className={styles.hint} style={{ textAlign: "left", marginBottom: 16 }}>
+        ※ 단, 전자상거래법(제6조·시행령 제6조)에 따라 아래 기록은 회원님 화면에서는 사라지지만 리얼해브가
+        정해진 기간 동안 보관한 뒤 파기해요.
+        <br />· 계약·거래 기록: 5년 · 소비자 불만·분쟁 처리 기록: 3년 · 상품 표시·광고 기록: 6개월
+      </p>
       {error && <p className={styles.error}>{error}</p>}
       <button type="button" className={`${styles.btn} ${styles.btnDanger}`} disabled={Boolean(busy)} onClick={withdraw}>
         {busy || "예, 탈퇴합니다"}
