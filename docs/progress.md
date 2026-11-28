@@ -45,10 +45,11 @@
 - 메일 발송 오류는 Supabase → Logs → Auth에서 원인을 볼 수 있습니다. (534 = 앱 비밀번호가 필요함, 535 = 아이디·비밀번호가 틀림)
 
 ## 남은 일
-1. **12단계 이어서 — Google 설정** (대표님): Supabase Google Callback URL 복사 → Google Cloud에서 프로젝트·OAuth 동의 화면(외부)·웹 클라이언트(원본 https://realhave.vercel.app, 리디렉션 URI = Supabase Callback URL) 생성 → 앱 게시 → Supabase Google 켜고 Client ID/Secret 저장 → URL Configuration Redirect URLs에 https://realhave.vercel.app/** 추가. 끝나면 Google 버튼 켜서 배포·테스트
+1. **12단계 이어서**: Google 로그인 설정·배포 완료(테스트 사용자만 로그인 가능). 대표님 테스트 → **카카오** 설정 (카카오 디벨로퍼스 앱, 이메일 받으려면 비즈 앱 전환)
 2. 12단계: 카카오 (카카오 디벨로퍼스 앱, 이메일 받으려면 비즈 앱 전환) → Apple (연 $99, 진행 여부 결정 필요)
 3. 미완 테스트: 신고 중 상품 수정 경고, 테스트 계정 탈퇴 후 법정 보관 기록 생성
 4. **13단계**: PWA·도메인·이용약관·개인정보처리방침(법정 보관 내용 포함)·보안 점검
+   - 약관 페이지 생기면: Google Cloud → Google 인증 플랫폼 → 브랜딩(홈페이지·개인정보처리방침 URL 등) 채우고 → 대상 → **앱 게시** (지금은 "테스트 중"이라 등록한 Gmail만 로그인)
 5. 나중에: 인증서류 자동 가림(OCR)
 
 ## 내 PC에서 실행하는 법
