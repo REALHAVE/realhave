@@ -96,13 +96,13 @@ revoke all on public.legal_records from anon, authenticated;
 
 -- 당사자 정보 (닉네임·이메일·휴대폰) — 법정 보관용
 create or replace function private.person_json(p_id uuid)
-returns jsonb language sql stable security definer set search_path = '' as $
+returns jsonb language sql stable security definer set search_path = '' as $$
   select jsonb_build_object('nickname', p.nickname, 'email', u.email, 'phone', up.phone)
   from public.profiles p
   join auth.users u on u.id = p.id
   left join public.user_private up on up.user_id = p.id
   where p.id = p_id;
-$;
+$$;
 revoke execute on function private.person_json(uuid) from public, anon, authenticated;
 
 -- 회원 1명의 법정 보관 대상 기록을 보관함에 복사
