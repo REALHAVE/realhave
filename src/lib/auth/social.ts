@@ -5,5 +5,5 @@ export type SocialProvider = "kakao" | "apple" | "google";
 export const SOCIAL_PROVIDERS: { id: SocialProvider; label: string; enabled: boolean }[] = [
   { id: "kakao", label: "카카오로 시작하기", enabled: false },
   { id: "apple", label: "Apple로 시작하기", enabled: false },
-  { id: "google", label: "Google로 시작하기", enabled: false },
+  { id: "google", label: "Google로 시작하기", enabled: true }, // 2026-11-28 설정 완료 (Google 앱은 '테스트 중' — 13단계에서 게시)
 ];
