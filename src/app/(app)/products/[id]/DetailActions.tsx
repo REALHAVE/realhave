@@ -12,11 +12,13 @@ export default function DetailActions({
   userId,
   initialWished,
   loginHref,
+  needsOnboarding = false,
 }: {
   productId: string;
   userId: string | null;
   initialWished: boolean;
   loginHref: string;
+  needsOnboarding?: boolean;
 }) {
   const router = useRouter();
   const [wished, setWished] = useState(initialWished);
@@ -28,6 +30,17 @@ export default function DetailActions({
       <div className={styles.actions}>
         <Link href={loginHref} className={styles.btnLine}>♡ 찜</Link>
         <Link href={loginHref} className={styles.btnFill}>메시지</Link>
+      </div>
+    );
+  }
+
+  // 소셜 가입 후 추가 정보를 안 넣었으면 먼저 입력
+  if (needsOnboarding) {
+    const href = `/signup/complete?next=${encodeURIComponent(`/products/${productId}`)}`;
+    return (
+      <div className={styles.actions}>
+        <Link href={href} className={styles.btnLine}>♡ 찜</Link>
+        <Link href={href} className={styles.btnFill}>메시지</Link>
       </div>
     );
   }

@@ -253,3 +253,32 @@
   color: var(--ink-soft);
   text-decoration: underline;
 }
+
+/* 소셜 로그인 버튼 (각 회사 안내 색상) */
+button.soc {
+  width: 100%;
+  color: var(--ink);
+  background: var(--paper);
+}
+
+button.soc:disabled {
+  opacity: 0.6;
+}
+
+.soc_kakao {
+  background: #fee500 !important;
+  border-color: #fee500 !important;
+  color: rgba(0, 0, 0, 0.85) !important;
+}
+
+.soc_apple {
+  background: #000 !important;
+  border-color: #000 !important;
+  color: #fff !important;
+}
+
+.soc_google {
+  background: #fff !important;
+  border-color: #dadce0 !important;
+  color: #3c4043 !important;
+}

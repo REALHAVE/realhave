@@ -104,6 +104,7 @@ async function Detail({ params }: { params: PageProps<"/products/[id]">["params"
             userId={user?.id ?? null}
             initialWished={wished}
             loginHref={loginHref}
+            needsOnboarding={user?.needsOnboarding ?? false}
           />
         )}
       </footer>

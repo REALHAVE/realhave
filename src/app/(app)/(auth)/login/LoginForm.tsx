@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { useActionState } from "react";
 import { login, type FormState } from "../actions";
 import styles from "../auth.module.css";
+import SocialButtons from "./SocialButtons";
 
 export default function LoginForm() {
   const params = useSearchParams();
@@ -19,6 +20,9 @@ export default function LoginForm() {
 
       {next !== "/" && !state.error && (
         <p className={styles.message}>로그인이 필요한 메뉴예요. 로그인 후 이동합니다.</p>
+      )}
+      {params.get("error") === "social" && !state.error && (
+        <p className={styles.error}>소셜 로그인을 마치지 못했어요. 다시 시도하거나 이메일로 로그인해 주세요.</p>
       )}
       {state.error && <p className={styles.error}>{state.error}</p>}
 
@@ -52,12 +56,7 @@ export default function LoginForm() {
       </form>
 
       <div className={styles.divider}>또는</div>
-      <div className={styles.social}>
-        {/* 소셜 로그인은 12단계에서 연결 */}
-        <div className={styles.soc}>카카오로 시작하기 (준비 중)</div>
-        <div className={styles.soc}>Apple로 시작하기 (준비 중)</div>
-        <div className={styles.soc}>Google로 시작하기 (준비 중)</div>
-      </div>
+      <SocialButtons next={next} />
 
       <p className={styles.foot}>
         아직 회원이 아니신가요? <Link href="/signup">회원가입</Link>

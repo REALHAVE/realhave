@@ -85,6 +85,11 @@ async function MyPageContent() {
 
   return (
     <>
+      {user.needsOnboarding && (
+        <Link href="/signup/complete?next=/mypage" className={styles.onboard}>
+          📝 <b>추가 정보 입력이 필요해요</b> — 휴대폰번호와 약관 동의를 마치면 거래·채팅을 할 수 있어요. ›
+        </Link>
+      )}
       <div className={styles.header}>
         <div className={styles.avatar} />
         <div>

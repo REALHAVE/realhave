@@ -12,6 +12,8 @@ export const metadata = { title: "상품등록 · Real HAVE" };
 async function SellContent() {
   const user = await getSessionUser();
   if (!user) redirect("/login?next=/sell");
+  // 소셜 가입 후 휴대폰번호·약관 동의를 안 했으면 먼저 입력
+  if (user.needsOnboarding) redirect("/signup/complete?next=/sell");
 
   if (user.status === "suspended") {
     return (

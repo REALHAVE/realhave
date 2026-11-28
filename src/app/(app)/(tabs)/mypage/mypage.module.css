@@ -157,3 +157,16 @@
   color: var(--ink-soft);
   font-weight: 600;
 }
+
+/* 소셜 가입 후 추가 정보 안내 */
+.onboard {
+  display: block;
+  margin: 10px 20px 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #fdf3e3;
+  border: 1px solid #f0dcb8;
+  color: #7a5414;
+  font-size: 12.5px;
+  line-height: 1.6;
+}

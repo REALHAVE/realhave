@@ -179,3 +179,33 @@ export async function logout() {
   await supabase.auth.signOut();
   redirect("/mypage");
 }
+
+// ---------------------------------------------------------------------
+// 소셜 가입 후 추가 정보 (닉네임·휴대폰·약관) — 검사는 DB 함수가 한 번 더 함
+// ---------------------------------------------------------------------
+export async function completeProfile(_: FormState, form: FormData): Promise<FormState> {
+  const nickname = str(form, "nickname");
+  const phoneRaw = str(form, "phone");
+  const phone = normalizePhone(phoneRaw);
+  const agreed = form.get("agree") === "on";
+  const next = safeNext(form.get("next"), "/mypage");
+  const values = { nickname, phone: phoneRaw };
+
+  if (!isValidNickname(nickname)) return { error: "닉네임은 2~20자로 입력해 주세요.", values };
+  if (!isValidPhone(phone)) return { error: "휴대폰번호를 확인해 주세요. (예: 010-1234-5678)", values };
+  if (!agreed) return { error: "이용약관 및 개인정보처리방침에 동의해 주세요.", values };
+
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("complete_profile", {
+    p_nickname: nickname,
+    p_phone: phone,
+    p_agree: true,
+  });
+  if (error) {
+    return {
+      error: /[가-힣]/.test(error.message) ? error.message : "저장하지 못했어요. 잠시 후 다시 시도해 주세요.",
+      values,
+    };
+  }
+  redirect(next);
+}
